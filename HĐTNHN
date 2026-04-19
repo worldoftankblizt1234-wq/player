@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BÀI THU HOẠCH CUỐI KÌ 2 - Nguyễn Anh Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Thư viện hiệu ứng cuộn trang -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; overflow-x: hidden; }
+        .gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        
+        /* Hiệu ứng nổi lên khi chạm vào */
+        .hover-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hover-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            border-color: #3b82f6;
+        }
+
+        .section-card { 
+            background: white; 
+            border-radius: 1.5rem; 
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); 
+            padding: 2.5rem; 
+            margin-bottom: 3rem; 
+        }
+
+        .image-container { border-radius: 1rem; overflow: hidden; border: 1px solid #cbd5e1; background: #f8fafc; }
+        img { width: 100%; height: auto; display: block; object-fit: cover; }
+        .highlight-text { color: #2563eb; font-weight: 600; }
+        
+        .quote-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-blur: 10px;
+            border-left: 4px solid #fff;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Header Section -->
+    <header class="gradient-bg text-white py-20 px-6 text-center shadow-lg relative">
+        <div class="max-w-4xl mx-auto" data-aos="zoom-in">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 uppercase tracking-tighter">Bài Thu Hoạch Cuối Kì 2</h1>
+            <p class="text-xl md:text-2xl font-light opacity-90 mb-8 italic">Hoạt động Trải nghiệm, Hướng nghiệp - Hành trình khám phá Cao đẳng Sonadezi</p>
+            
+            <!-- Phần danh ngôn mới -->
+            <div class="quote-box max-w-2xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="200">
+                "Cách tốt nhất để dự đoán tương lai là tự tay tạo ra nó." 
+                <br>
+                <span class="text-sm not-italic opacity-80">— Abraham Lincoln —</span>
+            </div>
+
+            <div class="inline-flex flex-col md:flex-row items-center justify-center gap-4 bg-white/10 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/20 mt-4">
+                <span class="text-lg"><strong>Học sinh:</strong> Nguyễn Anh Minh</span>
+                <span class="hidden md:block opacity-40">|</span>
+                <span class="text-lg"><strong>Lớp:</strong> 9/2-22</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto py-16 px-6">
+
+        <!-- Mục 1: Ấn tượng -->
+        <section class="section-card hover-card" data-aos="fade-right">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center uppercase">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-3 text-sm">1</span>
+                Những điều em ấn tượng và yêu thích nhất
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4 text-justify">
+                    <p>Ngay từ khi đặt chân vào khuôn viên trường Sonadezi, em đã bị thu hút bởi một <span class="highlight-text">không gian học tập vô cùng năng động và cởi mở</span>. Không giống như không gian trường phổ thông truyền thống, các khu vực tại đây đều toát lên vẻ hiện đại, thực tế và mang đậm hơi thở của công việc sản xuất.</p>
+                    <p>Em đặc biệt ấn tượng với sự phối hợp hài hòa giữa việc học tập và rèn luyện thể chất. Hình ảnh các anh chị sinh viên hào hứng bên bàn <span class="highlight-text">bóng bàn</span> sau giờ thực hành căng thẳng đã cho thấy một môi trường phát triển toàn diện, nơi sức khỏe và trí tuệ luôn song hành cùng nhau.</p>
+                    <p>Tuy nhiên, điểm chạm lớn nhất đối với em chính là <span class="highlight-text">khu vực trưng bày mỹ thuật</span>. Những tác phẩm tại đây không chỉ đơn thuần là bài tập, mà là những tâm hồn sáng tạo mãnh liệt, chứng minh rằng tại Sonadezi, mỗi sinh viên đều là một nghệ sĩ trong chính công việc của mình.</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="image-container shadow-sm">
+                        <img src="https://i.postimg.cc/cJhtNtk6/z7741929847974-565a16d5f9aa9c7c38178f18723002e7.jpg" alt="[Ảnh giao lưu bóng bàn của sinh viên]">
+                    </div>
+                    <p class="text-xs text-center italic text-slate-400">Ảnh: Hoạt động thể thao sôi nổi trong khuôn viên trường</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mục 2: Ngành nghề -->
+        <section class="section-card bg-slate-100/50" data-aos="fade-left">
+            <h2 class="text-2xl font-bold text-blue-900 mb-8 flex items-center uppercase">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-3 text-sm">2</span>
+                Các ngành nghề em được tìm hiểu
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <!-- Ngành May -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover-card">
+                    <h3 class="font-bold text-blue-700 mb-3 text-lg">Ngành May và Thiết kế Thời trang</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed text-justify">Khi tham quan xưởng may, em đã thấy được sự tỉ mỉ trong từng đường kim mũi chỉ. Quy trình sản xuất công nghiệp yêu cầu sự phối hợp nhịp nhàng giữa hàng trăm chiếc máy may hiện đại và bàn tay khéo léo của người thợ. Đây là ngành nghề đòi hỏi sự kiên nhẫn và đôi mắt thẩm mỹ tinh tế.</p>
+                </div>
+
+                <!-- Ngành Khách sạn -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover-card">
+                    <h3 class="font-bold text-blue-700 mb-3 text-lg">Quản trị Khách sạn & Nhà hàng</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed text-justify">Phòng thực hành nghiệp vụ khiến em choáng ngợp bởi sự chuẩn mực như trong các khách sạn cao cấp. Em nhận ra rằng, ngành dịch vụ không chỉ là phục vụ, mà là nghệ thuật làm hài lòng khách hàng thông qua sự giao tiếp lịch thiệp và sự chuyên nghiệp tuyệt đối.</p>
+                </div>
+
+                <!-- Ngành Điện -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover-card">
+                    <h3 class="font-bold text-blue-700 mb-3 text-lg">Kỹ thuật Điện Công nghiệp</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed text-justify">Những bảng mạch phức tạp và hệ thống điều khiển tự động hóa cho thấy tầm quan trọng của tư duy logic. Đây là nòng cốt giúp vận hành cả một nhà máy lớn. Chuyến đi giúp em hiểu rằng, kỹ thuật chính là nền móng để xây dựng nên thế giới hiện đại ngày nay.</p>
+                </div>
+
+                <!-- Ngành Truyền thông -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover-card">
+                    <h3 class="font-bold text-blue-700 mb-3 text-lg">Truyền thông và Thông tin</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed text-justify">Trong thời đại 4.0, đây là ngành nghề thu hút sự chú ý của nhiều bạn trẻ. Tại Sonadezi, sinh viên được trang bị kỹ năng sử dụng các công cụ truyền thông hiện đại, học cách xây dựng hình ảnh và quản trị dữ liệu để đưa thương hiệu đến gần hơn với khách hàng.</p>
+                </div>
+            </div>
+
+            <!-- Góc Mỹ thuật -->
+            <div class="bg-white p-8 rounded-2xl border border-slate-200 hover-card" data-aos="zoom-in-up">
+                <h3 class="font-bold text-blue-700 mb-6 text-center text-xl uppercase italic">
+                    "Nghệ thuật là ngôn ngữ của tâm hồn"
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="image-container">
+                        <img src="https://i.postimg.cc/jSwDLdqn/z7741929871590-7b9e3050dc85509d1d42f7f3d84acc54.jpg" alt="[Tác phẩm hội họa của sinh viên Sonadezi]">
+                    </div>
+                    <div class="image-container">
+                        <img src="https://i.postimg.cc/3Jw4QFP4/z7741929859003-ba9fd25de60a98782baf10ab0dc0c4a7.jpg" alt="[Mô hình nghệ thuật thủ công]">
+                    </div>
+                </div>
+                <p class="text-sm text-slate-500 mt-6 text-center italic">Những tác phẩm trưng bày minh chứng cho một môi trường giáo dục khuyến khích sự khác biệt và năng khiếu.</p>
+            </div>
+        </section>
+
+        <!-- Mục 3: Cảm nhận -->
+        <section class="section-card hover-card" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center uppercase">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-3 text-sm">3</span>
+                Cảm nhận sâu sắc sau chuyến đi
+            </h2>
+            <div class="bg-blue-50 p-8 rounded-2xl border-l-8 border-blue-600 space-y-4">
+                <p class="text-lg text-slate-700 italic leading-relaxed text-justify">
+                    "Sau chuyến hành trình khám phá Cao đẳng Sonadezi, em không chỉ thu nhận được kiến thức về các ngành nghề, mà còn tìm thấy nguồn cảm hứng mạnh mẽ về lộ trình học tập tương lai. Em hiểu rằng, dù học bất cứ ngành nào, chỉ cần có niềm đam mê và sự kỷ luật, chúng ta đều có thể trở thành những chuyên gia thực thụ."
+                </p>
+                <p class="text-slate-600 text-justify">
+                    Sự tận tâm của các thầy cô giáo và sự nhiệt huyết của các anh chị sinh viên đã xóa tan đi những lo lắng về định hướng sau khi tốt nghiệp lớp 9. Sonadezi không chỉ dạy nghề, mà còn dạy cách để chúng ta tự tin bước vào đời.
+                </p>
+            </div>
+        </section>
+
+        <!-- Mục 4: Kế hoạch -->
+        <section class="section-card hover-card" data-aos="flip-up">
+            <h2 class="text-2xl font-bold text-blue-900 mb-8 flex items-center uppercase">
+                <span class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-3 text-sm">4</span>
+                Kế hoạch vươn tới tương lai
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-8 bg-slate-50 rounded-2xl border border-slate-200 text-center hover:bg-white transition-all">
+                    <div class="text-4xl mb-4">📖</div>
+                    <p class="font-bold text-blue-800 mb-2 uppercase">Học tập vững vàng</p>
+                    <p class="text-sm text-slate-600">Dành toàn bộ sự tập trung cho việc ôn luyện kiến thức nền tảng để đạt kết quả tốt nhất trong kỳ thi tuyển sinh lớp 10 sắp tới và quyết tâm thi tốt trường mình muốn vô.</p>
+                </div>
+                <div class="p-8 bg-slate-50 rounded-2xl border border-slate-200 text-center hover:bg-white transition-all">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <p class="font-bold text-blue-800 mb-2 uppercase">Nuôi dưỡng đam mê</p>
+                    <p class="text-sm text-slate-600">Tiếp tục trau dồi kỹ năng hội họa và tư duy thẩm mỹ, coi đó là một lợi thế quan trọng trong định hướng nghề nghiệp sau này.</p>
+                </div>
+                <div class="p-8 bg-slate-50 rounded-2xl border border-slate-200 text-center hover:bg-white transition-all">
+                    <div class="text-4xl mb-4">🌟</div>
+                    <p class="font-bold text-blue-800 mb-2 uppercase">Rèn luyện bản thân</p>
+                    <p class="text-sm text-slate-600">Hình thành thói quen kỷ luật, tính trách nhiệm và sự tự tin để sẵn sàng cho môi trường học tập mới chuyên nghiệp hơn để nâng cao tinh thần,kĩ năng của mình.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto opacity-80" data-aos="fade-up">
+            <p class="text-xl font-bold mb-3 tracking-widest uppercase">Nguyễn Anh Minh - Lớp 9/2-22</p>
+            <p class="text-sm italic mb-8">Trường THCS [Tên trường của bạn]</p>
+            <div class="pt-8 border-t border-white/10">
+                <p class="text-xs uppercase tracking-widest opacity-50">© 2024 Hoạt động Trải nghiệm Hướng nghiệp - Bài thu hoạch cuối kì 2</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts cho hiệu ứng cuộn trang -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Khởi tạo hiệu ứng AOS
+        AOS.init({
+            duration: 1000, 
+            once: true,     
+            offset: 100     
+        });
+    </script>
+</body>
+</html>
