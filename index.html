@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Big Bang Game - Người chơi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        input, .option-btn, .option-choice {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+        .timer-bar { transition: width 0.2s linear; }
+        .disabled-btn { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+        .option-btn { transition: all 0.2s ease; cursor: pointer; }
+        .option-btn:hover:not(.disabled-btn) { transform: scale(1.01); background-color: #e0e7ff; }
+        .correct-highlight { background-color: #bbf7d0 !important; border-color: #22c55e !important; }
+        .wrong-highlight { background-color: #fecaca !important; border-color: #ef4444 !important; }
+        .selected-temp { background-color: #3b82f6 !important; border-color: #2563eb !important; color: white !important; }
+        @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-10px);} }
+        .animate-bounce { animation: bounce 0.5s ease-in-out; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; border-radius: 1.5rem; width: 90%; max-width: 450px; padding: 2rem; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: showModal 0.3s forwards; }
+        @keyframes showModal { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .fullscreen-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.5s ease-out; }
+        .fullscreen-popup-content { text-align: center; color: white; animation: popupBounce 0.6s ease-out; }
+        .fullscreen-popup-icon { font-size: 6rem; margin-bottom: 1rem; }
+        .fullscreen-popup-title { font-size: 3rem; font-weight: bold; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 4px; }
+        .fullscreen-popup-subtitle { font-size: 1.5rem; opacity: 0.9; }
+        .explain-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 1rem; max-width: 90%; width: 500px; padding: 2rem; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); z-index: 10001; animation: popupBounce 0.3s ease-out; }
+        .explain-popup-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #1e1b4b; }
+        .explain-popup-content { font-size: 1rem; color: #333; line-height: 1.5; margin-bottom: 1.5rem; text-align: left; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popupBounce { 0%,100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } }
+        .option-choice { padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.75rem; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s; text-align: left; }
+        .option-choice:hover { background-color: #e0e7ff; border-color: #6366f1; }
+        .option-selected { background-color: #6366f1; border-color: #6366f1; color: white; }
+        .warning-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            z-index: 10002;
+            animation: fadeOut 2s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 to-purple-900 min-h-screen p-4" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white/90 backdrop-blur rounded-2xl p-6 shadow-xl">
+            <div id="loginPanel">
+                <h2 class="text-xl font-bold text-center mb-4">📝 Nhập tên của bạn</h2>
+                <input type="text" id="playerName" placeholder="Tên hiển thị" class="w-full p-3 border rounded-xl mb-3 text-center" autocomplete="off">
+                <button id="loginBtn" class="w-full bg-indigo-600 text-white py-3 rounded-xl">🎮 Vào chơi</button>
+            </div>
+            <div id="gamePanel" class="hidden">
+                <div class="flex justify-between mb-4"><div><span class="text-gray-500">👤</span> <span id="playerNameDisplay" class="font-bold"></span></div><div><span class="text-gray-500">⭐</span> <span id="playerScore" class="font-bold text-indigo-600">0</span></div></div>
+                <div class="mb-4"><div class="flex justify-between text-sm text-gray-600 mb-1"><span>⏱️ Thời gian còn lại</span><span id="timerText" class="font-bold">-- giây</span></div><div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden"><div id="timerBar" class="timer-bar bg-green-500 h-3 rounded-full" style="width: 100%"></div></div></div>
+                <div class="flex justify-between items-center mb-2"><div class="bg-gray-100 rounded-full px-3 py-1 text-xs font-medium" id="levelBadge">---</div><div class="text-sm">Điểm: <span id="questionPoints" class="font-bold text-indigo-600">0</span></div></div>
+                <div id="questionText" class="text-md font-bold p-3 bg-indigo-50 rounded-lg mb-4">Chờ câu hỏi...</div>
+                <div id="options" class="space-y-2"></div>
+                <div class="mt-6"><h3 class="font-bold mb-2">🏆 Bảng xếp hạng</h3><div id="rankList" class="space-y-1 max-h-48 overflow-y-auto"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/database": "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js" } }</script>
+
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, get, set, onValue } from "firebase/database";
+
+        // ==================== CHỐNG MỞ TAB MỚI + HỦY CÂU HỎI KHI RỜI TAB ====================
+        (function() {
+            let tabLeft = false;
+            
+            function showToast(msg) {
+                let toast = document.querySelector('.warning-toast');
+                if (toast) toast.remove();
+                toast = document.createElement('div');
+                toast.className = 'warning-toast';
+                toast.innerText = msg;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+            }
+
+            // Hiển thị modal cảnh báo hủy câu hỏi
+            function showCancelQuestionModal() {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="text-6xl mb-4">⚠️</div>
+                        <h2 class="text-2xl font-bold mb-2 text-red-600">CÂU HỎI BỊ HỦY</h2>
+                        <p class="text-gray-600 mb-4">Bạn đã rời khỏi game trong khi câu hỏi đang diễn ra.<br>Câu hỏi này sẽ không được tính điểm.</p>
+                        <button id="closeCancelModal" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Đã hiểu</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.getElementById('closeCancelModal').onclick = () => modal.remove();
+            }
+
+            // 1. Chống các tổ hợp phím mở tab mới
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                    (e.ctrlKey && e.key === 'u') ||
+                    (e.ctrlKey && e.key === 'U')) {
+                    e.preventDefault();
+                    window.location.href = 'about:blank';
+                    setTimeout(() => { window.close(); }, 100);
+                }
+                if (e.ctrlKey && (e.key === 't' || e.key === 'T' || e.key === 'n' || e.key === 'N')) {
+                    e.preventDefault();
+                    showToast("⚠️ Không thể mở tab/cửa sổ mới!");
+                    return false;
+                }
+                if (e.ctrlKey && e.shiftKey && (e.key === 'n' || e.key === 'N')) {
+                    e.preventDefault();
+                    showToast("⚠️ Không thể mở cửa sổ ẩn danh!");
+                    return false;
+                }
+            });
+            
+            // 2. Chống click chuột giữa
+            document.addEventListener('mousedown', function(e) {
+                if (e.button === 1) {
+                    e.preventDefault();
+                    showToast("⚠️ Không thể mở tab mới bằng chuột giữa!");
+                    return false;
+                }
+            });
+            
+            // 3. Chống chuột phải
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // 4. Phát hiện DevTools
+            let devtoolsDetected = false;
+            function detectDevTools() {
+                const element = new Image();
+                Object.defineProperty(element, 'id', {
+                    get: function() {
+                        devtoolsDetected = true;
+                        throw new Error('DevTools detected');
+                    }
+                });
+                console.log(element);
+            }
+            setInterval(() => {
+                if (devtoolsDetected) {
+                    window.location.href = 'about:blank';
+                    setTimeout(() => { window.close(); }, 100);
+                }
+                devtoolsDetected = false;
+                detectDevTools();
+            }, 1000);
+            
+            // 5. PHÁT HIỆN RỜI TAB -> HỦY CÂU HỎI HIỆN TẠI
+            let hasTriggeredCancel = false;
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    tabLeft = true;
+                    showToast("⚠️ Bạn đã rời khỏi game!");
+                    // Gửi sự kiện hủy câu hỏi lên Firebase
+                    if (window.cancelCurrentQuestion && !hasTriggeredCancel) {
+                        hasTriggeredCancel = true;
+                        window.cancelCurrentQuestion();
+                        showCancelQuestionModal();
+                    }
+                }
+            });
+            
+            window.addEventListener('blur', function() {
+                if (!hasTriggeredCancel) {
+                    showToast("⚠️ Bạn đã rời khỏi game!");
+                    if (window.cancelCurrentQuestion) {
+                        hasTriggeredCancel = true;
+                        window.cancelCurrentQuestion();
+                        showCancelQuestionModal();
+                    }
+                }
+            });
+            
+            window.addEventListener('focus', function() {
+                // Reset flag khi quay lại (cho câu hỏi tiếp theo)
+                hasTriggeredCancel = false;
+            });
+        })();
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyALdVA3woqhtG1k7tfApCiP5ar8kH1JfHI",
+            authDomain: "administrator-a7ed3.firebaseapp.com",
+            databaseURL: "https://administrator-a7ed3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "administrator-a7ed3",
+            storageBucket: "administrator-a7ed3.firebasestorage.app",
+            messagingSenderId: "299780527549",
+            appId: "1:299780527549:web:21d540316de77159692ed4"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let currentPlayer = null, currentQuestion = null, hasAnsweredCurrent = false, selectedAnswerIdx = -1, isLocked = false, resultData = null, currentQuestionIndex = -1, modalShownForCurrentQuestion = false;
+        let timerEndTime = null, timerDuration = 30, timerInterval = null;
+        let hasShownTutorial = false;
+        let isQuestionCancelled = false;
+
+        // Hàm hủy câu hỏi hiện tại (gọi từ bên ngoài)
+        window.cancelCurrentQuestion = async function() {
+            if (!currentQuestion || isQuestionCancelled) return;
+            isQuestionCancelled = true;
+            
+            // Dừng timer
+            if (timerInterval) clearInterval(timerInterval);
+            timerEndTime = null;
+            
+            // Khóa câu hỏi, không cho trả lời
+            isLocked = true;
+            
+            // Ghi nhận rằng câu hỏi này đã bị hủy (không tính điểm)
+            const qIndex = currentQuestion.index;
+            await set(ref(db, `players/${currentPlayer.name}/cancelled/${qIndex}`), true);
+            
+            // Cập nhật giao diện
+            document.getElementById('questionText').innerHTML = "⚠️ CÂU HỎI ĐÃ BỊ HỦY ⚠️<br><span class='text-sm text-gray-500'>Bạn đã rời khỏi game trong khi câu hỏi đang diễn ra. Câu này không được tính điểm.</span>";
+            document.getElementById('options').innerHTML = '';
+            
+            // Thông báo cho host biết (tùy chọn)
+            await set(ref(db, `game/cancelledBy/${currentPlayer.name}`), { questionIndex: qIndex, timestamp: Date.now() });
+        };
+
+        function updateTimerDisplay() {
+            if (isQuestionCancelled) return;
+            if (!timerEndTime || timerEndTime <= Date.now()) {
+                document.getElementById('timerText').innerHTML = 'Hết giờ';
+                document.getElementById('timerBar').style.width = '0%';
+                document.getElementById('timerBar').className = 'timer-bar bg-red-500 h-3 rounded-full';
+                if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                return;
+            }
+            const remaining = Math.max(0, (timerEndTime - Date.now()) / 1000);
+            const percent = (remaining / timerDuration) * 100;
+            document.getElementById('timerText').innerHTML = `${Math.ceil(remaining)} giây`;
+            document.getElementById('timerBar').style.width = `${Math.max(0, percent)}%`;
+            const bar = document.getElementById('timerBar');
+            if (percent < 20) bar.className = 'timer-bar bg-red-500 h-3 rounded-full';
+            else if (percent < 50) bar.className = 'timer-bar bg-yellow-500 h-3 rounded-full';
+            else bar.className = 'timer-bar bg-green-500 h-3 rounded-full';
+        }
+
+        function startTimerLocal(seconds) { if (timerInterval) clearInterval(timerInterval); timerDuration = seconds; timerEndTime = Date.now() + seconds * 1000; updateTimerDisplay(); timerInterval = setInterval(() => { if (!timerEndTime || timerEndTime <= Date.now()) { if (timerInterval) clearInterval(timerInterval); timerInterval = null; updateTimerDisplay(); } else { updateTimerDisplay(); } }, 200); }
+        function stopTimerLocal() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } timerEndTime = null; updateTimerDisplay(); }
+
+        function showFullscreenPopup(level) {
+            const popup = document.createElement('div'); popup.className = 'fullscreen-popup';
+            let icon='',title='',subtitle='';
+            if(level==='Easy'){icon='🍃';title='CẤP ĐỘ DỄ';subtitle='Mỗi câu đúng được 1 điểm';}
+            else if(level==='Medium'){icon='🌿';title='CẤP ĐỘ TRUNG BÌNH';subtitle='Mỗi câu đúng được 2 điểm';}
+            else if(level==='Hard'){icon='⚡';title='CẤP ĐỘ KHÓ';subtitle='Mỗi câu đúng được 3 điểm';}
+            else if(level==='BOSS'){icon='👑🔥';title='CẤP ĐỘ BOSS';subtitle='Mỗi câu đúng được 6 điểm';}
+            popup.innerHTML=`<div class="fullscreen-popup-content"><div class="fullscreen-popup-icon">${icon}</div><div class="fullscreen-popup-title">${title}</div><div class="fullscreen-popup-subtitle">${subtitle}</div></div>`;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 2000);
+        }
+
+        function showExplanationPopup(explanation) {
+            const popup = document.createElement('div'); popup.className = 'explain-popup';
+            popup.innerHTML = `<div class="explain-popup-title">📚 GIẢI THÍCH</div><div class="explain-popup-content">${explanation}</div><button id="closeExplainBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl transition">Đóng</button>`;
+            document.body.appendChild(popup);
+            document.getElementById('closeExplainBtn').onclick = () => popup.remove();
+        }
+
+        function showTutorialModal() {
+            if (hasShownTutorial) return;
+            hasShownTutorial = true;
+            
+            const modal1 = document.createElement('div');
+            modal1.className = 'modal-overlay';
+            modal1.innerHTML = `
+                <div class="modal-content">
+                    <div class="text-4xl mb-2">🎓</div>
+                    <h2 class="text-2xl font-bold mb-2 text-indigo-900">HƯỚNG DẪN CHƠI</h2>
+                    <p class="text-gray-600 mb-4 text-sm">Hãy thử trả lời câu hỏi ví dụ bên dưới nhé!</p>
+                    <div class="bg-indigo-50 p-4 rounded-xl text-left mb-4">
+                        <p class="font-bold mb-3 text-indigo-900">📖 Câu hỏi mẫu: Trong truyện tranh Doraemon, nhân vật Nobita thường nhờ ai giúp đỡ khi gặp khó khăn?</p>
+                        <div id="tutorialOptions" class="space-y-2">
+                            <div class="option-choice" data-opt="0">A. Doraemon</div>
+                            <div class="option-choice" data-opt="1">B. Jaian</div>
+                            <div class="option-choice" data-opt="2">C. Shizuka</div>
+                            <div class="option-choice" data-opt="3">D. Dekisugi</div>
+                        </div>
+                    </div>
+                    <button id="tutorialNextBtn" class="w-full bg-gray-300 text-gray-500 py-3 rounded-xl font-bold" disabled>📢 Xem giải thích</button>
+                </div>
+            `;
+            document.body.appendChild(modal1);
+            
+            let selectedOpt = null;
+            const options = modal1.querySelectorAll('.option-choice');
+            const nextBtn = modal1.querySelector('#tutorialNextBtn');
+            
+            options.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    options.forEach(o => o.classList.remove('option-selected'));
+                    opt.classList.add('option-selected');
+                    selectedOpt = opt.dataset.opt;
+                    nextBtn.disabled = false;
+                    nextBtn.classList.remove('bg-gray-300', 'text-gray-500');
+                    nextBtn.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700');
+                });
+            });
+            
+            nextBtn.onclick = () => {
+                if (!selectedOpt) return;
+                modal1.remove();
+                
+                const modal2 = document.createElement('div');
+                modal2.className = 'modal-overlay';
+                const isCorrect = (selectedOpt === '0');
+                modal2.innerHTML = `
+                    <div class="modal-content">
+                        <div class="text-4xl mb-2">${isCorrect ? '🎉' : '📚'}</div>
+                        <h2 class="text-2xl font-bold mb-2 text-indigo-900">${isCorrect ? 'CHÍNH XÁC!' : 'GIẢI THÍCH'}</h2>
+                        <div class="bg-${isCorrect ? 'green' : 'blue'}-50 p-4 rounded-xl mb-6 border border-${isCorrect ? 'green' : 'blue'}-200 text-left">
+                            <p class="text-sm">
+                                ${isCorrect ? 
+                                    '✅ Bạn đã trả lời đúng! Doraemon chính là người bạn thân thiết luôn giúp đỡ Nobita bằng những bảo bối kỳ diệu từ tương lai.' : 
+                                    '❌ Đáp án đúng là A (Doraemon). Doraemon là chú mèo máy đến từ tương lai, luôn giúp đỡ Nobita bằng những bảo bối thần kỳ.'
+                                }
+                            </p>
+                        </div>
+                        <button id="finishTutorialBtn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition">🎮 Vào game thôi!</button>
+                    </div>
+                `;
+                document.body.appendChild(modal2);
+                document.getElementById('finishTutorialBtn').onclick = () => modal2.remove();
+            };
+        }
+
+        async function login() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) return alert("Nhập tên!");
+            const playerRef = ref(db, `players/${name}`);
+            const snap = await get(playerRef);
+            if (!snap.exists()) await set(playerRef, { name, score: 0, answers: {} });
+            const data = snap.exists() ? snap.val() : { name, score: 0, answers: {} };
+            currentPlayer = { name, score: data.score || 0, answers: data.answers || {} };
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('gamePanel').classList.remove('hidden');
+            document.getElementById('playerNameDisplay').innerText = name;
+            document.getElementById('playerScore').innerText = currentPlayer.score;
+            showTutorialModal();
+        }
+
+        function resetForNewQuestion() { 
+            hasAnsweredCurrent=false; selectedAnswerIdx=-1; isLocked=false; resultData=null; modalShownForCurrentQuestion=false; isQuestionCancelled=false;
+            const oldModal=document.querySelector('.modal-overlay'); 
+            if(oldModal && !oldModal.querySelector('#finishTutorialBtn')) oldModal.remove(); 
+        }
+
+        function showResultModal(isCorrect, correctLetter, correctText, pointsEarned, playerScore, explanation) {
+            if(modalShownForCurrentQuestion) return;
+            modalShownForCurrentQuestion=true;
+            const modal=document.createElement('div'); modal.className='modal-overlay';
+            modal.innerHTML=`<div class="modal-content"><div class="text-6xl mb-4">${isCorrect?'🎉':'😢'}</div><h2 class="text-2xl font-bold mb-2">${isCorrect?'CHÍNH XÁC!':'SAI RỒI!'}</h2><p class="text-gray-600 mb-4">${isCorrect?`Bạn đã trả lời đúng! +${pointsEarned} điểm`:`Đáp án đúng là: ${correctLetter}. ${correctText}`}</p><div class="bg-gray-100 p-3 rounded-lg mb-4"><p class="text-sm text-gray-500">Điểm hiện tại của bạn</p><p class="text-3xl font-bold text-indigo-600">${playerScore}</p></div><button id="showExplainBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl transition mr-2">📚 Giải thích</button><button id="closeModalBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-xl transition">Đóng</button></div>`;
+            document.body.appendChild(modal);
+            document.getElementById('closeModalBtn').onclick = () => modal.remove();
+            document.getElementById('showExplainBtn').onclick = () => { showExplanationPopup(explanation); };
+        }
+
+        function displayQuestion(q) {
+            if(!currentPlayer) return;
+            if (isQuestionCancelled) return;
+            currentQuestion=q; currentQuestionIndex=q.index;
+            const alreadyAnswered = currentPlayer.answers && currentPlayer.answers[currentQuestionIndex] !== undefined;
+            if(alreadyAnswered){ hasAnsweredCurrent=true; selectedAnswerIdx=currentPlayer.answers[currentQuestionIndex]; }
+            else{ if(currentQuestionIndex!==-1){ hasAnsweredCurrent=false; selectedAnswerIdx=-1; } }
+            document.getElementById('questionText').innerHTML=q.text;
+            let levelText=q.level==='Easy'?'Dễ - 1đ':(q.level==='Medium'?'Trung bình - 2đ':(q.level==='Hard'?'Khó - 3đ':'BOSS - 6đ'));
+            document.getElementById('levelBadge').innerHTML=levelText;
+            document.getElementById('questionPoints').innerText=q.points;
+            const optionsDiv=document.getElementById('options'); optionsDiv.innerHTML='';
+            const showResult=(isLocked&&resultData&&resultData.questionIndex===currentQuestionIndex);
+            const correctIdx=showResult?resultData.correctAnswer:-1;
+            q.options.forEach((opt,idx)=>{
+                const btn=document.createElement('button');
+                let btnClass=`option-btn w-full p-2 rounded-lg text-left border-2 transition-all bg-white border-gray-200 text-sm `;
+                if(showResult){ btn.disabled=true; btnClass+=`disabled-btn `; if(idx===correctIdx) btnClass+=`correct-highlight `; if(selectedAnswerIdx===idx&&idx!==correctIdx) btnClass+=`wrong-highlight `; }
+                else if(hasAnsweredCurrent){ btn.disabled=true; btnClass+=`disabled-btn `; if(selectedAnswerIdx===idx) btnClass+=`selected-temp `; }
+                else{ btn.onclick=()=>submitAnswer(idx); }
+                btn.className=btnClass; btn.innerHTML=`${String.fromCharCode(65+idx)}. ${opt}`;
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        async function submitAnswer(answerIdx){
+            if(!currentPlayer||hasAnsweredCurrent||isLocked||!currentQuestion||isQuestionCancelled){ if(isLocked) alert("Câu hỏi đã khóa!"); return; }
+            if(timerEndTime && Date.now()>timerEndTime){ alert("⏰ Hết giờ!"); return; }
+            const qIndex=currentQuestion.index;
+            await set(ref(db,`players/${currentPlayer.name}/answers/${qIndex}`),answerIdx);
+            currentPlayer.answers[qIndex]=answerIdx;
+            hasAnsweredCurrent=true; selectedAnswerIdx=answerIdx;
+            alert("✅ Đã ghi nhận câu trả lời. Chờ quản trò công bố kết quả!");
+            displayQuestion(currentQuestion);
+        }
+
+        function listenForLockAndResult(){
+            onValue(ref(db,'game/locked'),(snapshot)=>{ isLocked=snapshot.val()===true; if(currentQuestion) displayQuestion(currentQuestion); });
+            onValue(ref(db,'game/resultPublished'),async(snapshot)=>{
+                const newResult=snapshot.val();
+                if(!newResult){ resultData=null; if(currentQuestion) displayQuestion(currentQuestion); return; }
+                resultData=newResult;
+                if(currentQuestion && resultData.questionIndex===currentQuestionIndex){
+                    const playerRef=ref(db,`players/${currentPlayer.name}`);
+                    const snap=await get(playerRef);
+                    if(snap.exists()){ currentPlayer.score=snap.val().score||0; document.getElementById('playerScore').innerText=currentPlayer.score; }
+                    const isCorrect=(selectedAnswerIdx===resultData.correctAnswer);
+                    const correctLetter=String.fromCharCode(65+resultData.correctAnswer);
+                    const correctText=currentQuestion.options[resultData.correctAnswer];
+                    showResultModal(isCorrect,correctLetter,correctText,resultData.points,currentPlayer.score, resultData.explanation);
+                    displayQuestion(currentQuestion);
+                }
+            });
+        }
+
+        function listenForLevelPopup(){ onValue(ref(db,'game/levelPopup'),(snapshot)=>{ const data=snapshot.val(); if(data&&data.show) showFullscreenPopup(data.level); }); }
+        function listenRanking(){
+            onValue(ref(db,'players'),()=>{
+                get(ref(db,'players')).then(snap=>{
+                    const data=snap.val()||{};
+                    const players=Object.values(data).sort((a,b)=>(b.score||0)-(a.score||0));
+                    const rankDiv=document.getElementById('rankList');
+                    if(players.length===0){ rankDiv.innerHTML='<div class="text-center text-gray-400 text-sm">Chưa có người chơi</div>'; return; }
+                    rankDiv.innerHTML=players.map((p,i)=>`<div class="flex justify-between p-2 bg-white rounded-lg shadow-sm text-sm"><span>${i+1}. ${p.name}</span><span class="font-bold text-indigo-600">⭐ ${p.score||0}</span></div>`).join('');
+                });
+            });
+        }
+
+        onValue(ref(db,'game/timer'),(snapshot)=>{
+            const data=snapshot.val();
+            if(data && data.endTime && data.endTime>0){
+                const remaining = Math.max(0, (data.endTime - Date.now()) / 1000);
+                if(remaining>0){ startTimerLocal(remaining); }
+                else { stopTimerLocal(); }
+            } else { stopTimerLocal(); }
+        });
+
+        onValue(ref(db,'game/currentQuestion'),(snap)=>{
+            const q=snap.val();
+            if(q && q.index!==undefined && q.index>=0 && currentPlayer){ resetForNewQuestion(); displayQuestion(q); }
+            else if(q && q.finished){ document.getElementById('questionText').innerHTML="🏆 GAME OVER! Cảm ơn bạn đã chơi! 🏆"; document.getElementById('options').innerHTML=''; document.getElementById('levelBadge').innerHTML='---'; document.getElementById('questionPoints').innerText='0'; }
+        });
+
+        listenForLockAndResult(); listenForLevelPopup(); listenRanking();
+        document.getElementById('loginBtn').onclick = login;
+        document.getElementById('playerName').addEventListener('keypress', e => e.key === 'Enter' && login());
+    </script>
+</body>
+</html>
