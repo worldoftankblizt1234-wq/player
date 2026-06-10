@@ -25,7 +25,6 @@
             -ms-user-select: text;
         }
         
-        /* Hiệu ứng kính mờ cao cấp */
         .glass-panel {
             background: rgba(15, 23, 42, 0.45);
             backdrop-filter: blur(16px);
@@ -34,20 +33,17 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* Thanh thời gian với hiệu ứng chuyển màu và chạy mượt */
         .timer-bar { 
             transition: width 0.2s linear; 
             box-shadow: 0 0 12px var(--tw-shadow-color, rgba(34, 197, 94, 0.5));
         }
         
-        /* Trạng thái nút bị khóa */
         .disabled-btn { 
             opacity: 0.5; 
             cursor: not-allowed; 
             pointer-events: none; 
         }
 
-        /* Nút lựa chọn câu hỏi đáp án */
         .option-btn { 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             cursor: pointer; 
@@ -62,7 +58,6 @@
             transform: scale(0.98);
         }
 
-        /* Highlights trạng thái trả lời */
         .correct-highlight { 
             background: rgba(16, 185, 129, 0.2) !important; 
             border-color: #10b981 !important; 
@@ -82,7 +77,6 @@
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
         }
 
-        /* Thiết kế Modal */
         .modal-overlay { 
             position: fixed; 
             top: 0; 
@@ -112,7 +106,6 @@
             to { transform: scale(1) translateY(0); opacity: 1; } 
         }
 
-        /* Fullscreen Popup Cấp Độ */
         .fullscreen-popup { 
             position: fixed; 
             top: 0; 
@@ -153,7 +146,6 @@
             letter-spacing: 1px;
         }
 
-        /* Popup Giải Thích */
         .explain-popup { 
             position: fixed; 
             top: 50%; 
@@ -191,7 +183,6 @@
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
         }
 
-        /* CSS Tuỳ chọn hướng dẫn */
         .option-choice { 
             padding: 0.875rem 1rem; 
             border: 1px solid rgba(255, 255, 255, 0.1); 
@@ -214,31 +205,6 @@
             box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
         }
 
-        /* Toast cảnh báo lỗi */
-        .warning-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 9999px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 10002;
-            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
-            animation: fadeOut 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            white-space: nowrap;
-        }
-        @keyframes fadeOut {
-            0% { opacity: 0; transform: translate(-50%, 10px); }
-            10% { opacity: 1; transform: translate(-50%, 0); }
-            80% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; transform: translate(-50%, -10px); }
-        }
-
-        /* Thêm các hiệu ứng mây sao nền mượt mà */
         .glow-sphere {
             position: absolute;
             width: 300px;
@@ -250,7 +216,6 @@
             pointer-events: none;
         }
 
-        /* Tùy chỉnh thanh cuộn đẹp mắt */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -269,13 +234,11 @@
 </head>
 <body class="min-h-screen p-4 flex items-center justify-center relative" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
-    <!-- Ánh sáng nền huyền ảo -->
     <div class="glow-sphere top-10 left-10"></div>
     <div class="glow-sphere bottom-10 right-10" style="background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);"></div>
 
     <div class="w-full max-w-2xl mx-auto z-10">
         <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-            <!-- Khung phản sáng phong cách viễn tưởng -->
             <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
             
             <!-- LOGIN PANEL -->
@@ -284,8 +247,8 @@
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner">
                         <span class="text-4xl">🌌</span>
                     </div>
-                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">HITLER MINI GAME</h1>
-                    <p class="text-sm text-indigo-200/60">Hành trình khám phá KKK</p>
+                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">BIG BANG GAME</h1>
+                    <p class="text-sm text-indigo-200/60">Hành trình khám phá tri thức vũ trụ</p>
                 </div>
                 
                 <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn để tham gia</h2>
@@ -298,7 +261,6 @@
 
             <!-- GAME PANEL -->
             <div id="gamePanel" class="hidden space-y-6">
-                <!-- Thông tin người chơi -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex items-center space-x-3 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5">
                         <div class="text-2xl">👤</div>
@@ -316,7 +278,6 @@
                     </div>
                 </div>
 
-                <!-- Đồng hồ đếm ngược -->
                 <div class="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-4">
                     <div class="flex justify-between items-center text-sm mb-2.5">
                         <span class="text-slate-300 font-medium flex items-center gap-1.5">⏱️ Thời gian còn lại</span>
@@ -327,7 +288,6 @@
                     </div>
                 </div>
 
-                <!-- Tiêu đề câu hỏi & Điểm số câu -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <div class="bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 text-indigo-300 rounded-full px-4 py-1.5 text-xs font-bold tracking-wider uppercase" id="levelBadge">
@@ -338,16 +298,13 @@
                         </div>
                     </div>
                     
-                    <!-- Khung câu hỏi -->
                     <div id="questionText" class="text-base sm:text-lg font-bold p-5 bg-gradient-to-b from-slate-900/50 to-slate-900/80 border border-slate-800 rounded-2xl text-slate-100 shadow-inner min-h-[90px] flex items-center leading-relaxed">
                         Chờ câu hỏi từ quản trò...
                     </div>
                 </div>
 
-                <!-- Các phương án trả lời -->
                 <div id="options" class="grid grid-cols-1 gap-3"></div>
 
-                <!-- Bảng xếp hạng -->
                 <div class="border-t border-slate-800/80 pt-6">
                     <h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2">
                         <span>🏆</span> BẢNG XẾP HẠNG THỜI GIAN THỰC
@@ -358,45 +315,18 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Map -->
     <script type="importmap">{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/database": "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js" } }</script>
 
-    <!-- Kịch bản Javascript chính (Giữ nguyên toàn bộ logic nghiệp vụ) -->
     <script type="module">
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, get, set, onValue } from "firebase/database";
 
-        // ==================== CHỐNG MỞ TAB MỚI + HỦY CÂU HỎI (CHỈ KHI ĐANG TRẢ LỜI CÂU HỎI) ====================
+        // ==================== CHỐNG MỞ TAB MỚI + TỰ ĐỘNG KHÓA CÂU HỎI (KHÔNG POPUP) ====================
         (function() {
             let hasTriggeredCancel = false;
-            let isGameActive = false; // Chỉ bật khi đã login và đang trong câu hỏi
-            
-            function showToast(msg) {
-                let toast = document.querySelector('.warning-toast');
-                if (toast) toast.remove();
-                toast = document.createElement('div');
-                toast.className = 'warning-toast';
-                toast.innerText = msg;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2000);
-            }
+            let isGameActive = false;
 
-            function showCancelQuestionModal() {
-                const modal = document.createElement('div');
-                modal.className = 'modal-overlay';
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <div class="text-6xl mb-4">⚠️</div>
-                        <h2 class="text-2xl font-bold mb-2 text-red-500 tracking-wide">CÂU HỎI BỊ HỦY</h2>
-                        <p class="text-slate-300 mb-6 text-sm leading-relaxed">Bạn đã rời khỏi game hoặc chuyển tab khi câu hỏi đang diễn ra.<br><span class="text-red-400 font-semibold">Câu hỏi này sẽ không được tính điểm.</span></p>
-                        <button id="closeCancelModal" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-3.5 rounded-xl font-bold hover:from-indigo-500 hover:to-indigo-600 transition shadow-lg shadow-indigo-900/30">Đã hiểu</button>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                document.getElementById('closeCancelModal').onclick = () => modal.remove();
-            }
-
-            // Các phím tắt mở tab mới (luôn chặn kể cả khi chưa login)
+            // Các phím tắt mở tab mới (luôn chặn)
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'F12' || 
                     (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
@@ -408,12 +338,10 @@
                 }
                 if (e.ctrlKey && (e.key === 't' || e.key === 'T' || e.key === 'n' || e.key === 'N')) {
                     e.preventDefault();
-                    showToast("⚠️ Không thể mở tab/cửa sổ mới!");
                     return false;
                 }
                 if (e.ctrlKey && e.shiftKey && (e.key === 'n' || e.key === 'N')) {
                     e.preventDefault();
-                    showToast("⚠️ Không thể mở cửa sổ ẩn danh!");
                     return false;
                 }
             });
@@ -421,7 +349,6 @@
             document.addEventListener('mousedown', function(e) {
                 if (e.button === 1) {
                     e.preventDefault();
-                    showToast("⚠️ Không thể mở tab mới bằng chuột giữa!");
                     return false;
                 }
             });
@@ -452,15 +379,13 @@
                 detectDevTools();
             }, 1000);
             
-            // CHỈ KHI GAME ĐANG HOẠT ĐỘNG (đã login và có câu hỏi) mới hủy câu hỏi khi rời tab
+            // PHÁT HIỆN RỜI TAB -> TỰ ĐỘNG KHÓA CÂU HỎI (KHÔNG POPUP CẢNH BÁO)
             document.addEventListener('visibilitychange', function() {
                 if (!isGameActive) return;
                 if (document.hidden) {
-                    showToast("⚠️ Bạn đã rời khỏi game!");
                     if (window.cancelCurrentQuestion && !hasTriggeredCancel) {
                         hasTriggeredCancel = true;
                         window.cancelCurrentQuestion();
-                        showCancelQuestionModal();
                     }
                 }
             });
@@ -468,11 +393,9 @@
             window.addEventListener('blur', function() {
                 if (!isGameActive) return;
                 if (!hasTriggeredCancel) {
-                    showToast("⚠️ Bạn đã rời khỏi game!");
                     if (window.cancelCurrentQuestion) {
                         hasTriggeredCancel = true;
                         window.cancelCurrentQuestion();
-                        showCancelQuestionModal();
                     }
                 }
             });
@@ -481,11 +404,10 @@
                 hasTriggeredCancel = false;
             });
             
-            // Export để set trạng thái game active
             window.setGameActive = function(active) {
                 isGameActive = active;
                 if (!active) {
-                    hasTriggeredCancel = false; // reset khi thoát game
+                    hasTriggeredCancel = false;
                 }
             };
         })();
@@ -507,7 +429,7 @@
         let hasShownTutorial = false;
         let isQuestionCancelled = false;
 
-        // Hàm hủy câu hỏi hiện tại (gọi từ bên ngoài)
+        // Hàm tự động khóa câu hỏi khi rời tab (không popup)
         window.cancelCurrentQuestion = async function() {
             if (!currentQuestion || isQuestionCancelled) return;
             isQuestionCancelled = true;
@@ -519,7 +441,7 @@
             const qIndex = currentQuestion.index;
             await set(ref(db, `players/${currentPlayer.name}/cancelled/${qIndex}`), true);
             
-            document.getElementById('questionText').innerHTML = "<div class='text-center w-full'><span class='text-red-400 text-lg block mb-1'>⚠️ CÂU HỎI ĐÃ BỊ HỦY ⚠️</span><span class='text-xs text-slate-400 font-normal'>Bạn đã rời khỏi game khi đang diễn ra câu hỏi này. Hệ thống không tính điểm cho bạn ở câu này.</span></div>";
+            document.getElementById('questionText').innerHTML = "<div class='text-center w-full'><span class='text-red-400 text-lg block mb-1'>⚠️ CÂU HỎI ĐÃ BỊ KHÓA ⚠️</span><span class='text-xs text-slate-400 font-normal'>Bạn đã rời khỏi game khi đang diễn ra câu hỏi này. Hệ thống không tính điểm cho bạn ở câu này.</span></div>";
             document.getElementById('options').innerHTML = '';
             
             await set(ref(db, `game/cancelledBy/${currentPlayer.name}`), { questionIndex: qIndex, timestamp: Date.now() });
@@ -688,7 +610,6 @@
         function displayQuestion(q) {
             if(!currentPlayer) return;
             if (isQuestionCancelled) return;
-            // BẬT CHẾ ĐỘ THEO DÕI RỜI TAB
             window.setGameActive(true);
             
             currentQuestion=q; currentQuestionIndex=q.index;
@@ -785,7 +706,7 @@
                 document.getElementById('options').innerHTML=''; 
                 document.getElementById('levelBadge').innerHTML='---'; 
                 document.getElementById('questionPoints').innerText='0';
-                window.setGameActive(false); // TẮT THEO DÕI KHI GAME KẾT THÚC
+                window.setGameActive(false);
             }
         });
 
@@ -794,4 +715,4 @@
         document.getElementById('playerName').addEventListener('keypress', e => e.key === 'Enter' && login());
     </script>
 </body>
-</html>
+</html>                            
