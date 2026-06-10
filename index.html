@@ -325,6 +325,7 @@
         (function() {
             let hasTriggeredCancel = false;
             let isGameActive = false;
+            let activationTimeout = null;
 
             // Các phím tắt mở tab mới (luôn chặn)
             document.addEventListener('keydown', function(e) {
@@ -379,7 +380,7 @@
                 detectDevTools();
             }, 1000);
             
-            // PHÁT HIỆN RỜI TAB -> TỰ ĐỘNG KHÓA CÂU HỎI (KHÔNG POPUP CẢNH BÁO)
+            // PHÁT HIỆN RỜI TAB -> TỰ ĐỘNG KHÓA CÂU HỎI (chỉ khi đã bật game active sau 500ms)
             document.addEventListener('visibilitychange', function() {
                 if (!isGameActive) return;
                 if (document.hidden) {
@@ -405,8 +406,16 @@
             });
             
             window.setGameActive = function(active) {
-                isGameActive = active;
-                if (!active) {
+                // Clear timeout cũ nếu có
+                if (activationTimeout) clearTimeout(activationTimeout);
+                
+                if (active) {
+                    // Đợi 500ms mới bật chế độ theo dõi, tránh kích hoạt nhầm khi trang vừa load
+                    activationTimeout = setTimeout(() => {
+                        isGameActive = true;
+                    }, 500);
+                } else {
+                    isGameActive = false;
                     hasTriggeredCancel = false;
                 }
             };
@@ -610,6 +619,7 @@
         function displayQuestion(q) {
             if(!currentPlayer) return;
             if (isQuestionCancelled) return;
+            // BẬT CHẾ ĐỘ THEO DÕI RỜI TAB (sau 500ms mới active)
             window.setGameActive(true);
             
             currentQuestion=q; currentQuestionIndex=q.index;
@@ -715,4 +725,4 @@
         document.getElementById('playerName').addEventListener('keypress', e => e.key === 'Enter' && login());
     </script>
 </body>
-</html>                            
+</html>
