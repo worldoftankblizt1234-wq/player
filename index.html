@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="google" content="notranslate">
-    <title>Big Bang Game - Người chơi</title>
+    <title>Mini-Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -31,9 +31,61 @@
         .fullscreen-popup-icon { font-size: 5.5rem; margin-bottom: 1.5rem; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .fullscreen-popup-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 6px; background: linear-gradient(to right, #a5b4fc, #818cf8, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .fullscreen-popup-subtitle { font-size: 1.25rem; opacity: 0.85; letter-spacing: 1px; }
-        .explain-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(15,23,42,0.98); border: 1px solid rgba(255,255,255,0.15); border-radius: 1.5rem; max-width: 90%; width: 500px; padding: 2.25rem; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.8); z-index: 10001; animation: popupBounce 0.4s ease-out; }
-        .explain-popup-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #a5b4fc; letter-spacing: 2px; }
-        .explain-popup-content { font-size: 1rem; color: #e2e8f0; line-height: 1.6; margin-bottom: 1.75rem; text-align: left; }
+        
+        .explain-popup { 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%,-50%); 
+            background: rgba(15,23,42,0.98); 
+            border: 1px solid rgba(255,255,255,0.15); 
+            border-radius: 1.5rem; 
+            max-width: 90%; 
+            width: 500px; 
+            max-height: 85vh; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 2.25rem; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8); 
+            z-index: 10001; 
+            animation: popupBounce 0.4s ease-out; 
+        }
+        .explain-popup-title { 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            margin-bottom: 1rem; 
+            color: #a5b4fc; 
+            letter-spacing: 2px; 
+            flex-shrink: 0; 
+        }
+        .explain-popup-content { 
+            font-size: 1rem; 
+            color: #e2e8f0; 
+            line-height: 1.6; 
+            margin-bottom: 1.75rem; 
+            text-align: left; 
+            overflow-y: auto; 
+            flex: 1; 
+            padding-right: 0.5rem; 
+        }
+        .explain-popup button {
+            flex-shrink: 0;
+        }
+        @media (max-width: 640px) {
+            .explain-popup { 
+                padding: 1.5rem; 
+                max-height: 90vh; 
+            }
+            .explain-popup-title { 
+                font-size: 1.25rem; 
+            }
+            .explain-popup-content { 
+                font-size: 0.875rem; 
+                margin-bottom: 1.25rem; 
+            }
+        }
+        
         .congrats-popup {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
@@ -70,17 +122,20 @@
     <div class="w-full max-w-2xl mx-auto z-10">
         <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+            
+            <!-- Login Panel -->
             <div id="loginPanel" class="py-4">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner"><span class="text-4xl">🌌</span></div>
-                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">HITLER MINI GAME</h1>
+                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2" MINIGAME</h1>
                     <p class="text-sm text-indigo-200/60">Hành trình khám phá tri thức Hitler</p>
                 </div>
-                <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn để tham gia</h2>
+                <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn</h2>
                 <input type="text" id="playerName" placeholder="Tên hiển thị của bạn..." class="w-full p-4 bg-slate-900/50 border border-slate-700/50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl mb-4 text-center text-white placeholder-slate-500 font-medium transition-all outline-none" autocomplete="off">
                 <button id="loginBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all">🎮 VÀO CHƠI NGAY</button>
             </div>
 
+            <!-- Game Panel -->
             <div id="gamePanel" class="hidden space-y-6">
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex items-center space-x-3 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5"><div class="text-2xl">👤</div><div class="truncate"><p class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">NGƯỜI CHƠI</p><span id="playerNameDisplay" class="font-extrabold text-white text-sm"></span></div></div>
@@ -99,16 +154,14 @@
 
                 <div id="options" class="grid grid-cols-1 gap-3"></div>
 
-                <div class="border-t border-slate-800/80 pt-6"><h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🏆</span> BẢNG XẾP HẠNG THỜI GIAN THỰC</h3><div id="rankList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div></div>
+                <div class="border-t border-slate-800/80 pt-6"><h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🏆</span> BẢNG XẾP HẠNG</h3><div id="rankList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div></div>
             </div>
         </div>
     </div>
 
-    <script type="importmap">{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/database": "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js" } }</script>
-
     <script type="module">
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, get, set, onValue } from "firebase/database";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
         function showToast(msg, isError = false) {
             let toast = document.querySelector('.toast-notify');
@@ -144,15 +197,13 @@
             let isGameActive = false;
             let activationTimeout = null;
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'U')) { e.preventDefault(); window.location.href = 'about:blank'; setTimeout(() => { window.close(); }, 100); }
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'U')) { e.preventDefault(); }
                 if (e.ctrlKey && (e.key === 't' || e.key === 'T' || e.key === 'n' || e.key === 'N')) { e.preventDefault(); return false; }
                 if (e.ctrlKey && e.shiftKey && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); return false; }
             });
             document.addEventListener('mousedown', function(e) { if (e.button === 1) { e.preventDefault(); return false; } });
             document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-            let devtoolsDetected = false;
-            function detectDevTools() { const element = new Image(); Object.defineProperty(element, 'id', { get: function() { devtoolsDetected = true; throw new Error('DevTools detected'); } }); console.log(element); }
-            setInterval(() => { if (devtoolsDetected) { window.location.href = 'about:blank'; setTimeout(() => { window.close(); }, 100); } devtoolsDetected = false; detectDevTools(); }, 1000);
+            
             document.addEventListener('visibilitychange', function() { if (!isGameActive) return; if (document.hidden) { if (window.cancelCurrentQuestion && !hasTriggeredCancel) { hasTriggeredCancel = true; window.cancelCurrentQuestion(); } } });
             window.addEventListener('blur', function() { if (!isGameActive) return; if (!hasTriggeredCancel) { if (window.cancelCurrentQuestion) { hasTriggeredCancel = true; window.cancelCurrentQuestion(); } } });
             window.addEventListener('focus', function() { hasTriggeredCancel = false; });
@@ -175,6 +226,7 @@
         let timerEndTime = null, timerDuration = 30, timerInterval = null;
         let hasShownTutorial = false;
         let isQuestionCancelled = false;
+        let wasAlreadyAnsweredOnLoad = null; // Kiểm soát lỗi lặp game, tránh tính điểm lần 2
 
         window.cancelCurrentQuestion = async function() {
             if (!currentQuestion || isQuestionCancelled) return;
@@ -235,22 +287,33 @@
             hasShownTutorial = true;
             const modal1 = document.createElement('div');
             modal1.className = 'modal-overlay';
-            modal1.innerHTML = `<div class="modal-content !max-w-[480px]"><div class="text-5xl mb-3">🎓</div><h2 class="text-2xl font-extrabold mb-2 text-white tracking-wide">HƯỚNG DẪN CHƠI</h2><p class="text-slate-400 mb-5 text-sm">Hãy thử trả lời câu hỏi ví dụ bên dưới để làm quen nhé!</p><div class="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl text-left mb-5"><p class="font-bold mb-4 text-white text-sm leading-relaxed">📖 Câu hỏi mẫu: Trong truyện tranh Doraemon, nhân vật Nobita thường nhờ ai giúp đỡ khi gặp khó khăn?</p><div id="tutorialOptions" class="space-y-2"><div class="option-choice" data-opt="0"><span class="font-bold text-indigo-400 mr-2">A.</span> Doraemon</div><div class="option-choice" data-opt="1"><span class="font-bold text-indigo-400 mr-2">B.</span> Jaian</div><div class="option-choice" data-opt="2"><span class="font-bold text-indigo-400 mr-2">C.</span> Shizuka</div><div class="option-choice" data-opt="3"><span class="font-bold text-indigo-400 mr-2">D.</span> Dekisugi</div></div></div><button id="tutorialNextBtn" class="w-full bg-slate-800 text-slate-500 py-3.5 rounded-xl font-bold tracking-wide transition-all" disabled>📢 XEM GIẢI THÍCH</button></div>`;
+            modal1.innerHTML = `
+                <div class="modal-content !max-w-[480px]">
+                    <div class="text-5xl mb-3">⚡</div>
+                    <h2 class="text-2xl font-extrabold mb-4 text-white tracking-wide">THÔNG BÁO QUAN TRỌNG</h2>
+                    
+                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left mb-6 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="text-cyan-400 text-lg font-bold">1.</span>
+                            <p class="text-sm text-slate-200 leading-relaxed">Trò chơi có hệ thống giám sát tự động phát hiện thoát trang. <span class="text-red-400 font-bold">Vui lòng không sử dụng bất kỳ hành vi nào</span> để rời khỏi trình duyệt trong khi đang chơi.</p>
+                        </div>
+                        <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
+                            <span class="text-cyan-400 text-lg font-bold">2.</span>
+                            <p class="text-sm text-slate-200 leading-relaxed">Tất cả hệ thống câu hỏi trong đây đều sử dụng <span class="text-cyan-400 font-bold">kiến thức lớp 9</span>. Chỉ có một số câu hỏi là nằm ngoài kiến thức chung.</p>
+                        </div>
+                        <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
+                            <span class="text-cyan-400 text-lg font-bold">3.</span>
+                            <p class="text-sm text-slate-200 leading-relaxed">Nếu bạn không biết tại sao câu này lại chọn như thế thì bạn chỉ cần ấn vào nút <span class="text-cyan-400 font-bold">giải thích</span>.</p>
+                        </div>
+                    </div>
+                    
+                    <button id="finishTutorialBtn" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3.5 rounded-xl font-bold tracking-wider hover:from-emerald-500 hover:to-green-500 shadow-lg shadow-emerald-900/30 transition">
+                        🎮 VÀO GAME THÔI!
+                    </button>
+                </div>
+            `;
             document.body.appendChild(modal1);
-            let selectedOpt = null;
-            const options = modal1.querySelectorAll('.option-choice');
-            const nextBtn = modal1.querySelector('#tutorialNextBtn');
-            options.forEach(opt => { opt.addEventListener('click', () => { options.forEach(o => o.classList.remove('option-selected')); opt.classList.add('option-selected'); selectedOpt = opt.dataset.opt; nextBtn.disabled = false; nextBtn.classList.remove('bg-slate-800','text-slate-500'); nextBtn.classList.add('bg-gradient-to-r','from-indigo-600','to-violet-600','text-white','hover:from-indigo-500','hover:to-violet-500','shadow-lg','shadow-indigo-900/30'); }); });
-            nextBtn.onclick = () => {
-                if (!selectedOpt) return;
-                modal1.remove();
-                const modal2 = document.createElement('div');
-                modal2.className = 'modal-overlay';
-                const isCorrect = (selectedOpt === '0');
-                modal2.innerHTML = `<div class="modal-content"><div class="text-5xl mb-3">${isCorrect?'🎉':'📚'}</div><h2 class="text-2xl font-extrabold mb-2 text-white tracking-wide">${isCorrect?'CHÍNH XÁC!':'GIẢI THÍCH'}</h2><div class="bg-slate-900/80 border ${isCorrect?'border-emerald-500/30':'border-indigo-500/30'} p-4 rounded-xl mb-6 text-left"><p class="text-sm leading-relaxed text-slate-200">${isCorrect?'✅ <span class="text-emerald-400 font-semibold">Bạn đã trả lời đúng!</span>Khi gặp khó khăn, rắc rối trong học tập hay bị bạn bè bắt nạt, người đầu tiên Nobita thường xuyên nhờ vả và cầu cứu chính là Doraemon. Cậu thường khóc lóc chạy về nhà, xin Mèo Ú cho mượn bảo bối thần kỳ để giải quyết vấn đề.':'❌ <span class="text-red-400 font-semibold">Rất tiếc chưa chính xác!</span> Đáp án đúng là A (Doraemon)Khi gặp khó khăn, rắc rối trong học tập hay bị bạn bè bắt nạt, người đầu tiên Nobita thường xuyên nhờ vả và cầu cứu chính là Doraemon. Cậu thường khóc lóc chạy về nhà, xin Mèo Ú cho mượn bảo bối thần kỳ để giải quyết vấn đề.'}</p></div><button id="finishTutorialBtn" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3.5 rounded-xl font-bold tracking-wider hover:from-emerald-500 hover:to-green-500 shadow-lg shadow-emerald-900/30 transition">🎮 VÀO GAME THÔI!</button></div>`;
-                document.body.appendChild(modal2);
-                document.getElementById('finishTutorialBtn').onclick = () => modal2.remove();
-            };
+            document.getElementById('finishTutorialBtn').onclick = () => modal1.remove();
         }
 
         async function login() {
@@ -268,13 +331,53 @@
             showTutorialModal();
         }
 
-        function resetForNewQuestion() { hasAnsweredCurrent=false; selectedAnswerIdx=-1; isLocked=false; resultData=null; modalShownForCurrentQuestion=false; isQuestionCancelled=false; const oldModal=document.querySelector('.modal-overlay'); if(oldModal && !oldModal.querySelector('#finishTutorialBtn')) oldModal.remove(); }
+        function resetForNewQuestion() { 
+            hasAnsweredCurrent = false; 
+            selectedAnswerIdx = -1; 
+            isLocked = false; 
+            resultData = null; 
+            modalShownForCurrentQuestion = false; 
+            isQuestionCancelled = false; 
+            wasAlreadyAnsweredOnLoad = null; 
+            const oldModal = document.querySelector('.modal-overlay'); 
+            if(oldModal && !oldModal.querySelector('#finishTutorialBtn')) oldModal.remove(); 
+        }
 
-        function showResultModal(isCorrect, correctLetter, correctText, pointsEarned, playerScore, explanation) {
+        function showResultModal(isCorrect, correctLetter, correctText, pointsEarned, playerScore, explanation, isReplay = false) {
             if(modalShownForCurrentQuestion) return;
-            modalShownForCurrentQuestion=true;
-            const modal=document.createElement('div'); modal.className='modal-overlay';
-            modal.innerHTML=`<div class="modal-content"><div class="text-6xl mb-4">${isCorrect?'🎉':'😢'}</div><h2 class="text-2xl font-extrabold mb-1 tracking-wide text-white">${isCorrect?'CHÍNH XÁC!':'CHƯA CHÍNH XÁC!'}</h2><p class="text-sm text-slate-300 mb-5 leading-relaxed">${isCorrect?`Chúc mừng! Bạn đã trả lời đúng và tích lũy được <span class="text-emerald-400 font-bold">+${pointsEarned} điểm</span>.`:`Đáp án chính xác là <span class="text-indigo-400 font-bold">${correctLetter}</span>. <span class="text-slate-300 block mt-1 italic">"${correctText}"</span>`}</p><div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl mb-6"><p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase mb-1">TỔNG ĐIỂM CỦA BẠN</p><p class="text-4xl font-black text-indigo-400">${playerScore}</p></div><div class="flex space-x-3"><button id="showExplainBtn" class="flex-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-bold py-3 px-4 rounded-xl transition">📚 Giải thích</button><button id="closeModalBtn" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-4 rounded-xl transition">Đóng</button></div></div>`;
+            modalShownForCurrentQuestion = true;
+            const modal = document.createElement('div'); 
+            modal.className = 'modal-overlay';
+            
+            let pointsDesc = "";
+            let warningText = "";
+            
+            if (isReplay) {
+                pointsDesc = `<span class="text-amber-400 font-bold">0 điểm (Lượt làm lại)</span>`;
+                warningText = `<span class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg block mt-3 font-semibold text-left">⚠️ Bạn đã trả lời câu này từ trước. Do trò chơi tải lại/bị lỗi hoạt động, bạn sẽ không được cộng điểm lần thứ 2 để giữ cân bằng.</span>`;
+            } else {
+                pointsDesc = `<span class="text-emerald-400 font-bold">+${pointsEarned} điểm</span>`;
+            }
+
+            let resultDetailHTML = isCorrect 
+                ? `Chúc mừng! Bạn đã trả lời đúng. Lượt này bạn nhận: ${pointsDesc}.${warningText}` 
+                : `Đáp án chính xác là <span class="text-indigo-400 font-bold">${correctLetter}</span>. <span class="text-slate-300 block mt-1 italic">"${correctText}"</span>${warningText}`;
+
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="text-6xl mb-4">${isCorrect ? '🎉' : '😢'}</div>
+                    <h2 class="text-2xl font-extrabold mb-1 tracking-wide text-white">${isCorrect ? 'CHÍNH XÁC!' : 'CHƯA CHÍNH XÁC!'}</h2>
+                    <p class="text-sm text-slate-300 mb-5 leading-relaxed">${resultDetailHTML}</p>
+                    <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl mb-6">
+                        <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase mb-1">TỔNG ĐIỂM CỦA BẠN</p>
+                        <p class="text-4xl font-black text-indigo-400">${playerScore}</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button id="showExplainBtn" class="flex-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-bold py-3 px-4 rounded-xl transition">📚 Giải thích</button>
+                        <button id="closeModalBtn" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-4 rounded-xl transition">Đóng</button>
+                    </div>
+                </div>
+            `;
             document.body.appendChild(modal);
             document.getElementById('closeModalBtn').onclick = () => modal.remove();
             document.getElementById('showExplainBtn').onclick = () => { showExplanationPopup(explanation); };
@@ -286,6 +389,16 @@
             window.setGameActive(true);
             currentQuestion=q; currentQuestionIndex=q.index;
             const alreadyAnswered = currentPlayer.answers && currentPlayer.answers[currentQuestionIndex] !== undefined;
+            
+            // Theo dõi và ghim flag Replay nếu câu hỏi này đã làm từ trước
+            if (wasAlreadyAnsweredOnLoad === null) {
+                wasAlreadyAnsweredOnLoad = alreadyAnswered;
+                if (alreadyAnswered) {
+                    // Đẩy trạng thái replayed lên database để server/quản trị viên không cộng lặp điểm
+                    set(ref(db, `players/${currentPlayer.name}/replayed/${currentQuestionIndex}`), true);
+                }
+            }
+
             if(alreadyAnswered){ hasAnsweredCurrent=true; selectedAnswerIdx=currentPlayer.answers[currentQuestionIndex]; }
             else{ if(currentQuestionIndex!==-1){ hasAnsweredCurrent=false; selectedAnswerIdx=-1; } }
             document.getElementById('questionText').innerHTML=q.text;
@@ -330,7 +443,9 @@
                     const isCorrect=(selectedAnswerIdx===resultData.correctAnswer);
                     const correctLetter=String.fromCharCode(65+resultData.correctAnswer);
                     const correctText=currentQuestion.options[resultData.correctAnswer];
-                    showResultModal(isCorrect,correctLetter,correctText,resultData.points,currentPlayer.score, resultData.explanation);
+                    
+                    // Truyền flag wasAlreadyAnsweredOnLoad vào kết quả modal
+                    showResultModal(isCorrect,correctLetter,correctText,resultData.points,currentPlayer.score, resultData.explanation, wasAlreadyAnsweredOnLoad);
                     displayQuestion(currentQuestion);
                 }
             });
@@ -338,7 +453,6 @@
 
         function listenForLevelPopup(){ onValue(ref(db,'game/levelPopup'),(snapshot)=>{ const data=snapshot.val(); if(data&&data.show) showFullscreenPopup(data.level); }); }
         
-        // Lắng nghe top 3 từ host
         function listenForTop3() {
             onValue(ref(db,'game/top3'), (snapshot) => {
                 const data = snapshot.val();
@@ -393,8 +507,11 @@
         });
 
         listenForLockAndResult(); listenForLevelPopup(); listenRanking(); listenForTop3();
+        
         document.getElementById('loginBtn').onclick = login;
-        document.getElementById('playerName').addEventListener('keypress', e => e.key === 'Enter' && login());
+        document.getElementById('playerName').addEventListener('keypress', e => {
+            if (e.key === 'Enter') login();
+        });
     </script>
 </body>
 </html>
