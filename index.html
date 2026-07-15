@@ -32,59 +32,40 @@
         .fullscreen-popup-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 6px; background: linear-gradient(to right, #a5b4fc, #818cf8, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .fullscreen-popup-subtitle { font-size: 1.25rem; opacity: 0.85; letter-spacing: 1px; }
         
+        /* BOSS POPUP ĐẶC BIỆT */
+        .boss-popup {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #450a0a 0%, #7f1d1d 30%, #991b1b 60%, #1a0000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999; animation: bossFadeIn 0.8s ease-out;
+        }
+        .boss-popup-content { text-align: center; color: white; padding: 2rem; animation: bossPulse 2s infinite; }
+        .boss-popup-icon { font-size: 8rem; margin-bottom: 1rem; animation: bossFloat 3s ease-in-out infinite; }
+        .boss-popup-title {
+            font-size: 4rem; font-weight: 900; letter-spacing: 0.2em;
+            text-shadow: 0 0 30px rgba(239,68,68,0.8), 0 0 60px rgba(239,68,68,0.4);
+            background: linear-gradient(to right, #fca5a5, #f87171, #ef4444, #dc2626);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: bossGlow 1.5s infinite alternate;
+        }
+        .boss-popup-subtitle { font-size: 1.5rem; opacity: 0.9; margin-top: 0.5rem; color: #fca5a5; text-shadow: 0 0 20px rgba(239,68,68,0.5); }
+        .boss-popup-points { font-size: 2rem; font-weight: 800; color: #fbbf24; margin-top: 1rem; text-shadow: 0 0 20px rgba(251,191,36,0.5); animation: bossPulse 1.5s infinite; }
+        @keyframes bossFadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes bossPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes bossFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        @keyframes bossGlow { 0% { text-shadow: 0 0 30px rgba(239,68,68,0.8); } 100% { text-shadow: 0 0 60px rgba(239,68,68,1), 0 0 90px rgba(239,68,68,0.6); } }
+        
         .explain-popup { 
-            position: fixed; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%,-50%); 
-            background: rgba(15,23,42,0.98); 
-            border: 1px solid rgba(255,255,255,0.15); 
-            border-radius: 1.5rem; 
-            max-width: 90%; 
-            width: 500px; 
-            max-height: 85vh; 
-            display: flex; 
-            flex-direction: column; 
-            padding: 2.25rem; 
-            text-align: center; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8); 
-            z-index: 10001; 
-            animation: popupBounce 0.4s ease-out; 
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); 
+            background: rgba(15,23,42,0.98); border: 1px solid rgba(255,255,255,0.15); 
+            border-radius: 1.5rem; max-width: 90%; width: 500px; max-height: 85vh; 
+            display: flex; flex-direction: column; padding: 2.25rem; text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8); z-index: 10001; animation: popupBounce 0.4s ease-out; 
         }
-        .explain-popup-title { 
-            font-size: 1.5rem; 
-            font-weight: 800; 
-            margin-bottom: 1rem; 
-            color: #a5b4fc; 
-            letter-spacing: 2px; 
-            flex-shrink: 0; 
-        }
-        .explain-popup-content { 
-            font-size: 1rem; 
-            color: #e2e8f0; 
-            line-height: 1.6; 
-            margin-bottom: 1.75rem; 
-            text-align: left; 
-            overflow-y: auto; 
-            flex: 1; 
-            padding-right: 0.5rem; 
-        }
-        .explain-popup button {
-            flex-shrink: 0;
-        }
-        @media (max-width: 640px) {
-            .explain-popup { 
-                padding: 1.5rem; 
-                max-height: 90vh; 
-            }
-            .explain-popup-title { 
-                font-size: 1.25rem; 
-            }
-            .explain-popup-content { 
-                font-size: 0.875rem; 
-                margin-bottom: 1.25rem; 
-            }
-        }
+        .explain-popup-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #a5b4fc; letter-spacing: 2px; flex-shrink: 0; }
+        .explain-popup-content { font-size: 1rem; color: #e2e8f0; line-height: 1.6; margin-bottom: 1.75rem; text-align: left; overflow-y: auto; flex: 1; padding-right: 0.5rem; }
+        .explain-popup button { flex-shrink: 0; }
+        @media (max-width: 640px) { .explain-popup { padding: 1.5rem; max-height: 90vh; } .explain-popup-title { font-size: 1.25rem; } .explain-popup-content { font-size: 0.875rem; margin-bottom: 1.25rem; } }
         
         .congrats-popup {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -109,6 +90,25 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+        /* BOSS BADGE TRÊN CÂU HỎI */
+        .boss-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            font-weight: 900;
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            animation: bossBadgePulse 1s infinite;
+            margin-left: 0.5rem;
+            text-shadow: 0 0 10px rgba(220,38,38,0.5);
+        }
+        @keyframes bossBadgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(220,38,38,0.5); }
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 flex items-center justify-center relative" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
@@ -143,7 +143,10 @@
                 </div>
 
                 <div class="space-y-3">
-                    <div class="flex justify-between items-center"><div class="bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 text-indigo-300 rounded-full px-4 py-1.5 text-xs font-bold tracking-wider uppercase" id="levelBadge">---</div><div class="text-xs font-bold text-slate-400 tracking-wider">TRỊ GIÁ: <span id="questionPoints" class="text-sm font-black text-violet-400 bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 rounded-md ml-1">0</span> ĐIỂM</div></div>
+                    <div class="flex justify-between items-center">
+                        <div class="bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/20 text-indigo-300 rounded-full px-4 py-1.5 text-xs font-bold tracking-wider uppercase" id="levelBadge">---</div>
+                        <div class="text-xs font-bold text-slate-400 tracking-wider">TRỊ GIÁ: <span id="questionPoints" class="text-sm font-black text-violet-400 bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 rounded-md ml-1">0</span> ĐIỂM</div>
+                    </div>
                     <div id="questionText" class="text-base sm:text-lg font-bold p-5 bg-gradient-to-b from-slate-900/50 to-slate-900/80 border border-slate-800 rounded-2xl text-slate-100 shadow-inner min-h-[90px] flex items-center leading-relaxed">Chờ câu hỏi từ quản trò...</div>
                 </div>
 
@@ -259,19 +262,51 @@
         function stopTimerLocal() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } timerEndTime = null; updateTimerDisplay(); }
 
         function showFullscreenPopup(level) {
-            const popup = document.createElement('div'); popup.className = 'fullscreen-popup';
+            // Nếu là BOSS thì hiện popup đặc biệt
+            if (level === 'BOSS') {
+                showBossPopup();
+                return;
+            }
+            
+            const popup = document.createElement('div'); 
+            popup.className = 'fullscreen-popup';
             let icon='',title='',subtitle='';
             if(level==='Easy'){icon='🍃';title='CẤP ĐỘ DỄ';subtitle='Mỗi câu đúng được 1 điểm';}
             else if(level==='Medium'){icon='🌿';title='CẤP ĐỘ TRUNG BÌNH';subtitle='Mỗi câu đúng được 2 điểm';}
             else if(level==='Hard'){icon='⚡';title='CẤP ĐỘ KHÓ';subtitle='Mỗi câu đúng được 3 điểm';}
-            else if(level==='BOSS'){icon='👑🔥';title='CẤP ĐỘ BOSS';subtitle='Mỗi câu đúng được 6 điểm';}
             popup.innerHTML=`<div class="fullscreen-popup-content"><div class="fullscreen-popup-icon">${icon}</div><div class="fullscreen-popup-title">${title}</div><div class="fullscreen-popup-subtitle">${subtitle}</div></div>`;
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 2000);
         }
 
+        // ======================= BOSS POPUP ĐẶC BIỆT =======================
+        function showBossPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'boss-popup';
+            popup.innerHTML = `
+                <div class="boss-popup-content">
+                    <div class="boss-popup-icon">👑🔥</div>
+                    <div class="boss-popup-title">⚡ BOSS LEVEL ⚡</div>
+                    <div class="boss-popup-subtitle">🔰 Thử thách đỉnh cao dành cho bậc thầy kiến thức</div>
+                    <div class="boss-popup-points">🏆 Mỗi câu đúng được 6 ĐIỂM!</div>
+                    <div style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.7;">⏱️ Thời gian suy nghĩ: 20 giây</div>
+                </div>
+            `;
+            document.body.appendChild(popup);
+
+            // Phát hiệu ứng rung (nếu có)
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 500]);
+            }
+
+            setTimeout(() => { 
+                popup.remove(); 
+            }, 3000);
+        }
+
         function showExplanationPopup(explanation) {
-            const popup = document.createElement('div'); popup.className = 'explain-popup';
+            const popup = document.createElement('div'); 
+            popup.className = 'explain-popup';
             popup.innerHTML = `<div class="explain-popup-title">📚 GIẢI THÍCH CHUYÊN SÂU</div><div class="explain-popup-content">${explanation}</div><button id="closeExplainBtn" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-2.5 px-8 rounded-xl transition shadow-lg shadow-indigo-900/40">Đóng</button>`;
             document.body.appendChild(popup);
             document.getElementById('closeExplainBtn').onclick = () => popup.remove();
@@ -324,9 +359,6 @@
             document.getElementById('playerNameDisplay').innerText = name;
             document.getElementById('playerScore').innerText = currentPlayer.score;
             showTutorialModal();
-
-            // ĐÃ LOẠI BỎ: Không tự động kéo câu hỏi cũ từ Firebase khi đăng nhập để tránh hiện sai câu trước đó.
-            // Người chơi mới vào sẽ LUÔN nhìn thấy màn hình "Chờ câu hỏi từ quản trò..." cho đến khi Host bấm Next câu tiếp theo.
         }
 
         function resetForNewQuestion() { 
@@ -361,8 +393,13 @@
                 ? `Chúc mừng! Bạn đã trả lời đúng. Lượt này bạn nhận: ${pointsDesc}.${warningText}` 
                 : `Đáp án chính xác là <span class="text-indigo-400 font-bold">${correctLetter}</span>. <span class="text-slate-300 block mt-1 italic">"${correctText}"</span>${warningText}`;
 
+            // Nếu là câu BOSS thì thêm hiệu ứng
+            const isBoss = currentQuestion && currentQuestion.level === 'BOSS';
+            const bossExtra = isBoss ? `<div style="background: linear-gradient(135deg, rgba(220,38,38,0.2), rgba(153,27,27,0.2)); border: 1px solid rgba(220,38,38,0.3); border-radius: 0.75rem; padding: 0.5rem; margin-bottom: 1rem; color: #fca5a5; font-weight: bold; font-size: 0.9rem;">👑 CÂU HỎI BOSS - ĐIỂM THƯỞNG X6!</div>` : '';
+
             modal.innerHTML = `
                 <div class="modal-content">
+                    ${bossExtra}
                     <div class="text-6xl mb-4">${isCorrect ? '🎉' : '😢'}</div>
                     <h2 class="text-2xl font-extrabold mb-1 tracking-wide text-white">${isCorrect ? 'CHÍNH XÁC!' : 'CHƯA CHÍNH XÁC!'}</h2>
                     <p class="text-sm text-slate-300 mb-5 leading-relaxed">${resultDetailHTML}</p>
@@ -397,10 +434,23 @@
 
             if(alreadyAnswered){ hasAnsweredCurrent=true; selectedAnswerIdx=currentPlayer.answers[currentQuestionIndex]; }
             else{ if(currentQuestionIndex!==-1){ hasAnsweredCurrent=false; selectedAnswerIdx=-1; } }
-            document.getElementById('questionText').innerHTML=q.text;
-            let levelText=q.level==='Easy'?'🍃 Dễ (1đ)':(q.level==='Medium'?'🌿 TBình (2đ)':(q.level==='Hard'?'⚡ Khó (3đ)':'👑 BOSS (6đ)'));
-            document.getElementById('levelBadge').innerHTML=levelText;
-            document.getElementById('questionPoints').innerText=q.points;
+            
+            // Thêm badge BOSS nếu cần
+            let bossBadge = '';
+            if (q.level === 'BOSS') {
+                bossBadge = ' <span class="boss-badge">👑 BOSS</span>';
+            }
+            
+            document.getElementById('questionText').innerHTML = q.text + bossBadge;
+            
+            let levelText = '';
+            if(q.level === 'Easy') { levelText = '🍃 Dễ (1đ)'; }
+            else if(q.level === 'Medium') { levelText = '🌿 TBình (2đ)'; }
+            else if(q.level === 'Hard') { levelText = '⚡ Khó (3đ)'; }
+            else if(q.level === 'BOSS') { levelText = '👑 BOSS (6đ) ⚡'; }
+            document.getElementById('levelBadge').innerHTML = levelText;
+            document.getElementById('questionPoints').innerText = q.points;
+            
             const optionsDiv=document.getElementById('options'); optionsDiv.innerHTML='';
             const showResult=(isLocked&&resultData&&resultData.questionIndex===currentQuestionIndex);
             const correctIdx=showResult?resultData.correctAnswer:-1;
@@ -446,7 +496,18 @@
             });
         }
 
-        function listenForLevelPopup(){ onValue(ref(db,'game/levelPopup'),(snapshot)=>{ const data=snapshot.val(); if(data&&data.show) showFullscreenPopup(data.level); }); }
+        function listenForLevelPopup(){ 
+            onValue(ref(db,'game/levelPopup'),(snapshot)=>{ 
+                const data=snapshot.val(); 
+                if(data && data.show) {
+                    showFullscreenPopup(data.level);
+                    // Xóa popup sau khi hiển thị
+                    setTimeout(() => {
+                        set(ref(db,'game/levelPopup'), null);
+                    }, 200);
+                }
+            }); 
+        }
         
         // Listen for the top 3 and display the congratulations popup
         function listenForTop3() {
