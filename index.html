@@ -14,7 +14,7 @@
             overflow-x: hidden;
         }
         * { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
-        input, .option-btn, .option-choice { user-select: text; -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; }
+        input, .option-btn { user-select: text; -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; }
         .glass-panel { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
         .timer-bar { transition: width 0.2s linear; box-shadow: 0 0 12px var(--tw-shadow-color, rgba(34,197,94,0.5)); }
         .disabled-btn { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
@@ -27,7 +27,6 @@
         .modal-content { background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 2rem; width: 90%; max-width: 450px; padding: 2.5rem 2rem; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); animation: showModal 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
         @keyframes showModal { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         
-        /* LEVEL POPUP - FULL MÀN HÌNH CHUYÊN NGHIỆP */
         .level-popup {
             position: fixed;
             top: 0;
@@ -85,17 +84,13 @@
             text-shadow: 0 0 15px rgba(251,191,36,0.4);
         }
         
-        @keyframes levelFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes levelFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes levelBounce {
             0% { transform: scale(0.6) translateY(30px); opacity: 0; }
             70% { transform: scale(1.05) translateY(-5px); opacity: 1; }
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
         
-        /* FINISHED POPUP */
         .finished-popup {
             position: fixed;
             top: 0;
@@ -149,22 +144,10 @@
             animation: finishedPulse 1.5s infinite;
         }
         
-        @keyframes finishedFadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes finishedPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-        @keyframes finishedFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-        @keyframes finishedGlow {
-            0% { text-shadow: 0 0 30px rgba(16,185,129,0.6); }
-            100% { text-shadow: 0 0 60px rgba(16,185,129,1), 0 0 90px rgba(16,185,129,0.5); }
-        }
+        @keyframes finishedFadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes finishedPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+        @keyframes finishedFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        @keyframes finishedGlow { 0% { text-shadow: 0 0 30px rgba(16,185,129,0.6); } 100% { text-shadow: 0 0 60px rgba(16,185,129,1), 0 0 90px rgba(16,185,129,0.5); } }
         
         .explain-popup { 
             position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); 
@@ -176,7 +159,6 @@
         .explain-popup-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #a5b4fc; letter-spacing: 2px; flex-shrink: 0; }
         .explain-popup-content { font-size: 1rem; color: #e2e8f0; line-height: 1.6; margin-bottom: 1.75rem; text-align: left; overflow-y: auto; flex: 1; padding-right: 0.5rem; }
         .explain-popup button { flex-shrink: 0; }
-        @media (max-width: 640px) { .explain-popup { padding: 1.5rem; max-height: 90vh; } .explain-popup-title { font-size: 1.25rem; } .explain-popup-content { font-size: 0.875rem; margin-bottom: 1.25rem; } }
         
         .congrats-popup {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -192,9 +174,7 @@
         .congrats-popup .rank-score { font-size: 1.2rem; color: #78350f; margin-bottom: 1.5rem; }
         .congrats-popup button { background: #1e1b4b; color: white; padding: 0.75rem 2rem; border-radius: 2rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .congrats-popup button:hover { transform: scale(1.05); background: #312e81; }
-        .option-choice { padding: 0.875rem 1rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); border-radius: 0.875rem; margin-bottom: 0.625rem; cursor: pointer; transition: all 0.25s; text-align: left; color: #e2e8f0; }
-        .option-choice:hover { background-color: rgba(99,102,241,0.15); border-color: #6366f1; }
-        .option-selected { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border-color: #818cf8; color: white; box-shadow: 0 0 15px rgba(99,102,241,0.4); }
+        
         .glow-sphere { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(0,0,0,0) 70%); filter: blur(40px); z-index: -1; pointer-events: none; }
         .toast-notify { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.9); backdrop-filter: blur(12px); border: 1px solid rgba(99,102,241,0.5); color: #a5b4fc; padding: 10px 20px; border-radius: 9999px; font-size: 13px; font-weight: 500; z-index: 10002; white-space: nowrap; box-shadow: 0 0 20px rgba(99,102,241,0.3); animation: toastFade 2s ease-out forwards; pointer-events: none; }
         @keyframes toastFade { 0% { opacity: 0; transform: translateX(-50%) translateY(10px); } 15% { opacity: 1; transform: translateX(-50%) translateY(0); } 85% { opacity: 1; } 100% { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-10px); } }
@@ -202,9 +182,9 @@
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
 
-        .boss-badge {
+        .dendich-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #dc2626, #991b1b);
+            background: linear-gradient(135deg, #a855f7, #6b21a8);
             color: white;
             font-weight: 900;
             padding: 0.25rem 1rem;
@@ -213,11 +193,11 @@
             letter-spacing: 0.05em;
             animation: bossBadgePulse 1s infinite;
             margin-left: 0.5rem;
-            text-shadow: 0 0 10px rgba(220,38,38,0.5);
+            text-shadow: 0 0 10px rgba(168,85,247,0.5);
         }
         @keyframes bossBadgePulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(220,38,38,0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(168,85,247,0.5); }
         }
 
         .waiting-container {
@@ -236,19 +216,34 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .waiting-text {
             color: #a5b4fc;
             font-size: 0.9rem;
             font-weight: 500;
             animation: pulse 1.5s ease-in-out infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+        .gavel-glow {
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+            border: 2px solid rgba(245, 158, 11, 0.6);
+        }
+        .inventory-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #f43f5e;
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #0f172a;
         }
     </style>
 </head>
@@ -272,15 +267,69 @@
                 <button id="loginBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all">🎮 VÀO CHƠI NGAY</button>
             </div>
 
+            <div id="auctionPanel" class="hidden space-y-6">
+                <div class="flex justify-between items-center bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🪙</span>
+                        <div>
+                            <span class="text-[10px] text-slate-400 font-bold block uppercase">Số dư ví thầu</span>
+                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">17,750 xu</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-slate-400 font-bold block uppercase">Trạng thái sàn</span>
+                        <span class="text-sm font-black text-emerald-400 tracking-wider animate-pulse">ĐANG MỞ THẦU</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-b from-amber-500/10 to-amber-500/0 border border-amber-500/30 rounded-2xl p-5 relative overflow-hidden gavel-glow text-center">
+                    <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-widest px-3 py-1 rounded-full">🔨 VẬT PHẨM ĐANG LÊN SÀN</span>
+                    <h2 id="auctionItemName" class="text-2xl font-extrabold text-white mt-4">Chưa có vật phẩm</h2>
+                    <p id="auctionItemDesc" class="text-sm text-indigo-200/70 mt-2 min-h-[40px]">Hãy đợi Quản trò đưa vật phẩm lên sàn thầu.</p>
+                    
+                    <div class="grid grid-cols-2 gap-3 my-4">
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[10px] text-slate-400 font-bold block">GIÁ HIỆN TẠI</span>
+                            <span id="auctionCurrentBid" class="text-xl font-black text-amber-400">0 xu</span>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[10px] text-slate-400 font-bold block">THẦU CAO NHẤT</span>
+                            <span id="auctionHighestBidder" class="text-sm font-bold text-slate-200 truncate block mt-0.5">Không có ai</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="text-[10px] text-slate-400 font-bold block">BÚA GÕ CHỐT THẦU SAU</span>
+                        <span id="auctionItemCountdown" class="text-3xl font-black text-red-500">--s</span>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button id="bidBtn100" class="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:pointer-events-none text-slate-950 font-black py-3 rounded-xl text-sm shadow-lg active:scale-95 transition-all">+100 XU</button>
+                        <button id="bidBtn500" class="flex-1 bg-amber-600 hover:bg-amber-500 disabled:opacity-40 disabled:pointer-events-none text-slate-950 font-black py-3 rounded-xl text-sm shadow-lg active:scale-95 transition-all">+500 XU</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800/80 pt-6">
+                    <h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🎒</span> KHO VẬT PHẨM ĐÃ MUA</h3>
+                    <div id="auctionInventory" class="grid grid-cols-3 gap-3"></div>
+                </div>
+            </div>
+
             <div id="gamePanel" class="hidden space-y-6">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex items-center space-x-3 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5"><div class="text-2xl">👤</div><div class="truncate"><p class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">NGƯỜI CHƠI</p><span id="playerNameDisplay" class="font-extrabold text-white text-sm"></span></div></div>
-                    <div class="flex items-center space-x-3 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5"><div class="text-2xl">⭐</div><div><p class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">TỔNG ĐIỂM</p><span id="playerScore" class="font-black text-indigo-400 text-lg">0</span></div></div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">👤</div><div class="truncate"><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">NGƯỜI CHƠI</p><span id="playerNameDisplay" class="font-extrabold text-white text-xs"></span></div></div>
+                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">⭐</div><div><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">ĐIỂM</p><span id="playerScore" class="font-black text-indigo-400 text-sm">0</span></div></div>
+                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">🪙</div><div><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">VÍ TIỀN</p><span id="playerXu" class="font-black text-amber-400 text-sm">0</span></div></div>
                 </div>
 
                 <div class="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-4">
                     <div class="flex justify-between items-center text-sm mb-2.5"><span class="text-slate-300 font-medium flex items-center gap-1.5">⏱️ Thời gian còn lại</span><span id="timerText" class="font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full text-xs">-- giây</span></div>
                     <div class="w-full bg-slate-950/60 rounded-full h-3.5 p-[2px] border border-slate-800/60 overflow-hidden"><div id="timerBar" class="timer-bar bg-green-500 h-2.5 rounded-full" style="width: 100%"></div></div>
+                </div>
+
+                <div class="bg-slate-900/40 border border-slate-800/50 rounded-2xl p-4 relative">
+                    <h4 class="text-xs font-bold text-indigo-300 uppercase mb-2 tracking-wider flex items-center gap-1"><span>🎒</span> KHO VẬT PHẨM ĐANG CÓ (Click để dùng)</h4>
+                    <div id="gameInventory" class="grid grid-cols-3 gap-2"></div>
                 </div>
 
                 <div class="space-y-3">
@@ -292,7 +341,6 @@
                         <div class="waiting-container w-full">
                             <div class="waiting-spinner"></div>
                             <div class="waiting-text">⏳ Đang chờ quản trò ra câu hỏi...</div>
-                            <div class="text-xs text-slate-500">Hãy đợi chủ phòng bắt đầu game</div>
                         </div>
                     </div>
                 </div>
@@ -308,7 +356,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
-        // ======================= TOAST =======================
+        const STARTING_COINS = 17750;
+
         function showToast(msg, isError = false) {
             let toast = document.querySelector('.toast-notify');
             if (toast) toast.remove();
@@ -322,7 +371,6 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
-        // ======================= CONGRATS =======================
         function showCongratsPopup(name, rank, score) {
             const medals = ['🥇', '🥈', '🥉'];
             const titles = ['NHÀ VÔ ĐỊCH', 'Á QUÂN', 'HẠNG BA'];
@@ -339,39 +387,28 @@
             setTimeout(() => popup.remove(), 5000);
         }
 
-        // ======================= ANTI-CHEAT LOGIC =======================
+        let hasTriggeredCancel = false;
+        let isGameActive = false;
+        let activationTimeout = null;
+
         (function() {
-            let hasTriggeredCancel = false;
-            let isGameActive = false;
-            let activationTimeout = null;
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
-                if (e.ctrlKey && (e.key === 't' || e.key === 'T' || e.key === 'n' || e.key === 'N')) { e.preventDefault(); return false; }
-                if (e.ctrlKey && e.shiftKey && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); return false; }
             });
-            document.addEventListener('mousedown', function(e) { if (e.button === 1) { e.preventDefault(); return false; } });
             document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
             
-            // Chỉ phạt cheat nếu chưa trả lời thành công
             document.addEventListener('visibilitychange', function() { 
                 if (!isGameActive) return; 
                 if (document.hidden) { 
-                    if (window.cancelCurrentQuestion && !hasTriggeredCancel && !window.hasAnsweredCurrent) { 
-                        hasTriggeredCancel = true; 
-                        window.cancelCurrentQuestion(); 
-                    } 
+                    handleCheatDetection();
                 } 
             });
             window.addEventListener('blur', function() { 
                 if (!isGameActive) return; 
-                if (!hasTriggeredCancel && !window.hasAnsweredCurrent) { 
-                    if (window.cancelCurrentQuestion) { 
-                        hasTriggeredCancel = true; 
-                        window.cancelCurrentQuestion(); 
-                    } 
-                } 
+                handleCheatDetection();
             });
             window.addEventListener('focus', function() { hasTriggeredCancel = false; });
+            
             window.setGameActive = function(active) { 
                 if (activationTimeout) clearTimeout(activationTimeout); 
                 if (active) { 
@@ -383,7 +420,24 @@
             };
         })();
 
-        // ======================= FIREBASE CONFIG =======================
+        async function handleCheatDetection() {
+            if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
+            
+            if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.shield) > 0) {
+                hasTriggeredCancel = true;
+                const newShieldCount = Number(currentPlayer.inventory.shield) - 1;
+                currentPlayer.inventory.shield = newShieldCount;
+                await set(ref(db, `players/${currentPlayer.name}/inventory/shield`), newShieldCount);
+                showToast("🛡️ Khiên Bảo Vệ đã tự động tiêu hao để chống phạt Khóa câu hỏi!", false);
+                return;
+            }
+
+            if (window.cancelCurrentQuestion) { 
+                hasTriggeredCancel = true; 
+                window.cancelCurrentQuestion(); 
+            }
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyALdVA3woqhtG1k7tfApCiP5ar8kH1JfHI",
             authDomain: "administrator-a7ed3.firebaseapp.com",
@@ -396,32 +450,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // ======================= BIẾN TOÀN CỤC =======================
         let currentPlayer = null, currentQuestion = null, hasAnsweredCurrent = false, selectedAnswerIdx = -1, isLocked = false, resultData = null, currentQuestionIndex = -1, modalShownForCurrentQuestion = false;
         let timerEndTime = null, timerDuration = 30, timerInterval = null;
         let hasShownTutorial = false;
         let isQuestionCancelled = false;
         let wasAlreadyAnsweredOnLoad = null;
         let isWaitingForQuestion = true;
-        
-        window.hasAnsweredCurrent = false; // Đồng bộ hóa với module anti-cheat bên ngoài
-        
-        // ======================= QUẢN LÝ LEVEL POPUP =======================
         let lastShownLevel = null;
         let gameFinished = false;
         let levelPopupTimeout = null;
 
+        window.hasAnsweredCurrent = false;
+
+        const itemIconsAndNames = {
+            "50_50": { name: "50/50", icon: "⚡" },
+            "amulet": { name: "Bùa hộ mệnh", icon: "🔮" },
+            "double_points": { name: "Nhân đôi điểm", icon: "🔥" },
+            "steal_points": { name: "Trộm điểm", icon: "💰" },
+            "shield": { name: "Khiên bảo vệ", icon: "🛡️" },
+            "extra_time": { name: "Thời gian phụ", icon: "⏳" }
+        };
+
         function showLevelPopup(level, force = false) {
-            let normLevel = level;
-            if (level) {
-                const lower = level.toLowerCase();
-                if (lower === 'easy') normLevel = 'Easy';
-                else if (lower === 'medium') normLevel = 'Medium';
-                else if (lower === 'hard') normLevel = 'Hard';
-            }
+            let normLevel = level ? level.toUpperCase() : '';
 
             if (gameFinished) return;
-            if (normLevel !== 'Easy' && normLevel !== 'Medium' && normLevel !== 'Hard') return;
+            if (normLevel !== 'EASY' && normLevel !== 'MEDIUM' && normLevel !== 'HARD' && normLevel !== 'DEN_DICH') return;
             if (!force && lastShownLevel === normLevel) return;
             
             lastShownLevel = normLevel;
@@ -435,24 +489,30 @@
             let icon = '', title = '', subtitle = '', pointsText = '';
             let bgGradient = '';
             
-            if (normLevel === 'Easy') { 
+            if (normLevel === 'EASY') { 
                 icon = '🍃✨'; 
-                title = 'CẤP ĐỘ DỄ'; 
-                subtitle = '🌟 Kiến thức cơ bản'; 
+                title = 'CHẶNG KHỞI ĐẦU'; 
+                subtitle = '🌟 Mở đầu nhẹ nhàng'; 
                 pointsText = '🎯 Mỗi câu đúng +1 điểm';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #022c22 0%, #064e3b 50%, #020617 100%)';
-            } else if (normLevel === 'Medium') { 
+            } else if (normLevel === 'MEDIUM') { 
                 icon = '🌿⚡'; 
-                title = 'CẤP ĐỘ TRUNG BÌNH'; 
-                subtitle = '🔥 Thử thách vừa sức'; 
+                title = 'CHẶNG ĐI NÀO'; 
+                subtitle = '🔥 Khởi động bứt phá'; 
                 pointsText = '🎯 Mỗi câu đúng +2 điểm';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #2e1065 55%, #020617 100%)';
-            } else if (normLevel === 'Hard') { 
+            } else if (normLevel === 'HARD') { 
                 icon = '🔥⚡'; 
-                title = 'CẤP ĐỘ KHÓ'; 
-                subtitle = '💪 Đẳng cấp cao thủ'; 
+                title = 'CHẶNG TĂNG TỐC'; 
+                subtitle = '💪 Thử thách đỉnh cao'; 
                 pointsText = '🎯 Mỗi câu đúng +3 điểm';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #450a0a 0%, #7f1d1d 55%, #020617 100%)';
+            } else if (normLevel === 'DEN_DICH') {
+                icon = '🏆🏁';
+                title = 'CHẶNG ĐẾN ĐÍCH';
+                subtitle = '👑 Trí tuệ thăng hoa';
+                pointsText = '🎯 Mỗi câu đúng +4 điểm (Đúng/Sai)';
+                bgGradient = 'radial-gradient(circle at 50% 50%, #2e1065 0%, #1e1b4b 55%, #581c87 100%)';
             }
             
             popup.style.background = bgGradient;
@@ -492,7 +552,6 @@
             if (oldPopup) oldPopup.remove();
         }
 
-        // ======================= FINISHED POPUP =======================
         function showFinishedPopup(finalScore) {
             const popup = document.createElement('div');
             popup.className = 'finished-popup';
@@ -502,16 +561,11 @@
                     <div class="finished-popup-title">🎯 FINISHED 🎯</div>
                     <div class="finished-popup-subtitle">🎉 Chúc mừng bạn đã hoàn thành tất cả các câu hỏi!</div>
                     <div class="finished-popup-score">⭐ Tổng điểm: ${finalScore} ⭐</div>
-                    <div style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.6; color: #a7f3d0;">Hãy đợi quản trò bắt đầu trò chơi mới</div>
                 </div>
             `;
             document.body.appendChild(popup);
-            if (navigator.vibrate) {
-                navigator.vibrate([100, 50, 100, 50, 200]);
-            }
         }
 
-        // ======================= EXPLANATION POPUP =======================
         function showExplanationPopup(explanation) {
             const popup = document.createElement('div'); 
             popup.className = 'explain-popup';
@@ -520,7 +574,6 @@
             document.getElementById('closeExplainBtn').onclick = () => popup.remove();
         }
 
-        // ======================= TUTORIAL =======================
         function showTutorialModal() {
             if (hasShownTutorial) return;
             hasShownTutorial = true;
@@ -534,15 +587,11 @@
                     <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left mb-6 space-y-3">
                         <div class="flex items-start gap-3">
                             <span class="text-cyan-400 text-lg font-bold">1.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Trò chơi có hệ thống giám sát tự động phát hiện thoát trang. <span class="text-red-400 font-bold">Vui lòng không sử dụng bất kỳ hành vi nào</span> để rời khỏi trình duyệt trong khi đang chơi.</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Hệ thống giám sát tự động sẽ phát hiện thoát trang. <span class="text-red-400 font-bold">Vui lòng không tab-out/rời khỏi màn hình</span> để tránh bị phạt Khóa câu hỏi.</p>
                         </div>
                         <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
                             <span class="text-cyan-400 text-lg font-bold">2.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Tất cả hệ thống câu hỏi trong đây đều sử dụng <span class="text-cyan-400 font-bold">kiến thức lớp 9</span>. Chỉ có một số câu hỏi là nằm ngoài kiến thức chung.</p>
-                        </div>
-                        <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
-                            <span class="text-cyan-400 text-lg font-bold">3.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">If you don't know why this answer is selected, simply click the <span class="text-cyan-400 font-bold">Explain</span> button.</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Mỗi người chơi bắt đầu với <b>15,000 Xu</b> 🪙 để tham gia thầu mua 6 loại bảo vật trợ lực cực khủng ở Màn Đấu Giá!</p>
                         </div>
                     </div>
                     
@@ -556,22 +605,70 @@
                 modal1.remove();
                 if (currentQuestion) {
                     setTimeout(() => {
-                        let normL = currentQuestion.level;
-                        if (currentQuestion.level) {
-                            const low = currentQuestion.level.toLowerCase();
-                            if (low === 'easy') normL = 'Easy';
-                            else if (low === 'medium') normL = 'Medium';
-                            else if (low === 'hard') normL = 'Hard';
-                        }
-                        if (normL && normL !== 'BOSS' && normL !== 'boss') {
-                            showLevelPopup(normL, true);
-                        }
+                        showLevelPopup(currentQuestion.level, true);
                     }, 300);
                 }
             };
         }
 
-        // ======================= USER LOGIN & AUTO RECOVERY =======================
+        function updateAuctionInventoryUI(inventory) {
+            const container = document.getElementById('auctionInventory');
+            container.innerHTML = '';
+            if (!inventory) return;
+
+            Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
+                const qty = Number(inventory[id]) || 0;
+                const block = document.createElement('div');
+                block.className = 'bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-center relative';
+                block.innerHTML = `
+                    <div class="text-2xl">${meta.icon}</div>
+                    <div class="text-[10px] text-slate-300 font-bold truncate mt-1">${meta.name}</div>
+                    ${qty > 0 ? `<span class="inventory-badge">${qty}</span>` : ''}
+                `;
+                container.appendChild(block);
+            });
+        }
+
+        async function submitAuctionBid(increment) {
+            if (!currentPlayer) return;
+            try {
+                const activeIdSnap = await get(ref(db, 'game/auction/activeItemId'));
+                const activeId = activeIdSnap.val();
+                if (!activeId) {
+                    showToast("Sàn thầu đang trống!", true);
+                    return;
+                }
+
+                const curBidSnap = await get(ref(db, 'game/auction/currentBid'));
+                const currentBid = Number(curBidSnap.val()) || 0;
+
+                const bidderSnap = await get(ref(db, 'game/auction/highestBidder'));
+                if (bidderSnap.val() === currentPlayer.name) {
+                    showToast("Bạn đang giữ giá thầu cao nhất!", true);
+                    return;
+                }
+
+                const walletSnap = await get(ref(db, `players/${currentPlayer.name}/xu`));
+                const currentWallet = Number(walletSnap.val()) || 0;
+                
+                const nextBid = Number(currentBid) + Number(increment);
+
+                if (currentWallet < nextBid) {
+                    showToast("🪙 Ví thầu của bạn không đủ xu để đặt giá này!", true);
+                    return;
+                }
+
+                await set(ref(db, 'game/auction/currentBid'), nextBid);
+                await set(ref(db, 'game/auction/highestBidder'), currentPlayer.name);
+                showToast("🔥 Đã nâng giá thành công!");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('bidBtn100').onclick = () => submitAuctionBid(100);
+        document.getElementById('bidBtn500').onclick = () => submitAuctionBid(500);
+
         async function login() {
             const name = document.getElementById('playerName').value.trim();
             if (!name) return showToast("Vui lòng nhập tên của bạn!", true);
@@ -579,39 +676,164 @@
             const playerRef = ref(db, `players/${name}`);
             const snap = await get(playerRef);
             
-            // Nếu là người chơi cũ (F5 tải lại trang), hệ thống SẼ KHÔNG xóa điểm của họ!
             if (!snap.exists()) {
-                const initialData = { name, score: 0, answers: {}, cancelled: {}, online: true };
+                const initialData = { 
+                    name, 
+                    score: 0, 
+                    xu: STARTING_COINS,
+                    answers: {}, 
+                    cancelled: {}, 
+                    online: true,
+                    inventory: {
+                        "50_50": 0,
+                        "amulet": 0,
+                        "double_points": 0,
+                        "steal_points": 0,
+                        "shield": 0,
+                        "extra_time": 0
+                    }
+                };
                 await set(playerRef, initialData);
                 currentPlayer = initialData;
             } else {
                 const data = snap.val();
                 currentPlayer = { 
                     name, 
-                    score: data.score || 0, 
+                    score: Number(data.score) || 0, 
+                    xu: data.xu !== undefined ? Number(data.xu) : STARTING_COINS,
                     answers: data.answers || {}, 
                     cancelled: data.cancelled || {}, 
+                    inventory: data.inventory || {
+                        "50_50": 0,
+                        "amulet": 0,
+                        "double_points": 0,
+                        "steal_points": 0,
+                        "shield": 0,
+                        "extra_time": 0
+                    },
                     online: true 
                 };
                 await set(ref(db, `players/${name}/online`), true);
             }
             
-            // QUAN TRỌNG: Chỉ thiết lập trạng thái offline khi ngắt kết nối, KHÔNG ĐƯỢC xóa toàn bộ nút của người chơi!
             onDisconnect(ref(db, `players/${name}/online`)).set(false);
-            
-            // Lưu session vào trình duyệt của người chơi để tự động khôi phục khi nhấn F5
             sessionStorage.setItem('playerName', name);
             
             document.getElementById('loginPanel').classList.add('hidden');
-            document.getElementById('gamePanel').classList.remove('hidden');
+            
+            onValue(ref(db, 'game/status'), (snap) => {
+                const status = snap.val();
+                if (status === 'auction') {
+                    document.getElementById('auctionPanel').classList.remove('hidden');
+                    document.getElementById('gamePanel').classList.add('hidden');
+                } else {
+                    document.getElementById('auctionPanel').classList.add('hidden');
+                    document.getElementById('gamePanel').classList.remove('hidden');
+                }
+            });
+
             document.getElementById('playerNameDisplay').innerText = name;
             document.getElementById('playerScore').innerText = currentPlayer.score;
+            document.getElementById('playerXu').innerText = currentPlayer.xu;
+            document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
             
+            onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
+                const pVal = playerSnap.val();
+                if (pVal) {
+                    currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
+                    currentPlayer.inventory = pVal.inventory || {};
+                    currentPlayer.score = Number(pVal.score) || 0;
+                    
+                    document.getElementById('playerXu').innerText = currentPlayer.xu;
+                    document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
+                    document.getElementById('playerScore').innerText = currentPlayer.score;
+                    
+                    updateAuctionInventoryUI(currentPlayer.inventory);
+                    updateGameInventoryUI(currentPlayer.inventory);
+                }
+            });
+
             showTutorialModal();
             checkCurrentQuestion();
         }
 
-        // ======================= TIMER HANDLERS =======================
+        function updateGameInventoryUI(inventory) {
+            const container = document.getElementById('gameInventory');
+            container.innerHTML = '';
+            if (!inventory) return;
+
+            Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
+                const qty = Number(inventory[id]) || 0;
+                if (id === 'shield') return;
+
+                const btn = document.createElement('button');
+                btn.disabled = qty <= 0;
+                btn.className = `p-2 rounded-xl text-center border relative transition flex flex-col items-center justify-center ${qty > 0 ? 'bg-indigo-600/20 border-indigo-500 hover:scale-105' : 'bg-slate-950/40 border-slate-900 opacity-40'}`;
+                btn.onclick = () => useInventoryItem(id);
+                btn.innerHTML = `
+                    <div class="text-xl">${meta.icon}</div>
+                    <div class="text-[9px] text-slate-300 font-bold truncate mt-1">${meta.name}</div>
+                    ${qty > 0 ? `<span class="inventory-badge">${qty}</span>` : ''}
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        async function useInventoryItem(itemId) {
+            if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) return;
+            const qty = Number(currentPlayer.inventory[itemId]) || 0;
+            if (qty <= 0) return;
+
+            if (itemId === '50_50') {
+                if (currentQuestion.level === 'DEN_DICH') {
+                    showToast("❌ Vật phẩm 50/50 không thể sử dụng ở chặng Đến Đích!", true);
+                    return;
+                }
+                const btns = document.querySelectorAll('#options button');
+                const correctIdx = Number(currentQuestion.correctAnswer);
+                let hidden = 0;
+                btns.forEach((btn, idx) => {
+                    if (idx !== correctIdx && hidden < 2) {
+                        btn.disabled = true;
+                        btn.classList.add('opacity-30', 'pointer-events-none');
+                        hidden++;
+                    }
+                });
+                showToast("⚡ Đã kích hoạt 50/50! 2 đáp án sai đã bị ẩn.");
+            }
+
+            else if (itemId === 'amulet') {
+                const correctIdx = Number(currentQuestion.correctAnswer);
+                const btns = document.querySelectorAll('#options button');
+                btns.forEach((btn, idx) => {
+                    if (idx === correctIdx) {
+                        btn.classList.add('border-amber-400', 'bg-amber-400/10');
+                        btn.style.boxShadow = "0 0 20px rgba(245, 158, 11, 0.4)";
+                    }
+                });
+                showToast("🔮 Bùa Hộ Mệnh linh nghiệm! Đáp án đúng đã phát sáng.");
+            }
+
+            else if (itemId === 'double_points') {
+                await set(ref(db, `players/${currentPlayer.name}/activeItems/double_points`), true);
+                showToast("🔥 Nhân Đôi Điểm đã kích hoạt cho câu hỏi này!");
+            }
+
+            else if (itemId === 'steal_points') {
+                await set(ref(db, `players/${currentPlayer.name}/activeItems/steal_points`), true);
+                showToast("💰 Đã kích hoạt Trộm Điểm (+1đ nếu trả lời đúng)!");
+            }
+
+            else if (itemId === 'extra_time') {
+                timerEndTime += 10 * 1000;
+                showToast("⏳ Thời gian phụ đã cộng thêm cho bạn 10 giây!");
+            }
+
+            const newQty = qty - 1;
+            currentPlayer.inventory[itemId] = newQty;
+            await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
+        }
+
         function updateTimerDisplay() {
             if (isQuestionCancelled) return;
             
@@ -621,7 +843,6 @@
                 document.getElementById('timerBar').className = 'timer-bar bg-red-500 h-2.5 rounded-full';
                 if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
                 
-                // Khóa lựa chọn khi hết giờ
                 if (!hasAnsweredCurrent && !isLocked) {
                     const btns = document.querySelectorAll('.option-btn');
                     btns.forEach(btn => {
@@ -663,9 +884,7 @@
             updateTimerDisplay(); 
         }
 
-        // ======================= CANCEL / BLOCK QUESTION =======================
         window.cancelCurrentQuestion = async function() {
-            // Chỉ phạt vi phạm nếu người chơi chưa bấm trả lời thành công câu này
             if (!currentQuestion || isQuestionCancelled || hasAnsweredCurrent) return;
             isQuestionCancelled = true;
             if (timerInterval) clearInterval(timerInterval);
@@ -673,19 +892,16 @@
             isLocked = true;
             const qIndex = currentQuestion.index;
             
-            // Cập nhật trạng thái vi phạm cục bộ
             if (!currentPlayer.cancelled) currentPlayer.cancelled = {};
             currentPlayer.cancelled[qIndex] = true;
             
-            // Lưu trạng thái vi phạm lên Database (đảm bảo F5 cũng không thể phục hồi)
             await set(ref(db, `players/${currentPlayer.name}/cancelled/${qIndex}`), true);
             
-            document.getElementById('questionText').innerHTML = "<div class='text-center w-full'><span class='text-red-400 text-lg block mb-1'>⚠️ CÂU HỎI ĐÃ BỊ KHÓA ⚠️</span><span class='text-xs text-slate-400 font-normal'>Bạn đã rời khỏi game khi đang diễn ra câu hỏi này. Hệ thống không tính điểm cho bạn ở câu này.</span></div>";
+            document.getElementById('questionText').innerHTML = "<div class='text-center w-full py-4'><span class='text-red-400 text-lg block font-bold mb-1'>⚠️ CÂU HỎI ĐÃ BỊ KHÓA ⚠️</span><span class='text-xs text-slate-400 font-normal'>Hệ thống phát hiện tab-out. Chặng này của bạn bị khóa điểm.</span></div>";
             document.getElementById('options').innerHTML = '';
             await set(ref(db, `game/cancelledBy/${currentPlayer.name}`), { questionIndex: qIndex, timestamp: Date.now() });
         };
 
-        // ======================= RESET STAGES =======================
         function resetForNewQuestion() { 
             hasAnsweredCurrent = false; 
             window.hasAnsweredCurrent = false;
@@ -696,11 +912,11 @@
             isQuestionCancelled = false; 
             wasAlreadyAnsweredOnLoad = null; 
             isWaitingForQuestion = false;
+            hasTriggeredCancel = false;
             const oldModal = document.querySelector('.modal-overlay'); 
             if(oldModal && !oldModal.querySelector('#finishTutorialBtn')) oldModal.remove(); 
         }
 
-        // ======================= RESULT POPUP =======================
         function showResultModal(isCorrect, correctLetter, correctText, pointsEarned, playerScore, explanation, isReplay = false) {
             if(modalShownForCurrentQuestion) return;
             modalShownForCurrentQuestion = true;
@@ -711,8 +927,8 @@
             let warningText = "";
             
             if (isReplay) {
-                pointsDesc = `<span class="text-amber-400 font-bold">0 điểm (Lượt làm lại)</span>`;
-                warningText = `<span class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg block mt-3 font-semibold text-left">⚠️ Bạn đã trả lời câu này từ trước. Do trò chơi tải lại/bị lỗi hoạt động, bạn sẽ không được cộng điểm lần thứ 2 để giữ cân bằng.</span>`;
+                pointsDesc = `<span class="text-amber-400 font-bold">0 điểm (Làm lại)</span>`;
+                warningText = `<span class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg block mt-3 font-semibold text-left">⚠️ Bạn đã làm câu hỏi này rồi. Điểm không cộng dồn thêm.</span>`;
             } else {
                 pointsDesc = `<span class="text-emerald-400 font-bold">+${pointsEarned} điểm</span>`;
             }
@@ -731,7 +947,7 @@
                         <p class="text-4xl font-black text-indigo-400">${playerScore}</p>
                     </div>
                     <div class="flex space-x-3">
-                        <button id="showExplainBtn" class="flex-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-bold py-3 px-4 rounded-xl transition">📚 Giải thích</button>
+                        <button id="showExplainBtn" class="flex-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-bold py-3 px-4 rounded-xl transition">📚 Câu hỏi gốc</button>
                         <button id="closeModalBtn" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-4 rounded-xl transition">Đóng</button>
                     </div>
                 </div>
@@ -741,7 +957,6 @@
             document.getElementById('showExplainBtn').onclick = () => { showExplanationPopup(explanation); };
         }
 
-        // ======================= SYNC QUESTION LOADS =======================
         async function checkCurrentQuestion() {
             try {
                 const snap = await get(ref(db, 'game/currentQuestion'));
@@ -753,10 +968,8 @@
                     const scoreSnap = await get(ref(db, `players/${currentPlayer.name}/score`));
                     const finalScore = scoreSnap.exists() ? scoreSnap.val() : 0;
                     showFinishedPopup(finalScore);
-                    document.getElementById('questionText').innerHTML = "<div class='text-center w-full py-4'><div class='text-4xl mb-2'>🏆</div><div class='text-indigo-300 font-extrabold text-lg'>GAME OVER!</div><div class='text-xs text-slate-400 font-normal mt-1'>Cảm ơn bạn đã tham gia cuộc chiến vũ trụ đầy thử thách này!</div></div>";
+                    document.getElementById('questionText').innerHTML = "<div class='text-center w-full py-4'><div class='text-4xl mb-2'>🏆</div><div class='text-indigo-300 font-extrabold text-lg'>GAME OVER!</div></div>";
                     document.getElementById('options').innerHTML = '';
-                    document.getElementById('levelBadge').innerHTML = '---';
-                    document.getElementById('questionPoints').innerText = '0';
                     window.setGameActive(false);
                     gameFinished = true;
                 } else {
@@ -764,7 +977,6 @@
                         <div class="waiting-container w-full">
                             <div class="waiting-spinner"></div>
                             <div class="waiting-text">⏳ Đang chờ quản trò ra câu hỏi...</div>
-                            <div class="text-xs text-slate-500">Hãy đợi chủ phòng bắt đầu game</div>
                         </div>
                     `;
                     document.getElementById('options').innerHTML = '';
@@ -772,11 +984,10 @@
                     resetLevelPopup();
                 }
             } catch (err) {
-                console.error('Lỗi kiểm tra câu hỏi:', err);
+                console.error(err);
             }
         }
 
-        // ======================= QUESTION RENDER & OPTION GENERATOR =======================
         function displayQuestion(q) {
             if(!currentPlayer) return;
             
@@ -785,12 +996,11 @@
             currentQuestionIndex = q.index;
             isWaitingForQuestion = false;
 
-            // KIỂM TRA NGAY TRẠNG THÁI VI PHẠM (CHỐNG F5 LÁCH LUẬT GIAN LẬN)
             const isCancelled = currentPlayer.cancelled && currentPlayer.cancelled[qIndex] === true;
             if (isCancelled || isQuestionCancelled) {
                 isQuestionCancelled = true;
                 window.setGameActive(true);
-                document.getElementById('questionText').innerHTML = "<div class='text-center w-full'><span class='text-red-400 text-lg block mb-1'>⚠️ CÂU HỎI ĐÃ BỊ KHÓA ⚠️</span><span class='text-xs text-slate-400 font-normal'>Bạn đã rời khỏi game khi đang diễn ra câu hỏi này. Hệ thống không tính điểm cho bạn ở câu này.</span></div>";
+                document.getElementById('questionText').innerHTML = "<div class='text-center w-full py-4'><span class='text-red-400 text-lg font-bold block mb-1'>⚠️ CÂU HỎI ĐÃ BỊ KHÓA ⚠️</span><span class='text-xs text-slate-400 font-normal'>Bạn đã rời game trong lượt này. Không tính kết quả.</span></div>";
                 document.getElementById('options').innerHTML = '';
                 document.getElementById('levelBadge').innerHTML = '❌ Bị Khóa';
                 document.getElementById('questionPoints').innerText = '0';
@@ -800,17 +1010,8 @@
             window.setGameActive(true);
             gameFinished = false;
 
-            let normLevel = q.level;
-            if (q.level) {
-                const lower = q.level.toLowerCase();
-                if (lower === 'easy') normLevel = 'Easy';
-                else if (lower === 'medium') normLevel = 'Medium';
-                else if (lower === 'hard') normLevel = 'Hard';
-                else if (lower === 'boss') normLevel = 'BOSS';
-            }
-            
-            // Hiển thị Popup Level nếu có sự thay đổi
-            if (normLevel && (normLevel === 'Easy' || normLevel === 'Medium' || normLevel === 'Hard')) {
+            let normLevel = q.level ? q.level.toUpperCase() : '';
+            if (normLevel === 'EASY' || normLevel === 'MEDIUM' || normLevel === 'HARD' || normLevel === 'DEN_DICH') {
                 if (normLevel !== lastShownLevel) {
                     const isTutorialActive = document.querySelector('.modal-overlay') && document.getElementById('finishTutorialBtn');
                     if (!isTutorialActive) {
@@ -820,7 +1021,6 @@
             }
             
             const alreadyAnswered = currentPlayer.answers && currentPlayer.answers[currentQuestionIndex] !== undefined;
-            
             if (wasAlreadyAnsweredOnLoad === null) {
                 wasAlreadyAnsweredOnLoad = alreadyAnswered;
                 if (alreadyAnswered) {
@@ -840,28 +1040,28 @@
                 } 
             }
             
-            let bossBadge = '';
-            if (normLevel === 'BOSS') {
-                bossBadge = ' <span class="boss-badge">👑 BOSS</span>';
+            let badgeExtra = '';
+            if (normLevel === 'DEN_DICH') {
+                badgeExtra = ' <span class="dendich-badge">🏆 ĐẾN ĐÍCH</span>';
             }
             
-            document.getElementById('questionText').innerHTML = q.text + bossBadge;
+            document.getElementById('questionText').innerHTML = q.text + badgeExtra;
             
             let levelText = '';
-            if(normLevel === 'Easy') { levelText = '🍃 Dễ (1đ)'; }
-            else if(normLevel === 'Medium') { levelText = '🌿 TBình (2đ)'; }
-            else if(normLevel === 'Hard') { levelText = '⚡ Khó (3đ)'; }
-            else if(normLevel === 'BOSS') { levelText = '👑 BOSS (6đ) ⚡'; }
+            if(normLevel === 'EASY') { levelText = '🍃 Khởi đầu (1đ)'; }
+            else if(normLevel === 'MEDIUM') { levelText = '🌿 Đi nào (2đ)'; }
+            else if(normLevel === 'HARD') { levelText = '⚡ Tăng tốc (3đ)'; }
+            else if(normLevel === 'DEN_DICH') { levelText = '🏆 Đến đích (4đ) 🏁'; }
+            
             document.getElementById('levelBadge').innerHTML = levelText;
             document.getElementById('questionPoints').innerText = q.points;
             
-            // ĐỒNG BỘ THỜI GIAN NGAY KHI HIỂN THỊ (NGĂN CHẶN TRẢ LỜI QUÁ GIỜ)
             const isTimeOut = timerEndTime ? (Date.now() > timerEndTime) : false;
-
             const optionsDiv = document.getElementById('options'); 
             optionsDiv.innerHTML = '';
+            
             const showResult = (isLocked && resultData && resultData.questionIndex === currentQuestionIndex);
-            const correctIdx = showResult ? resultData.correctAnswer : -1;
+            const correctIdx = showResult ? Number(resultData.correctAnswer) : -1;
             
             q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
@@ -889,12 +1089,8 @@
             });
         }
 
-        // ======================= SUBMIT ANSWER =======================
         async function submitAnswer(answerIdx) {
-            if (!currentPlayer || hasAnsweredCurrent || isLocked || !currentQuestion || isQuestionCancelled) { 
-                if (isLocked) showToast("Câu hỏi đã bị khóa!", true); 
-                return; 
-            }
+            if (!currentPlayer || hasAnsweredCurrent || isLocked || !currentQuestion || isQuestionCancelled) return;
             if (timerEndTime && Date.now() > timerEndTime) { 
                 showToast("⏰ Đã hết thời gian trả lời!", true); 
                 return; 
@@ -907,11 +1103,10 @@
             window.hasAnsweredCurrent = true;
             selectedAnswerIdx = answerIdx;
             
-            showToast("✅ Đã ghi nhận câu trả lời. Chờ quản trò công bố kết quả!");
+            showToast("✅ Đã ghi nhận đáp án!");
             displayQuestion(currentQuestion);
         }
 
-        // ======================= REALTIME DATABASE LISTENERS =======================
         function listenForLockAndResult() {
             onValue(ref(db, 'game/locked'), (snapshot) => { 
                 isLocked = snapshot.val() === true; 
@@ -929,12 +1124,12 @@
                     const playerRef = ref(db, `players/${currentPlayer.name}`);
                     const snap = await get(playerRef);
                     if (snap.exists()) { 
-                        currentPlayer.score = snap.val().score || 0; 
+                        currentPlayer.score = Number(snap.val().score) || 0; 
                         document.getElementById('playerScore').innerText = currentPlayer.score; 
                     }
-                    const isCorrect = (selectedAnswerIdx === resultData.correctAnswer);
-                    const correctLetter = String.fromCharCode(65 + resultData.correctAnswer);
-                    const correctText = currentQuestion.options[resultData.correctAnswer];
+                    const isCorrect = (selectedAnswerIdx === Number(resultData.correctAnswer));
+                    const correctLetter = String.fromCharCode(65 + Number(resultData.correctAnswer));
+                    const correctText = currentQuestion.options[Number(resultData.correctAnswer)];
                     
                     showResultModal(isCorrect, correctLetter, correctText, resultData.points, currentPlayer.score, resultData.explanation, wasAlreadyAnsweredOnLoad);
                     displayQuestion(currentQuestion);
@@ -946,20 +1141,9 @@
             onValue(ref(db, 'game/levelPopup'), (snapshot) => { 
                 const data = snapshot.val(); 
                 if (data && data.show) {
-                    let normL = data.level;
-                    if (data.level) {
-                        const low = data.level.toLowerCase();
-                        if (low === 'easy') normL = 'Easy';
-                        else if (low === 'medium') normL = 'Medium';
-                        else if (low === 'hard') normL = 'Hard';
-                    }
-                    if (normL && (normL === 'Easy' || normL === 'Medium' || normL === 'Hard')) {
-                        if (normL !== lastShownLevel) {
-                            const isTutorialActive = document.querySelector('.modal-overlay') && document.getElementById('finishTutorialBtn');
-                            if (!isTutorialActive) {
-                                showLevelPopup(normL);
-                            }
-                        }
+                    const isTutorialActive = document.querySelector('.modal-overlay') && document.getElementById('finishTutorialBtn');
+                    if (!isTutorialActive) {
+                        showLevelPopup(data.level);
                     }
                 }
             }); 
@@ -985,7 +1169,7 @@
                     const players = Object.values(data).sort((a, b) => (b.score || 0) - (a.score || 0));
                     const rankDiv = document.getElementById('rankList');
                     if (players.length === 0) { 
-                        rankDiv.innerHTML = '<div class="text-center text-slate-500 py-4 text-xs">Chưa có người chơi nào tham gia</div>'; 
+                        rankDiv.innerHTML = '<div class="text-center text-slate-500 py-4 text-xs">Chưa có người chơi tham gia</div>'; 
                         return; 
                     }
                     rankDiv.innerHTML = players.map((p, i) => {
@@ -1000,45 +1184,87 @@
             });
         }
 
-        // ======================= MONITOR GAME CHANGES =======================
+        onValue(ref(db, 'game/auction/activeItemId'), async (snap) => {
+            const itemId = snap.val();
+            if (itemId) {
+                const itemSnap = await get(ref(db, `game/auction/items/${itemId}`));
+                const itemVal = itemSnap.val();
+                if (itemVal) {
+                    document.getElementById('auctionItemName').innerText = itemVal.name;
+                    document.getElementById('auctionItemDesc').innerText = itemVal.description;
+                    document.getElementById('bidBtn100').disabled = false;
+                    document.getElementById('bidBtn500').disabled = false;
+                }
+            } else {
+                document.getElementById('auctionItemName').innerText = "Chưa có vật phẩm";
+                document.getElementById('auctionItemDesc').innerText = "Hãy đợi Quản trò đưa vật phẩm lên sàn thầu.";
+                document.getElementById('auctionCurrentBid').innerText = "0 xu";
+                document.getElementById('auctionHighestBidder').innerText = "Không có ai";
+                document.getElementById('bidBtn100').disabled = true;
+                document.getElementById('bidBtn500').disabled = true;
+            }
+        });
+
+        onValue(ref(db, 'game/auction/currentBid'), (snap) => {
+            const bid = Number(snap.val()) || 0;
+            if (bid > 0) {
+                document.getElementById('auctionCurrentBid').innerText = `${bid} xu`;
+            }
+        });
+
+        onValue(ref(db, 'game/auction/highestBidder'), (snap) => {
+            const bidder = snap.val();
+            if (bidder) {
+                document.getElementById('auctionHighestBidder').innerText = bidder;
+            } else {
+                document.getElementById('auctionHighestBidder').innerText = "Không có ai";
+            }
+        });
+
+        onValue(ref(db, 'game/auction/itemTimer'), (snap) => {
+            const itemEndTime = snap.val();
+            let interval = null;
+            if (itemEndTime && itemEndTime > Date.now()) {
+                interval = setInterval(() => {
+                    const remainingSecs = Math.max(0, Math.ceil((itemEndTime - Date.now()) / 1000));
+                    document.getElementById('auctionItemCountdown').innerText = `${remainingSecs}s`;
+                    if (remainingSecs <= 0) clearInterval(interval);
+                }, 200);
+            } else {
+                document.getElementById('auctionItemCountdown').innerText = "--s";
+            }
+        });
+
         onValue(ref(db, 'game/currentQuestion'), async (snap) => {
             const q = snap.val();
             if (q && q.index !== undefined && q.index >= 0 && currentPlayer) { 
-                
-                // Fetch đồng bộ toàn bộ lịch sử trạng thái điểm & vi phạm từ server khi đổi câu hỏi
                 const playerSnap = await get(ref(db, `players/${currentPlayer.name}`));
                 if (playerSnap.exists()) {
                     const pData = playerSnap.val();
-                    currentPlayer.score = pData.score || 0;
+                    currentPlayer.score = Number(pData.score) || 0;
                     currentPlayer.answers = pData.answers || {};
                     currentPlayer.cancelled = pData.cancelled || {};
                     document.getElementById('playerScore').innerText = currentPlayer.score;
                 }
-                
                 gameFinished = false;
                 resetForNewQuestion(); 
                 displayQuestion(q); 
             } else if (q && q.finished) { 
                 gameFinished = true;
                 resetLevelPopup();
-                
                 if (currentPlayer) {
                     get(ref(db, `players/${currentPlayer.name}/score`)).then(scoreSnap => {
-                        const finalScore = scoreSnap.exists() ? scoreSnap.val() : 0;
-                        showFinishedPopup(finalScore);
+                        showFinishedPopup(scoreSnap.exists() ? scoreSnap.val() : 0);
                     });
                 }
-                document.getElementById('questionText').innerHTML = "<div class='text-center w-full py-4'><div class='text-4xl mb-2'>🏆</div><div class='text-indigo-300 font-extrabold text-lg'>GAME OVER!</div><div class='text-xs text-slate-400 font-normal mt-1'>Cảm ơn bạn đã tham gia cuộc chiến vũ trụ đầy thử thách này!</div></div>"; 
+                document.getElementById('questionText').innerHTML = "<div class='text-center w-full py-4'><div class='text-4xl mb-2'>🏆</div><div class='text-indigo-300 font-extrabold text-lg'>GAME OVER!</div></div>"; 
                 document.getElementById('options').innerHTML = ''; 
-                document.getElementById('levelBadge').innerHTML = '---'; 
-                document.getElementById('questionPoints').innerText = '0';
                 window.setGameActive(false);
             } else if (currentPlayer && !q) {
                 document.getElementById('questionText').innerHTML = `
                     <div class="waiting-container w-full">
                         <div class="waiting-spinner"></div>
                         <div class="waiting-text">⏳ Đang chờ quản trò ra câu hỏi...</div>
-                        <div class="text-xs text-slate-500">Hãy đợi chủ phòng bắt đầu game</div>
                     </div>
                 `;
                 document.getElementById('options').innerHTML = '';
@@ -1056,7 +1282,6 @@
             } else { stopTimerLocal(); }
         });
 
-        // ======================= ENGINE ATTACHMENT =======================
         listenForLockAndResult(); 
         listenForLevelPopup(); 
         listenRanking(); 
@@ -1067,10 +1292,8 @@
             if (e.key === 'Enter') login();
         });
 
-        // ======================= ONLOAD AUTO-RECOVERY =======================
         window.onload = function() {
             try {
-                // 1. Khôi phục từ liên kết của Quản trò (Query Parameter)
                 const urlParams = new URLSearchParams(window.location.search);
                 const autoName = urlParams.get('name');
                 if (autoName) {
@@ -1081,16 +1304,12 @@
                         return;
                     }
                 }
-                
-                // 2. Tự động phục hồi phiên đăng nhập khi nhấn F5
                 const savedName = sessionStorage.getItem('playerName');
                 if (savedName) {
                     document.getElementById('playerName').value = savedName;
                     setTimeout(() => { login(); }, 150);
                 }
-            } catch (err) {
-                console.error("Lỗi tự động khôi phục phiên đăng nhập:", err);
-            }
+            } catch (err) {}
         };
     </script>
 </body>
