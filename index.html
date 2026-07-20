@@ -256,6 +256,7 @@
         <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
             
+            <!-- Player Entry Panel -->
             <div id="loginPanel" class="py-4">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner"><span class="text-4xl">🌌</span></div>
@@ -267,6 +268,7 @@
                 <button id="loginBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all">🎮 VÀO CHƠI NGAY</button>
             </div>
 
+            <!-- Realtime Auction Panel -->
             <div id="auctionPanel" class="hidden space-y-6">
                 <div class="flex justify-between items-center bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
                     <div class="flex items-center gap-2">
@@ -315,6 +317,7 @@
                 </div>
             </div>
 
+            <!-- Active Game Panel -->
             <div id="gamePanel" class="hidden space-y-6">
                 <div class="grid grid-cols-3 gap-3">
                     <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">👤</div><div class="truncate"><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">NGƯỜI CHƠI</p><span id="playerNameDisplay" class="font-extrabold text-white text-xs"></span></div></div>
@@ -327,6 +330,7 @@
                     <div class="w-full bg-slate-950/60 rounded-full h-3.5 p-[2px] border border-slate-800/60 overflow-hidden"><div id="timerBar" class="timer-bar bg-green-500 h-2.5 rounded-full" style="width: 100%"></div></div>
                 </div>
 
+                <!-- Active Game Inventory Panel (For usable items) -->
                 <div class="bg-slate-900/40 border border-slate-800/50 rounded-2xl p-4 relative">
                     <h4 class="text-xs font-bold text-indigo-300 uppercase mb-2 tracking-wider flex items-center gap-1"><span>🎒</span> KHO VẬT PHẨM ĐANG CÓ (Click để dùng)</h4>
                     <div id="gameInventory" class="grid grid-cols-3 gap-2"></div>
@@ -423,6 +427,17 @@
         async function handleCheatDetection() {
             if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
             
+            // 1. Kiểm tra Khiên Hộ Pháp tối thượng trước
+            if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.guardian_shield) > 0) {
+                hasTriggeredCancel = true;
+                const newShieldCount = Number(currentPlayer.inventory.guardian_shield) - 1;
+                currentPlayer.inventory.guardian_shield = newShieldCount;
+                await set(ref(db, `players/${currentPlayer.name}/inventory/guardian_shield`), newShieldCount);
+                showToast("🛡️✨ Khiên Hộ Pháp tối thượng đã kích hoạt! Chống khóa chặng và giữ nguyên điểm số!", false);
+                return;
+            }
+
+            // 2. Kiểm tra Khiên Bảo Vệ tiêu chuẩn
             if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.shield) > 0) {
                 hasTriggeredCancel = true;
                 const newShieldCount = Number(currentPlayer.inventory.shield) - 1;
@@ -468,6 +483,7 @@
             "double_points": { name: "Nhân đôi điểm", icon: "🔥" },
             "steal_points": { name: "Trộm điểm", icon: "💰" },
             "shield": { name: "Khiên bảo vệ", icon: "🛡️" },
+            "guardian_shield": { name: "Khiên hộ pháp", icon: "🛡️✨" }, // Added item
             "extra_time": { name: "Thời gian phụ", icon: "⏳" }
         };
 
@@ -493,25 +509,25 @@
                 icon = '🍃✨'; 
                 title = 'CHẶNG KHỞI ĐẦU'; 
                 subtitle = '🌟 Mở đầu nhẹ nhàng'; 
-                pointsText = '🎯 Mỗi câu đúng +1 điểm';
+                pointsText = '🎯 Đúng +1đ | Sai phạt -1đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #022c22 0%, #064e3b 50%, #020617 100%)';
             } else if (normLevel === 'MEDIUM') { 
                 icon = '🌿⚡'; 
                 title = 'CHẶNG ĐI NÀO'; 
                 subtitle = '🔥 Khởi động bứt phá'; 
-                pointsText = '🎯 Mỗi câu đúng +2 điểm';
+                pointsText = '🎯 Đúng +2đ | Sai phạt -2đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #2e1065 55%, #020617 100%)';
             } else if (normLevel === 'HARD') { 
                 icon = '🔥⚡'; 
                 title = 'CHẶNG TĂNG TỐC'; 
                 subtitle = '💪 Thử thách đỉnh cao'; 
-                pointsText = '🎯 Mỗi câu đúng +3 điểm';
+                pointsText = '🎯 Đúng +3đ | Sai phạt -3đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #450a0a 0%, #7f1d1d 55%, #020617 100%)';
             } else if (normLevel === 'DEN_DICH') {
                 icon = '🏆🏁';
                 title = 'CHẶNG ĐẾN ĐÍCH';
                 subtitle = '👑 Trí tuệ thăng hoa';
-                pointsText = '🎯 Mỗi câu đúng +4 điểm (Đúng/Sai)';
+                pointsText = '🎯 Đúng +4đ | Sai phạt -4đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #2e1065 0%, #1e1b4b 55%, #581c87 100%)';
             }
             
@@ -587,11 +603,11 @@
                     <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left mb-6 space-y-3">
                         <div class="flex items-start gap-3">
                             <span class="text-cyan-400 text-lg font-bold">1.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Hệ thống giám sát tự động sẽ phát hiện thoát trang. <span class="text-red-400 font-bold">Vui lòng không tab-out/rời khỏi màn hình</span> để tránh bị phạt Khóa câu hỏi.</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Hệ thống giám sát tự động sẽ phát hiện thoát trang. <span class="text-red-400 font-bold">Vui lòng không tab-out/rời khỏi màn hình</span> để tránh bị phạt Khóa chặng và trừ điểm số.</p>
                         </div>
                         <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
                             <span class="text-cyan-400 text-lg font-bold">2.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Mỗi người chơi bắt đầu với <b>17,750 Xu</b> 🪙 để tham gia thầu mua 6 loại bảo vật trợ lực ở Màn Đấu Giá!</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Mỗi người chơi bắt đầu với <b>17,750 Xu</b> 🪙 để tham gia đấu giá thầu mua các loại bảo vật siêu năng, đặc biệt là <b>Khiên Hộ Pháp 🛡️✨</b> để bảo toàn điểm khi trả lời sai!</p>
                         </div>
                     </div>
                     
@@ -690,6 +706,7 @@
                         "double_points": 0,
                         "steal_points": 0,
                         "shield": 0,
+                        "guardian_shield": 0, // Added to new user profile defaults
                         "extra_time": 0
                     }
                 };
@@ -709,6 +726,7 @@
                         "double_points": 0,
                         "steal_points": 0,
                         "shield": 0,
+                        "guardian_shield": 0,
                         "extra_time": 0
                     },
                     online: true 
@@ -764,7 +782,8 @@
 
             Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
                 const qty = Number(inventory[id]) || 0;
-                if (id === 'shield') return;
+                // Exclude shields because they are automatic/passive items
+                if (id === 'shield' || id === 'guardian_shield') return;
 
                 const btn = document.createElement('button');
                 btn.disabled = qty <= 0;
@@ -929,13 +948,22 @@
             if (isReplay) {
                 pointsDesc = `<span class="text-amber-400 font-bold">0 điểm (Làm lại)</span>`;
                 warningText = `<span class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg block mt-3 font-semibold text-left">⚠️ Bạn đã làm câu hỏi này rồi. Điểm không cộng dồn thêm.</span>`;
-            } else {
+            } else if (isCorrect) {
                 pointsDesc = `<span class="text-emerald-400 font-bold">+${pointsEarned} điểm</span>`;
+            } else {
+                // Calculation of negative points based on chặng (levels)
+                let deductPoints = 1;
+                if (currentQuestion.level === 'MEDIUM') deductPoints = 2;
+                else if (currentQuestion.level === 'HARD') deductPoints = 3;
+                else if (currentQuestion.level === 'DEN_DICH') deductPoints = 4;
+
+                pointsDesc = `<span class="text-rose-400 font-bold">-${deductPoints} điểm</span>`;
+                warningText = `<span class="text-xs text-red-300 bg-rose-500/10 border border-rose-500/20 px-3 py-2 rounded-lg block mt-3 font-semibold text-left">😢 Bạn đã chọn sai đáp án và bị trừ ${deductPoints} điểm (Mẹo: Mua "Khiên Hộ Pháp" 🛡️✨ tại sàn đấu thầu để bảo toàn điểm số).</span>`;
             }
 
             let resultDetailHTML = isCorrect 
                 ? `Chúc mừng! Bạn đã trả lời đúng. Lượt này bạn nhận: ${pointsDesc}.${warningText}` 
-                : `Đáp án chính xác là <span class="text-indigo-400 font-bold">${correctLetter}</span>. <span class="text-slate-300 block mt-1 italic">"${correctText}"</span>${warningText}`;
+                : `Rất tiếc! Lượt này bạn bị phạt: ${pointsDesc}. <br>Đáp án chính xác là <span class="text-indigo-400 font-bold">${correctLetter}</span>. <span class="text-slate-300 block mt-1 italic">"${correctText}"</span>${warningText}`;
 
             modal.innerHTML = `
                 <div class="modal-content">
@@ -1048,10 +1076,10 @@
             document.getElementById('questionText').innerHTML = q.text + badgeExtra;
             
             let levelText = '';
-            if(normLevel === 'EASY') { levelText = '🍃 Khởi đầu (1đ)'; }
-            else if(normLevel === 'MEDIUM') { levelText = '🌿 Đi nào (2đ)'; }
-            else if(normLevel === 'HARD') { levelText = '⚡ Tăng tốc (3đ)'; }
-            else if(normLevel === 'DEN_DICH') { levelText = '🏆 Đến đích (4đ) 🏁'; }
+            if(normLevel === 'EASY') { levelText = '🍃 Khởi đầu (1đ / -1đ)'; }
+            else if(normLevel === 'MEDIUM') { levelText = '🌿 Đi nào (2đ / -2đ)'; }
+            else if(normLevel === 'HARD') { levelText = '⚡ Tăng tốc (3đ / -3đ)'; }
+            else if(normLevel === 'DEN_DICH') { levelText = '🏆 Đến đích (4đ / -4đ) 🏁'; }
             
             document.getElementById('levelBadge').innerHTML = levelText;
             document.getElementById('questionPoints').innerText = q.points;
