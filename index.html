@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="google" content="notranslate">
-    <title>Mini-Game</title>
+    <title>Mini-Game Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -259,8 +259,8 @@
             <div id="loginPanel" class="py-4">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner"><span class="text-4xl">🌌</span></div>
-                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Mini-game</h1>
-                    <p class="text-sm text-indigo-200/60">Happy birthday 🎉🎉</p>
+                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Big Bang Quiz</h1>
+                    <p class="text-sm text-indigo-200/60">Đăng nhập tài khoản cá nhân của bạn</p>
                 </div>
                 <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn</h2>
                 <input type="text" id="playerName" placeholder="Tên hiển thị của bạn..." class="w-full p-4 bg-slate-900/50 border border-slate-700/50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl mb-4 text-center text-white placeholder-slate-500 font-medium transition-all outline-none" autocomplete="off">
@@ -322,6 +322,23 @@
                     <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">🪙</div><div><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">VÍ TIỀN</p><span id="playerXu" class="font-black text-amber-400 text-sm">0</span></div></div>
                 </div>
 
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex items-center justify-between bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2.5 px-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg">🛡️</span>
+                            <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Khiên thường</span>
+                        </div>
+                        <span id="playerShieldCount" class="font-black text-indigo-300 text-sm">0</span>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-900/40 border border-slate-800/80 rounded-2xl p-2.5 px-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg">🛡️✨</span>
+                            <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Hộ Pháp</span>
+                        </div>
+                        <span id="playerGuardianShieldCount" class="font-black text-pink-400 text-sm">0</span>
+                    </div>
+                </div>
+
                 <div class="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-4">
                     <div class="flex justify-between items-center text-sm mb-2.5"><span class="text-slate-300 font-medium flex items-center gap-1.5">⏱️ Thời gian còn lại</span><span id="timerText" class="font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full text-xs">-- giây</span></div>
                     <div class="w-full bg-slate-950/60 rounded-full h-3.5 p-[2px] border border-slate-800/60 overflow-hidden"><div id="timerBar" class="timer-bar bg-green-500 h-2.5 rounded-full" style="width: 100%"></div></div>
@@ -357,8 +374,8 @@
         import { getDatabase, ref, get, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
         const STARTING_COINS = 17750;
+        let serverTimeOffset = 0;
 
-        // Custom logging toasts
         function showToast(msg, isError = false) {
             let toast = document.querySelector('.toast-notify');
             if (toast) toast.remove();
@@ -369,10 +386,9 @@
             toast.style.color = isError ? '#f87171' : '#a5b4fc';
             toast.innerText = msg;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            setTimeout(() => toast.remove(), 2500);
         }
 
-        // Celebrate winners dialogs
         function showCongratsPopup(name, rank, score) {
             const medals = ['🥇', '🥈', '🥉'];
             const titles = ['NHÀ VÔ ĐỊCH', 'Á QUÂN', 'HẠNG BA'];
@@ -393,7 +409,7 @@
         let isGameActive = false;
         let activationTimeout = null;
 
-        // Setup cheat prevention mechanisms
+        // Cơ chế giám sát chống gian lận
         (function() {
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
@@ -423,26 +439,25 @@
             };
         })();
 
+        // Xử lý khi phát hiện tab-out (Giám sát tự động ưu tiên tiêu hao Khiên Hộ Pháp trước)
         async function handleCheatDetection() {
             if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
             
-            // Prefer consuming premium guardian shield first
             if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.guardian_shield) > 0) {
                 hasTriggeredCancel = true;
                 const newShieldCount = Number(currentPlayer.inventory.guardian_shield) - 1;
                 currentPlayer.inventory.guardian_shield = newShieldCount;
                 await set(ref(db, `players/${currentPlayer.name}/inventory/guardian_shield`), newShieldCount);
-                showToast("🛡️✨ Khiên Hộ Pháp đã tự động tiêu hao để bảo vệ bạn khỏi bị Khóa câu hỏi!", false);
+                showToast("🛡️✨ Khiên Hộ Pháp đã tự động bảo vệ điểm số khi bạn tab-out!", false);
                 return;
             }
 
-            // Fallback to normal shield protection
             if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.shield) > 0) {
                 hasTriggeredCancel = true;
                 const newShieldCount = Number(currentPlayer.inventory.shield) - 1;
                 currentPlayer.inventory.shield = newShieldCount;
                 await set(ref(db, `players/${currentPlayer.name}/inventory/shield`), newShieldCount);
-                showToast("🛡️ Khiên Bảo Vệ đã tự động tiêu hao để chống phạt Khóa câu hỏi!", false);
+                showToast("🛡️ Khiên Bảo Vệ đã tự động bảo vệ chống phạt Khóa câu hỏi khi tab-out!", false);
                 return;
             }
 
@@ -464,8 +479,17 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
+            serverTimeOffset = snap.val() || 0;
+        });
+
+        function getServerTime() {
+            return Date.now() + serverTimeOffset;
+        }
+
         let currentPlayer = null, currentQuestion = null, hasAnsweredCurrent = false, selectedAnswerIdx = -1, isLocked = false, resultData = null, currentQuestionIndex = -1, modalShownForCurrentQuestion = false;
         let timerEndTime = null, timerDuration = 30, timerInterval = null;
+        let auctionItemTimerInterval = null;
         let hasShownTutorial = false;
         let isQuestionCancelled = false;
         let wasAlreadyAnsweredOnLoad = null;
@@ -483,6 +507,8 @@
             "steal_points": { name: "Trộm điểm", icon: "💰" },
             "shield": { name: "Khiên bảo vệ", icon: "🛡️" },
             "guardian_shield": { name: "Khiên Hộ Pháp", icon: "🛡️✨" },
+            "bua_ho_phap": { name: "Bùa hộ pháp", icon: "🔮✨" },
+            "bua_the_than": { name: "Bùa thế thân", icon: "🎭" },
             "extra_time": { name: "Thời gian phụ", icon: "⏳" }
         };
 
@@ -508,25 +534,25 @@
                 icon = '🍃✨'; 
                 title = 'CHẶNG KHỞI ĐẦU'; 
                 subtitle = '🌟 Mở đầu nhẹ nhàng'; 
-                pointsText = '🎯 Mỗi câu đúng +1 điểm';
+                pointsText = '🎯 Câu đúng +1 điểm | Sai trừ -1đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #022c22 0%, #064e3b 50%, #020617 100%)';
             } else if (normLevel === 'MEDIUM') { 
                 icon = '🌿⚡'; 
                 title = 'CHẶNG ĐI NÀO'; 
                 subtitle = '🔥 Khởi động bứt phá'; 
-                pointsText = '🎯 Mỗi câu đúng +2 điểm';
+                pointsText = '🎯 Câu đúng +2 điểm | Sai trừ -2đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #1e1b4b 0%, #2e1065 55%, #020617 100%)';
             } else if (normLevel === 'HARD') { 
                 icon = '🔥⚡'; 
                 title = 'CHẶNG TĂNG TỐC'; 
                 subtitle = '💪 Thử thách đỉnh cao'; 
-                pointsText = '🎯 Mỗi câu đúng +3 điểm';
+                pointsText = '🎯 Câu đúng +3 điểm | Sai trừ -3đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #450a0a 0%, #7f1d1d 55%, #020617 100%)';
             } else if (normLevel === 'DEN_DICH') {
                 icon = '🏆🏁';
                 title = 'CHẶNG ĐẾN ĐÍCH';
                 subtitle = '👑 Trí tuệ thăng hoa';
-                pointsText = '🎯 Mỗi câu đúng +4 điểm (Đúng/Sai)';
+                pointsText = '🎯 Câu đúng +4 điểm | Sai trừ -4đ';
                 bgGradient = 'radial-gradient(circle at 50% 50%, #2e1065 0%, #1e1b4b 55%, #581c87 100%)';
             }
             
@@ -602,11 +628,11 @@
                     <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left mb-6 space-y-3">
                         <div class="flex items-start gap-3">
                             <span class="text-cyan-400 text-lg font-bold">1.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Hệ thống giám sát tự động sẽ phát hiện thoát trang. <span class="text-red-400 font-bold">Vui lòng không tab-out/rời khỏi màn hình</span> để tránh bị phạt Khóa câu hỏi.</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Phát hiện rời trang sẽ phạt Khóa câu hỏi. <span class="text-red-400 font-bold">Hãy tập trung tối đa</span>.</p>
                         </div>
                         <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
                             <span class="text-cyan-400 text-lg font-bold">2.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Mỗi người chơi bắt đầu với <b>17,750 Xu</b> 🪙 để tham gia thầu mua 7 loại bảo vật trợ lực ở Màn Đấu Giá!</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>17,750 Xu</b> 🪙 và trang bị ban đầu bao gồm <b>1 Khiên bảo vệ</b> + <b>4 Khiên Hộ Pháp</b>!</p>
                         </div>
                     </div>
                     
@@ -644,7 +670,6 @@
             });
         }
 
-        // Handle bidding submission limits
         async function submitAuctionBid(increment) {
             if (!currentPlayer) return;
             try {
@@ -700,13 +725,16 @@
                     answers: {}, 
                     cancelled: {}, 
                     online: true,
+                    bua_ho_phap_count: 0,
                     inventory: {
                         "50_50": 0,
                         "amulet": 0,
                         "double_points": 0,
                         "steal_points": 0,
-                        "shield": 0,
-                        "guardian_shield": 3, // Start with 3 free guardian shields
+                        "shield": 1, // Khởi đầu có sẵn 1 khiên thường
+                        "guardian_shield": 4, // Khởi đầu có sẵn 4 khiên hộ pháp
+                        "bua_ho_phap": 0,
+                        "bua_the_than": 0,
                         "extra_time": 0
                     }
                 };
@@ -714,25 +742,30 @@
                 currentPlayer = initialData;
             } else {
                 const data = snap.val();
+                const defaultInventory = {
+                    "50_50": 0,
+                    "amulet": 0,
+                    "double_points": 0,
+                    "steal_points": 0,
+                    "shield": 1,
+                    "guardian_shield": 4,
+                    "bua_ho_phap": 0,
+                    "bua_the_than": 0,
+                    "extra_time": 0
+                };
+                const mergedInventory = { ...defaultInventory, ...(data.inventory || {}) };
+                
                 currentPlayer = { 
                     name, 
                     score: Number(data.score) || 0, 
                     xu: data.xu !== undefined ? Number(data.xu) : STARTING_COINS,
                     answers: data.answers || {}, 
                     cancelled: data.cancelled || {}, 
-                    inventory: data.inventory || {
-                        "50_50": 0,
-                        "amulet": 0,
-                        "double_points": 0,
-                        "steal_points": 0,
-                        "shield": 0,
-                        "guardian_shield": 3,
-                        "extra_time": 0
-                    },
+                    bua_ho_phap_count: Number(data.bua_ho_phap_count) || 0,
+                    inventory: mergedInventory,
                     online: true 
                 };
-                // Forced write properties to clean up database structures
-                await set(ref(db, `players/${name}/name`), name);
+                await set(ref(db, `players/${name}/inventory`), mergedInventory);
                 await set(ref(db, `players/${name}/online`), true);
             }
             
@@ -763,10 +796,18 @@
                     currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
                     currentPlayer.inventory = pVal.inventory || {};
                     currentPlayer.score = Number(pVal.score) || 0;
+                    currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
                     
                     document.getElementById('playerXu').innerText = currentPlayer.xu;
                     document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
                     document.getElementById('playerScore').innerText = currentPlayer.score;
+                    
+                    const shieldQty = Number(currentPlayer.inventory.shield) || 0;
+                    const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
+                    const shieldElem = document.getElementById('playerShieldCount');
+                    const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
+                    if (shieldElem) shieldElem.innerText = shieldQty;
+                    if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
                     
                     updateAuctionInventoryUI(currentPlayer.inventory);
                     updateGameInventoryUI(currentPlayer.inventory);
@@ -784,7 +825,7 @@
 
             Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
                 const qty = Number(inventory[id]) || 0;
-                if (id === 'shield' || id === 'guardian_shield') return; // Do not show automatic passive shields in usable grid
+                if (id === 'shield' || id === 'guardian_shield') return;
 
                 const btn = document.createElement('button');
                 btn.disabled = qty <= 0;
@@ -799,6 +840,7 @@
             });
         }
 
+        // Kích hoạt bùa và các vật phẩm đặc biệt
         async function useInventoryItem(itemId) {
             if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) return;
             const qty = Number(currentPlayer.inventory[itemId]) || 0;
@@ -849,6 +891,33 @@
                 showToast("⏳ Thời gian phụ đã cộng thêm cho bạn 10 giây!");
             }
 
+            else if (itemId === 'bua_ho_phap') {
+                // Cho phép bỏ qua 2 câu hỏi tiếp theo và tự động được cộng điểm
+                await set(ref(db, `players/${currentPlayer.name}/bua_ho_phap_count`), 2);
+                showToast("🔮✨ Đã kích hoạt Bùa hộ pháp! Bạn sẽ tự động nhận điểm 2 câu kế tiếp.");
+            }
+
+            else if (itemId === 'bua_the_than') {
+                // Tìm kiếm người chơi online khác để gánh/nhận điểm thay
+                const playersSnap = await get(ref(db, 'players'));
+                if (playersSnap.exists()) {
+                    const allPlayers = Object.keys(playersSnap.val()).filter(p => p !== currentPlayer.name);
+                    if (allPlayers.length > 0) {
+                        const randomTarget = allPlayers[Math.floor(Math.random() * allPlayers.length)];
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/bua_the_than_target`), randomTarget);
+                        // Broadcast thông báo
+                        await set(ref(db, 'game/broadcast'), {
+                            text: `🎭 ${currentPlayer.name} đã kích hoạt Bùa Thế Thân lên ${randomTarget}!`,
+                            timestamp: getServerTime()
+                        });
+                        showToast(`🎭 Kích hoạt Bùa Thế Thân thành công! Người gánh chịu: ${randomTarget}`);
+                    } else {
+                        showToast("❌ Không có người chơi nào khác online để thế thân!", true);
+                        return; // Không tốn bùa
+                    }
+                }
+            }
+
             const newQty = qty - 1;
             currentPlayer.inventory[itemId] = newQty;
             await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
@@ -857,7 +926,8 @@
         function updateTimerDisplay() {
             if (isQuestionCancelled) return;
             
-            if (!timerEndTime || timerEndTime <= Date.now()) {
+            const now = getServerTime();
+            if (!timerEndTime || timerEndTime <= now) {
                 document.getElementById('timerText').innerHTML = 'Hết giờ';
                 document.getElementById('timerBar').style.width = '0%';
                 document.getElementById('timerBar').className = 'timer-bar bg-red-500 h-2.5 rounded-full';
@@ -872,7 +942,7 @@
                 }
                 return;
             }
-            const remaining = Math.max(0, (timerEndTime - Date.now()) / 1000);
+            const remaining = Math.max(0, (timerEndTime - now) / 1000);
             const percent = (remaining / timerDuration) * 100;
             document.getElementById('timerText').innerHTML = `${Math.ceil(remaining)} giây`;
             document.getElementById('timerBar').style.width = `${Math.max(0, percent)}%`;
@@ -885,10 +955,10 @@
         function startTimerLocal(seconds) { 
             if (timerInterval) clearInterval(timerInterval); 
             timerDuration = seconds; 
-            timerEndTime = Date.now() + seconds * 1000; 
+            timerEndTime = getServerTime() + seconds * 1000; 
             updateTimerDisplay(); 
             timerInterval = setInterval(() => { 
-                if (!timerEndTime || timerEndTime <= Date.now()) { 
+                if (!timerEndTime || timerEndTime <= getServerTime()) { 
                     if (timerInterval) clearInterval(timerInterval); 
                     timerInterval = null; 
                     updateTimerDisplay(); 
@@ -950,7 +1020,7 @@
                 pointsDesc = `<span class="text-amber-400 font-bold">0 điểm (Làm lại)</span>`;
                 warningText = `<span class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg block mt-3 font-semibold text-left">⚠️ Bạn đã làm câu hỏi này rồi. Điểm không cộng dồn thêm.</span>`;
             } else {
-                pointsDesc = `<span class="text-emerald-400 font-bold">+${pointsEarned} điểm</span>`;
+                pointsDesc = pointsEarned >= 0 ? `<span class="text-emerald-400 font-bold">+${pointsEarned} điểm</span>` : `<span class="text-rose-400 font-bold">${pointsEarned} điểm</span>`;
             }
 
             let resultDetailHTML = isCorrect 
@@ -1016,6 +1086,16 @@
             currentQuestionIndex = q.index;
             isWaitingForQuestion = false;
 
+            // Kiểm tra miễn trừ bằng Bùa Hộ Pháp
+            if (currentPlayer.bua_ho_phap_count && currentPlayer.bua_ho_phap_count > 0) {
+                window.setGameActive(false);
+                document.getElementById('questionText').innerHTML = `<div class='text-center w-full py-4'><span class='text-purple-400 text-lg block font-bold mb-1'>🔮 BÙA HỘ PHÁP ĐANG HIỆU LỰC 🔮</span><span class='text-xs text-slate-400 font-normal'>Bạn được miễn trả lời và được cộng trọn điểm câu này! (Hiệu lực: ${currentPlayer.bua_ho_phap_count} câu)</span></div>`;
+                document.getElementById('options').innerHTML = '';
+                document.getElementById('levelBadge').innerHTML = '✨ Miễn Nhiễm';
+                document.getElementById('questionPoints').innerText = q.points;
+                return;
+            }
+
             const isCancelled = currentPlayer.cancelled && currentPlayer.cancelled[qIndex] === true;
             if (isCancelled || isQuestionCancelled) {
                 isQuestionCancelled = true;
@@ -1076,7 +1156,7 @@
             document.getElementById('levelBadge').innerHTML = levelText;
             document.getElementById('questionPoints').innerText = q.points;
             
-            const isTimeOut = timerEndTime ? (Date.now() > timerEndTime) : false;
+            const isTimeOut = timerEndTime ? (getServerTime() > timerEndTime) : false;
             const optionsDiv = document.getElementById('options'); 
             optionsDiv.innerHTML = '';
             
@@ -1111,7 +1191,7 @@
 
         async function submitAnswer(answerIdx) {
             if (!currentPlayer || hasAnsweredCurrent || isLocked || !currentQuestion || isQuestionCancelled) return;
-            if (timerEndTime && Date.now() > timerEndTime) { 
+            if (timerEndTime && getServerTime() > timerEndTime) { 
                 showToast("⏰ Đã hết thời gian trả lời!", true); 
                 return; 
             }
@@ -1143,15 +1223,21 @@
                 if (currentQuestion && resultData.questionIndex === currentQuestionIndex) {
                     const playerRef = ref(db, `players/${currentPlayer.name}`);
                     const snap = await get(playerRef);
+                    let displayScore = 0;
                     if (snap.exists()) { 
                         currentPlayer.score = Number(snap.val().score) || 0; 
-                        document.getElementById('playerScore').innerText = currentPlayer.score; 
+                        currentPlayer.bua_ho_phap_count = Number(snap.val().bua_ho_phap_count) || 0;
+                        displayScore = currentPlayer.score;
+                        document.getElementById('playerScore').innerText = displayScore; 
                     }
-                    const isCorrect = (selectedAnswerIdx === Number(resultData.correctAnswer));
+                    
+                    // Kiểm tra xem có được cộng điểm tự động bằng bùa hộ pháp hay không
+                    const isBuaHoPhapActive = currentPlayer.bua_ho_phap_count && currentPlayer.bua_ho_phap_count > 0;
+                    const isCorrect = isBuaHoPhapActive || (selectedAnswerIdx === Number(resultData.correctAnswer));
                     const correctLetter = String.fromCharCode(65 + Number(resultData.correctAnswer));
                     const correctText = currentQuestion.options[Number(resultData.correctAnswer)];
                     
-                    showResultModal(isCorrect, correctLetter, correctText, resultData.points, currentPlayer.score, resultData.explanation, wasAlreadyAnsweredOnLoad);
+                    showResultModal(isCorrect, correctLetter, correctText, resultData.points, displayScore, resultData.explanation, wasAlreadyAnsweredOnLoad);
                     displayQuestion(currentQuestion);
                 }
             });
@@ -1182,15 +1268,23 @@
             });
         }
 
+        // Lắng nghe broadcast từ hệ thống
+        function listenForBroadcast() {
+            onValue(ref(db, 'game/broadcast'), (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.text) {
+                    showToast(data.text, false);
+                }
+            });
+        }
+
         function listenRanking() {
             onValue(ref(db, 'players'), () => {
                 get(ref(db, 'players')).then(snap => {
                     const data = snap.val() || {};
-                    
-                    // Retrieve direct keys to prevent undefined property name mismatch
                     const players = Object.entries(data).map(([key, p]) => {
                         return {
-                            name: key, // Ensure key is used to avoid null/undefined
+                            name: key,
                             score: p.score || 0,
                             xu: p.xu !== undefined ? p.xu : STARTING_COINS,
                             online: p.online
@@ -1237,9 +1331,7 @@
 
         onValue(ref(db, 'game/auction/currentBid'), (snap) => {
             const bid = Number(snap.val()) || 0;
-            if (bid > 0) {
-                document.getElementById('auctionCurrentBid').innerText = `${bid} xu`;
-            }
+            document.getElementById('auctionCurrentBid').innerText = `${bid} xu`;
         });
 
         onValue(ref(db, 'game/auction/highestBidder'), (snap) => {
@@ -1253,12 +1345,18 @@
 
         onValue(ref(db, 'game/auction/itemTimer'), (snap) => {
             const itemEndTime = snap.val();
-            let interval = null;
-            if (itemEndTime && itemEndTime > Date.now()) {
-                interval = setInterval(() => {
-                    const remainingSecs = Math.max(0, Math.ceil((itemEndTime - Date.now()) / 1000));
+            if (auctionItemTimerInterval) {
+                clearInterval(auctionItemTimerInterval);
+                auctionItemTimerInterval = null;
+            }
+            if (itemEndTime && itemEndTime > getServerTime()) {
+                auctionItemTimerInterval = setInterval(() => {
+                    const remainingSecs = Math.max(0, Math.ceil((itemEndTime - getServerTime()) / 1000));
                     document.getElementById('auctionItemCountdown').innerText = `${remainingSecs}s`;
-                    if (remainingSecs <= 0) clearInterval(interval);
+                    if (remainingSecs <= 0) {
+                        clearInterval(auctionItemTimerInterval);
+                        auctionItemTimerInterval = null;
+                    }
                 }, 200);
             } else {
                 document.getElementById('auctionItemCountdown').innerText = "--s";
@@ -1274,6 +1372,7 @@
                     currentPlayer.score = Number(pData.score) || 0;
                     currentPlayer.answers = pData.answers || {};
                     currentPlayer.cancelled = pData.cancelled || {};
+                    currentPlayer.bua_ho_phap_count = Number(pData.bua_ho_phap_count) || 0;
                     document.getElementById('playerScore').innerText = currentPlayer.score;
                 }
                 gameFinished = false;
@@ -1306,7 +1405,7 @@
         onValue(ref(db, 'game/timer'), (snapshot) => {
             const data = snapshot.val();
             if (data && data.endTime && data.endTime > 0) {
-                const remaining = Math.max(0, (data.endTime - Date.now()) / 1000);
+                const remaining = Math.max(0, (data.endTime - getServerTime()) / 1000);
                 if (remaining > 0) { startTimerLocal(remaining); }
                 else { stopTimerLocal(); }
             } else { stopTimerLocal(); }
@@ -1316,6 +1415,7 @@
         listenForLevelPopup(); 
         listenRanking(); 
         listenForTop3();
+        listenForBroadcast();
         
         document.getElementById('loginBtn').onclick = login;
         document.getElementById('playerName').addEventListener('keypress', e => {
