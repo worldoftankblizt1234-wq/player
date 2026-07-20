@@ -259,7 +259,7 @@
             <div id="loginPanel" class="py-4">
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner"><span class="text-4xl">🌌</span></div>
-                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Big Bang Quiz</h1>
+                    <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">MiniGame Quiz</h1>
                     <p class="text-sm text-indigo-200/60">Đăng nhập tài khoản cá nhân của bạn</p>
                 </div>
                 <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn</h2>
@@ -273,7 +273,7 @@
                         <span class="text-2xl">🪙</span>
                         <div>
                             <span class="text-[10px] text-slate-400 font-bold block uppercase">Số dư ví thầu</span>
-                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">17,750 xu</span>
+                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">20,500 xu</span>
                         </div>
                     </div>
                     <div class="text-right">
@@ -310,7 +310,7 @@
                 </div>
 
                 <div class="border-t border-slate-800/80 pt-6">
-                    <h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🎒</span> KHO VẬT PHẨM ĐÃ MUA</h3>
+                    <h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🎒</span> KHO VẬT PHẨM ĐẠT THẦU</h3>
                     <div id="auctionInventory" class="grid grid-cols-3 gap-3"></div>
                 </div>
             </div>
@@ -373,7 +373,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
-        const STARTING_COINS = 17750;
+        const STARTING_COINS = 20500;
         let serverTimeOffset = 0;
 
         function showToast(msg, isError = false) {
@@ -632,7 +632,7 @@
                         </div>
                         <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
                             <span class="text-cyan-400 text-lg font-bold">2.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>17,750 Xu</b> 🪙 và trang bị ban đầu bao gồm <b>1 Khiên bảo vệ</b> + <b>4 Khiên Hộ Pháp</b>!</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>20.500 Xu</b> 🪙 và hoàn toàn KHÔNG CÓ TRANG BỊ SẴN. Bạn cần tham gia đấu thầu để sở hữu các vật phẩm bảo vệ và hỗ trợ!</p>
                         </div>
                     </div>
                     
@@ -731,8 +731,8 @@
                         "amulet": 0,
                         "double_points": 0,
                         "steal_points": 0,
-                        "shield": 1, // Khởi đầu có sẵn 1 khiên thường
-                        "guardian_shield": 4, // Khởi đầu có sẵn 4 khiên hộ pháp
+                        "shield": 0, // Bắt đầu hoàn toàn trống rỗng không có sẵn
+                        "guardian_shield": 0, // Bắt đầu hoàn toàn trống rỗng không có sẵn
                         "bua_ho_phap": 0,
                         "bua_the_than": 0,
                         "extra_time": 0
@@ -747,8 +747,8 @@
                     "amulet": 0,
                     "double_points": 0,
                     "steal_points": 0,
-                    "shield": 1,
-                    "guardian_shield": 4,
+                    "shield": 0,
+                    "guardian_shield": 0,
                     "bua_ho_phap": 0,
                     "bua_the_than": 0,
                     "extra_time": 0
@@ -790,28 +790,34 @@
             document.getElementById('playerXu').innerText = currentPlayer.xu;
             document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
             
+            // Lắng nghe thay đổi dữ liệu người chơi theo thời gian thực (Bao gồm phát hiện Reset)
             onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
                 const pVal = playerSnap.val();
-                if (pVal) {
-                    currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
-                    currentPlayer.inventory = pVal.inventory || {};
-                    currentPlayer.score = Number(pVal.score) || 0;
-                    currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
-                    
-                    document.getElementById('playerXu').innerText = currentPlayer.xu;
-                    document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
-                    document.getElementById('playerScore').innerText = currentPlayer.score;
-                    
-                    const shieldQty = Number(currentPlayer.inventory.shield) || 0;
-                    const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
-                    const shieldElem = document.getElementById('playerShieldCount');
-                    const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
-                    if (shieldElem) shieldElem.innerText = shieldQty;
-                    if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
-                    
-                    updateAuctionInventoryUI(currentPlayer.inventory);
-                    updateGameInventoryUI(currentPlayer.inventory);
+                if (!playerSnap.exists() || !pVal) {
+                    // RESET TRIỆT ĐỂ: Nếu Quản trò bấm reset xóa sạch dữ liệu, ngay lập tức giải tán trang
+                    sessionStorage.removeItem('playerName');
+                    location.reload();
+                    return;
                 }
+                
+                currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
+                currentPlayer.inventory = pVal.inventory || {};
+                currentPlayer.score = Number(pVal.score) || 0;
+                currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
+                
+                document.getElementById('playerXu').innerText = currentPlayer.xu;
+                document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
+                document.getElementById('playerScore').innerText = currentPlayer.score;
+                
+                const shieldQty = Number(currentPlayer.inventory.shield) || 0;
+                const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
+                const shieldElem = document.getElementById('playerShieldCount');
+                const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
+                if (shieldElem) shieldElem.innerText = shieldQty;
+                if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
+                
+                updateAuctionInventoryUI(currentPlayer.inventory);
+                updateGameInventoryUI(currentPlayer.inventory);
             });
 
             showTutorialModal();
@@ -1422,6 +1428,7 @@
             if (e.key === 'Enter') login();
         });
 
+        // Tự động khôi phục phiên đăng nhập cũ
         window.onload = function() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
