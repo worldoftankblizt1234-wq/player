@@ -273,7 +273,7 @@
                         <span class="text-2xl">🪙</span>
                         <div>
                             <span class="text-[10px] text-slate-400 font-bold block uppercase">Số dư ví thầu</span>
-                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">36,670 xu</span>
+                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">46,360 xu</span>
                         </div>
                     </div>
                     <div class="text-right">
@@ -373,7 +373,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
-        const STARTING_COINS = 36670;
+        const STARTING_COINS = 46360; // 👈 ĐÃ CẬP NHẬT LÊN 46.360 XU
         let serverTimeOffset = 0;
 
         function showToast(msg, isError = false) {
@@ -439,7 +439,7 @@
             };
         })();
 
-        // Xử lý khi phát hiện tab-out (Giám sát tự động ưu tiên tiêu hao Khiên Hộ Pháp trước)
+        // Xử lý khi phát hiện tab-out
         async function handleCheatDetection() {
             if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
             
@@ -500,16 +500,20 @@
 
         window.hasAnsweredCurrent = false;
 
+        // DANH SÁCH 12 VẬT PHẨM (CẬP NHẬT ĐẦY ĐỦ)
         const itemIconsAndNames = {
             "50_50": { name: "50/50", icon: "⚡" },
             "amulet": { name: "Bùa hộ mệnh", icon: "🔮" },
-            "double_points": { name: "Nhân đôi điểm", icon: "🔥" },
-            "steal_points": { name: "Trộm điểm", icon: "💰" },
-            "shield": { name: "Khiên bảo vệ", icon: "🛡️" },
-            "guardian_shield": { name: "Khiên Hộ Pháp", icon: "🛡️✨" },
+            "tham_lam": { name: "Tham lam", icon: "🤑" },
             "bua_ho_phap": { name: "Bùa hộ pháp", icon: "🔮✨" },
+            "xa_hoi_chu_nghia": { name: "Xã hội chủ nghĩa", icon: "🤝" },
+            "tu_ban_trump": { name: "Tư bản (Trump)", icon: "🏛️" },
+            "phat_xit": { name: "Phát xít", icon: "⚫" },
             "bua_the_than": { name: "Bùa thế thân", icon: "🎭" },
-            "extra_time": { name: "Thời gian phụ", icon: "⏳" }
+            "double_points": { name: "Nhân đôi điểm", icon: "🔥" },
+            "extra_time": { name: "Thời gian phụ", icon: "⏳" },
+            "guardian_shield": { name: "Khiên Hộ Pháp", icon: "🛡️✨" },
+            "steal_points": { name: "Trộm điểm", icon: "💰" }
         };
 
         function showLevelPopup(level, force = false) {
@@ -632,7 +636,7 @@
                         </div>
                         <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
                             <span class="text-cyan-400 text-lg font-bold">2.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>36.670 Xu</b> 🪙 và hoàn toàn KHÔNG CÓ TRANG BỊ SẴN. Bạn cần tham gia đấu thầu để sở hữu các vật phẩm bảo vệ và hỗ trợ!</p>
+                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>46.360 Xu</b> 🪙 và hoàn toàn KHÔNG CÓ TRANG BỊ SẴN. Bạn cần tham gia đấu thầu để sở hữu các vật phẩm bảo vệ và hỗ trợ!</p>
                         </div>
                     </div>
                     
@@ -729,13 +733,16 @@
                     inventory: {
                         "50_50": 0,
                         "amulet": 0,
-                        "double_points": 0,
-                        "steal_points": 0,
-                        "shield": 0, // Bắt đầu hoàn toàn trống rỗng không có sẵn
-                        "guardian_shield": 0, // Bắt đầu hoàn toàn trống rỗng không có sẵn
+                        "tham_lam": 0,
                         "bua_ho_phap": 0,
+                        "xa_hoi_chu_nghia": 0,
+                        "tu_ban_trump": 0,
+                        "phat_xit": 0,
                         "bua_the_than": 0,
-                        "extra_time": 0
+                        "double_points": 0,
+                        "extra_time": 0,
+                        "guardian_shield": 0,
+                        "steal_points": 0
                     }
                 };
                 await set(playerRef, initialData);
@@ -745,13 +752,16 @@
                 const defaultInventory = {
                     "50_50": 0,
                     "amulet": 0,
-                    "double_points": 0,
-                    "steal_points": 0,
-                    "shield": 0,
-                    "guardian_shield": 0,
+                    "tham_lam": 0,
                     "bua_ho_phap": 0,
+                    "xa_hoi_chu_nghia": 0,
+                    "tu_ban_trump": 0,
+                    "phat_xit": 0,
                     "bua_the_than": 0,
-                    "extra_time": 0
+                    "double_points": 0,
+                    "extra_time": 0,
+                    "guardian_shield": 0,
+                    "steal_points": 0
                 };
                 const mergedInventory = { ...defaultInventory, ...(data.inventory || {}) };
                 
@@ -790,11 +800,10 @@
             document.getElementById('playerXu').innerText = currentPlayer.xu;
             document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
             
-            // Lắng nghe thay đổi dữ liệu người chơi theo thời gian thực (Bao gồm phát hiện Reset)
+            // Lắng nghe thay đổi dữ liệu người chơi theo thời gian thực
             onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
                 const pVal = playerSnap.val();
                 if (!playerSnap.exists() || !pVal) {
-                    // RESET TRIỆT ĐỂ: Nếu Quản trò bấm reset xóa sạch dữ liệu, ngay lập tức giải tán trang
                     sessionStorage.removeItem('playerName');
                     location.reload();
                     return;
@@ -898,20 +907,17 @@
             }
 
             else if (itemId === 'bua_ho_phap') {
-                // Cho phép bỏ qua 2 câu hỏi tiếp theo và tự động được cộng điểm
                 await set(ref(db, `players/${currentPlayer.name}/bua_ho_phap_count`), 2);
                 showToast("🔮✨ Đã kích hoạt Bùa hộ pháp! Bạn sẽ tự động nhận điểm 2 câu kế tiếp.");
             }
 
             else if (itemId === 'bua_the_than') {
-                // Tìm kiếm người chơi online khác để gánh/nhận điểm thay
                 const playersSnap = await get(ref(db, 'players'));
                 if (playersSnap.exists()) {
                     const allPlayers = Object.keys(playersSnap.val()).filter(p => p !== currentPlayer.name);
                     if (allPlayers.length > 0) {
                         const randomTarget = allPlayers[Math.floor(Math.random() * allPlayers.length)];
                         await set(ref(db, `players/${currentPlayer.name}/activeItems/bua_the_than_target`), randomTarget);
-                        // Broadcast thông báo
                         await set(ref(db, 'game/broadcast'), {
                             text: `🎭 ${currentPlayer.name} đã kích hoạt Bùa Thế Thân lên ${randomTarget}!`,
                             timestamp: getServerTime()
@@ -919,7 +925,41 @@
                         showToast(`🎭 Kích hoạt Bùa Thế Thân thành công! Người gánh chịu: ${randomTarget}`);
                     } else {
                         showToast("❌ Không có người chơi nào khác online để thế thân!", true);
-                        return; // Không tốn bùa
+                        return;
+                    }
+                }
+            }
+
+            else if (itemId === 'tham_lam') {
+                await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam`), true);
+                showToast("🤑 Đã kích hoạt Tham Lam! Nếu đúng, bạn sẽ cướp 1 vật phẩm của người khác.");
+            }
+
+            else if (itemId === 'xa_hoi_chu_nghia') {
+                await set(ref(db, `players/${currentPlayer.name}/activeItems/xa_hoi_chu_nghia`), true);
+                showToast("🤝 Đã kích hoạt Xã hội chủ nghĩa! Điểm sẽ chia đều cho tất cả.");
+            }
+
+            else if (itemId === 'tu_ban_trump') {
+                await set(ref(db, `players/${currentPlayer.name}/activeItems/tu_ban_trump`), true);
+                showToast("🏛️ Đã kích hoạt Tư bản Trump! Nếu đúng, bạn sẽ nhận 50% xu của người nghèo nhất.");
+            }
+
+            else if (itemId === 'phat_xit') {
+                const playersSnap = await get(ref(db, 'players'));
+                if (playersSnap.exists()) {
+                    const allPlayers = Object.keys(playersSnap.val()).filter(p => p !== currentPlayer.name);
+                    if (allPlayers.length > 0) {
+                        const randomTarget = allPlayers[Math.floor(Math.random() * allPlayers.length)];
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit_target`), randomTarget);
+                        await set(ref(db, 'game/broadcast'), {
+                            text: `⚫ ${currentPlayer.name} đã kích hoạt Phát Xít, hủy 1 vật phẩm của ${randomTarget}!`,
+                            timestamp: getServerTime()
+                        });
+                        showToast(`⚫ Phát Xít kích hoạt! Vật phẩm của ${randomTarget} sẽ bị hủy.`);
+                    } else {
+                        showToast("❌ Không có người chơi nào khác online!", true);
+                        return;
                     }
                 }
             }
@@ -1237,7 +1277,6 @@
                         document.getElementById('playerScore').innerText = displayScore; 
                     }
                     
-                    // Kiểm tra xem có được cộng điểm tự động bằng bùa hộ pháp hay không
                     const isBuaHoPhapActive = currentPlayer.bua_ho_phap_count && currentPlayer.bua_ho_phap_count > 0;
                     const isCorrect = isBuaHoPhapActive || (selectedAnswerIdx === Number(resultData.correctAnswer));
                     const correctLetter = String.fromCharCode(65 + Number(resultData.correctAnswer));
@@ -1274,7 +1313,6 @@
             });
         }
 
-        // Lắng nghe broadcast từ hệ thống
         function listenForBroadcast() {
             onValue(ref(db, 'game/broadcast'), (snapshot) => {
                 const data = snapshot.val();
@@ -1428,7 +1466,6 @@
             if (e.key === 'Enter') login();
         });
 
-        // Tự động khôi phục phiên đăng nhập cũ
         window.onload = function() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
