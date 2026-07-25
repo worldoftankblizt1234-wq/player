@@ -956,6 +956,7 @@
 
         // ===== POPUP CHỌN VẬT PHẨM ĐỂ CƯỚP =====
         function showStealItemSelectPopup(victimName) {
+            // Xóa popup cũ nếu có
             const oldPopup = document.querySelector('.client-popup');
             if (oldPopup) oldPopup.remove();
 
@@ -1560,7 +1561,7 @@
 
         // ===== LẮNG NGHE SỰ KIỆN TỪ HOST =====
         function listenForStealEvents() {
-            // Lắng nghe yêu cầu chọn vật phẩm
+            // Lắng nghe yêu cầu chọn vật phẩm (THAM LAM)
             onValue(ref(db, 'game/steal_select'), async (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
@@ -1569,6 +1570,7 @@
                 
                 // Nếu là người chơi này được yêu cầu chọn
                 if (data.thiefName === currentPlayer.name && data.status === 'waiting_select') {
+                    console.log('✅ Đây là yêu cầu chọn vật phẩm của tôi!');
                     // Hiển thị popup chọn vật phẩm của nạn nhân
                     showStealItemSelectPopup(data.victimName);
                 }
