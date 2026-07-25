@@ -245,6 +245,170 @@
             justify-content: center;
             border: 2px solid #0f172a;
         }
+
+        /* Popup chọn cho client */
+        .client-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            border-radius: 1.5rem;
+            max-width: 95%;
+            width: 550px;
+            max-height: 90vh;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            z-index: 10001;
+            animation: showModal 0.4s ease-out;
+            color: white;
+            overflow-y: auto;
+        }
+        .client-popup h2 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+        .client-popup .sub {
+            font-size: 0.95rem;
+            color: #a5b4fc;
+            margin-bottom: 1.5rem;
+        }
+        .client-popup .target-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+        .client-popup .target-item {
+            background: rgba(30, 27, 75, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .client-popup .target-item:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #818cf8;
+            transform: scale(1.02);
+        }
+        .client-popup .target-item .name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .client-popup .target-item .info {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .client-popup .cancel-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .client-popup .cancel-btn:hover {
+            background: #dc2626;
+            transform: scale(1.02);
+        }
+        .client-popup .empty-msg {
+            color: #94a3b8;
+            padding: 1rem;
+        }
+
+        /* Popup chi tiết bị cướp/hủy */
+        .steal-notify-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            border-radius: 1.5rem;
+            max-width: 95%;
+            width: 500px;
+            max-height: 85vh;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            z-index: 10002;
+            animation: showModal 0.4s ease-out;
+            color: white;
+            overflow-y: auto;
+        }
+        .steal-notify-popup .icon-big {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .steal-notify-popup h2 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+        .steal-notify-popup .sub {
+            font-size: 0.95rem;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+        }
+        .steal-notify-popup .highlight {
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        .steal-notify-popup .highlight-red {
+            color: #f87171;
+            font-weight: 700;
+        }
+        .steal-notify-popup .item-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .steal-notify-popup .item-tag {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 9999px;
+            padding: 0.3rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .steal-notify-popup .item-tag.lost {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #f87171;
+            text-decoration: line-through;
+        }
+        .steal-notify-popup .close-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .steal-notify-popup .close-btn:hover {
+            background: #4338ca;
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 flex items-center justify-center relative" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
@@ -373,7 +537,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
-        const STARTING_COINS = 367360; // 👈 ĐÃ CẬP NHẬT LÊN 46.360 XU
+        const STARTING_COINS = 367360;
         let serverTimeOffset = 0;
 
         function showToast(msg, isError = false) {
@@ -409,7 +573,6 @@
         let isGameActive = false;
         let activationTimeout = null;
 
-        // Cơ chế giám sát chống gian lận
         (function() {
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
@@ -439,7 +602,6 @@
             };
         })();
 
-        // Xử lý khi phát hiện tab-out
         async function handleCheatDetection() {
             if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
             
@@ -500,7 +662,6 @@
 
         window.hasAnsweredCurrent = false;
 
-        // DANH SÁCH 12 VẬT PHẨM (CẬP NHẬT ĐẦY ĐỦ)
         const itemIconsAndNames = {
             "50_50": { name: "50/50", icon: "⚡" },
             "amulet": { name: "Bùa hộ mệnh", icon: "🔮" },
@@ -714,153 +875,198 @@
         document.getElementById('bidBtn100').onclick = () => submitAuctionBid(100);
         document.getElementById('bidBtn500').onclick = () => submitAuctionBid(500);
 
-        async function login() {
-            const name = document.getElementById('playerName').value.trim();
-            if (!name) return showToast("Vui lòng nhập tên của bạn!", true);
-            
-            const playerRef = ref(db, `players/${name}`);
-            const snap = await get(playerRef);
-            
-            if (!snap.exists()) {
-                const initialData = { 
-                    name, 
-                    score: 0, 
-                    xu: STARTING_COINS,
-                    answers: {}, 
-                    cancelled: {}, 
-                    online: true,
-                    bua_ho_phap_count: 0,
-                    inventory: {
-                        "50_50": 0,
-                        "amulet": 0,
-                        "tham_lam": 0,
-                        "bua_ho_phap": 0,
-                        "xa_hoi_chu_nghia": 0,
-                        "tu_ban_trump": 0,
-                        "phat_xit": 0,
-                        "bua_the_than": 0,
-                        "double_points": 0,
-                        "extra_time": 0,
-                        "guardian_shield": 0,
-                        "steal_points": 0
-                    }
-                };
-                await set(playerRef, initialData);
-                currentPlayer = initialData;
-            } else {
-                const data = snap.val();
-                const defaultInventory = {
-                    "50_50": 0,
-                    "amulet": 0,
-                    "tham_lam": 0,
-                    "bua_ho_phap": 0,
-                    "xa_hoi_chu_nghia": 0,
-                    "tu_ban_trump": 0,
-                    "phat_xit": 0,
-                    "bua_the_than": 0,
-                    "double_points": 0,
-                    "extra_time": 0,
-                    "guardian_shield": 0,
-                    "steal_points": 0
-                };
-                const mergedInventory = { ...defaultInventory, ...(data.inventory || {}) };
-                
-                currentPlayer = { 
-                    name, 
-                    score: Number(data.score) || 0, 
-                    xu: data.xu !== undefined ? Number(data.xu) : STARTING_COINS,
-                    answers: data.answers || {}, 
-                    cancelled: data.cancelled || {}, 
-                    bua_ho_phap_count: Number(data.bua_ho_phap_count) || 0,
-                    inventory: mergedInventory,
-                    online: true 
-                };
-                await set(ref(db, `players/${name}/inventory`), mergedInventory);
-                await set(ref(db, `players/${name}/online`), true);
-            }
-            
-            onDisconnect(ref(db, `players/${name}/online`)).set(false);
-            sessionStorage.setItem('playerName', name);
-            
-            document.getElementById('loginPanel').classList.add('hidden');
-            
-            onValue(ref(db, 'game/status'), (snap) => {
-                const status = snap.val();
-                if (status === 'auction') {
-                    document.getElementById('auctionPanel').classList.remove('hidden');
-                    document.getElementById('gamePanel').classList.add('hidden');
-                } else {
-                    document.getElementById('auctionPanel').classList.add('hidden');
-                    document.getElementById('gamePanel').classList.remove('hidden');
-                }
-            });
+        // ===== POPUP CHỌN TARGET CHO CLIENT =====
+        function showClientPopup(title, subtitle, items, onSelect, onCancel) {
+            const oldPopup = document.querySelector('.client-popup');
+            if (oldPopup) oldPopup.remove();
 
-            document.getElementById('playerNameDisplay').innerText = name;
-            document.getElementById('playerScore').innerText = currentPlayer.score;
-            document.getElementById('playerXu').innerText = currentPlayer.xu;
-            document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
-            
-            // Lắng nghe thay đổi dữ liệu người chơi theo thời gian thực
-            onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
-                const pVal = playerSnap.val();
-                if (!playerSnap.exists() || !pVal) {
-                    sessionStorage.removeItem('playerName');
-                    location.reload();
+            const popup = document.createElement('div');
+            popup.className = 'client-popup';
+            popup.innerHTML = `
+                <h2>${title}</h2>
+                <div class="sub">${subtitle}</div>
+                <div id="clientPopupList" class="target-list"></div>
+                <button class="cancel-btn" id="clientPopupCancel">❌ Hủy bỏ</button>
+            `;
+            document.body.appendChild(popup);
+
+            const listContainer = document.getElementById('clientPopupList');
+
+            if (items.length === 0) {
+                listContainer.innerHTML = '<div class="empty-msg">❌ Không có lựa chọn nào!</div>';
+            } else {
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'target-item';
+                    div.innerHTML = `
+                        <span class="name">${item.name}</span>
+                        <span class="info">${item.info || ''}</span>
+                    `;
+                    div.onclick = () => {
+                        popup.remove();
+                        if (onSelect) onSelect(item);
+                    };
+                    listContainer.appendChild(div);
+                });
+            }
+
+            document.getElementById('clientPopupCancel').onclick = () => {
+                popup.remove();
+                if (onCancel) onCancel();
+            };
+
+            return popup;
+        }
+
+        // ===== POPUP CHI TIẾT BỊ CƯỚP/HỦY =====
+        function showStealNotifyPopup(data) {
+            const oldPopup = document.querySelector('.steal-notify-popup');
+            if (oldPopup) oldPopup.remove();
+
+            const { thief, itemName, itemId, type } = data;
+            const isSteal = type === 'steal';
+
+            const popup = document.createElement('div');
+            popup.className = 'steal-notify-popup';
+
+            const icon = isSteal ? '😱' : '💥';
+            const title = isSteal ? 'BẠN VỪA BỊ CƯỚP!' : 'BẠN VỪA BỊ HỦY VẬT PHẨM!';
+            const color = isSteal ? '#fbbf24' : '#ef4444';
+            const itemIcon = itemIconsAndNames[itemId]?.icon || '📦';
+            const itemDisplayName = itemIconsAndNames[itemId]?.name || itemId;
+
+            popup.innerHTML = `
+                <span class="icon-big">${icon}</span>
+                <h2 style="color: ${color}">${title}</h2>
+                <div class="sub">
+                    <span class="highlight-red">${thief}</span> đã ${isSteal ? 'cướp' : 'hủy'} <span class="highlight">${itemDisplayName}</span> của bạn!
+                </div>
+                <div style="background: rgba(30,27,75,0.4); border-radius: 1rem; padding: 0.75rem; margin: 0.5rem 0;">
+                    <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Vật phẩm bị mất</div>
+                    <div class="item-list">
+                        <span class="item-tag lost">
+                            ${itemIcon} ${itemDisplayName} ❌
+                        </span>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin: 0.5rem 0;">
+                    ${isSteal ? '🔄 Vật phẩm này đã chuyển sang túi đồ của kẻ cướp!' : '💥 Vật phẩm này đã bị xóa khỏi túi đồ của bạn!'}
+                </div>
+                <button class="close-btn" onclick="this.closest('.steal-notify-popup').remove()">✅ Đã hiểu</button>
+            `;
+            document.body.appendChild(popup);
+        }
+
+        // ===== SỬ DỤNG VẬT PHẨM =====
+        async function useInventoryItem(itemId) {
+            if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) {
+                showToast("❌ Không thể sử dụng vật phẩm lúc này!", true);
+                return;
+            }
+            const qty = Number(currentPlayer.inventory[itemId]) || 0;
+            if (qty <= 0) {
+                showToast("❌ Bạn không có vật phẩm này!", true);
+                return;
+            }
+
+            // ===== THAM LAM =====
+            if (itemId === 'tham_lam') {
+                const playersSnap = await get(ref(db, 'players'));
+                if (!playersSnap.exists()) {
+                    showToast("❌ Không có người chơi nào để cướp!", true);
                     return;
                 }
-                
-                currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
-                currentPlayer.inventory = pVal.inventory || {};
-                currentPlayer.score = Number(pVal.score) || 0;
-                currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
-                
-                document.getElementById('playerXu').innerText = currentPlayer.xu;
-                document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
-                document.getElementById('playerScore').innerText = currentPlayer.score;
-                
-                const shieldQty = Number(currentPlayer.inventory.shield) || 0;
-                const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
-                const shieldElem = document.getElementById('playerShieldCount');
-                const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
-                if (shieldElem) shieldElem.innerText = shieldQty;
-                if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
-                
-                updateAuctionInventoryUI(currentPlayer.inventory);
-                updateGameInventoryUI(currentPlayer.inventory);
-            });
+                const players = playersSnap.val();
+                const targetList = Object.entries(players)
+                    .filter(([name, data]) => name !== currentPlayer.name && data.online)
+                    .map(([name, data]) => ({
+                        name: name,
+                        info: `⭐ ${data.score || 0} điểm | 🪙 ${data.xu || 0} xu`
+                    }));
 
-            showTutorialModal();
-            checkCurrentQuestion();
-        }
+                if (targetList.length === 0) {
+                    showToast("❌ Không có người chơi nào khác online để cướp!", true);
+                    return;
+                }
 
-        function updateGameInventoryUI(inventory) {
-            const container = document.getElementById('gameInventory');
-            container.innerHTML = '';
-            if (!inventory) return;
+                showClientPopup(
+                    '🤑 THAM LAM',
+                    'Chọn nạn nhân để cướp vật phẩm:',
+                    targetList,
+                    async (selected) => {
+                        // Lưu target vào activeItems
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam`), true);
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam_target`), selected.name);
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam_used`), false);
+                        
+                        // Trừ 1 vật phẩm Tham Lam
+                        const newQty = Number(currentPlayer.inventory[itemId]) - 1;
+                        currentPlayer.inventory[itemId] = newQty;
+                        await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
+                        updateGameInventoryUI(currentPlayer.inventory);
+                        updateAuctionInventoryUI(currentPlayer.inventory);
+                        
+                        showToast(`🤑 Đã chọn ${selected.name} làm nạn nhân! Hãy trả lời đúng để cướp vật phẩm.`);
+                    },
+                    () => {
+                        showToast('Đã hủy kích hoạt Tham Lam.');
+                    }
+                );
+                return;
+            }
 
-            Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
-                const qty = Number(inventory[id]) || 0;
-                if (id === 'shield' || id === 'guardian_shield') return;
+            // ===== PHÁT XÍT =====
+            if (itemId === 'phat_xit') {
+                const playersSnap = await get(ref(db, 'players'));
+                if (!playersSnap.exists()) {
+                    showToast("❌ Không có người chơi nào để tấn công!", true);
+                    return;
+                }
+                const players = playersSnap.val();
+                const targetList = Object.entries(players)
+                    .filter(([name, data]) => name !== currentPlayer.name && data.online)
+                    .map(([name, data]) => ({
+                        name: name,
+                        info: `⭐ ${data.score || 0} điểm | 🪙 ${data.xu || 0} xu`
+                    }));
 
-                const btn = document.createElement('button');
-                btn.disabled = qty <= 0;
-                btn.className = `p-2 rounded-xl text-center border relative transition flex flex-col items-center justify-center ${qty > 0 ? 'bg-indigo-600/20 border-indigo-500 hover:scale-105' : 'bg-slate-950/40 border-slate-900 opacity-40'}`;
-                btn.onclick = () => useInventoryItem(id);
-                btn.innerHTML = `
-                    <div class="text-xl">${meta.icon}</div>
-                    <div class="text-[9px] text-slate-300 font-bold truncate mt-1">${meta.name}</div>
-                    ${qty > 0 ? `<span class="inventory-badge">${qty}</span>` : ''}
-                `;
-                container.appendChild(btn);
-            });
-        }
+                if (targetList.length === 0) {
+                    showToast("❌ Không có người chơi nào khác online để tấn công!", true);
+                    return;
+                }
 
-        // Kích hoạt bùa và các vật phẩm đặc biệt
-        async function useInventoryItem(itemId) {
-            if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) return;
-            const qty = Number(currentPlayer.inventory[itemId]) || 0;
-            if (qty <= 0) return;
+                showClientPopup(
+                    '⚫ PHÁT XÍT',
+                    'Chọn nạn nhân để hủy 1 vật phẩm:',
+                    targetList,
+                    async (selected) => {
+                        // Lưu target vào activeItems
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit`), true);
+                        await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit_target`), selected.name);
+                        
+                        // Trừ 1 vật phẩm Phát Xít
+                        const newQty = Number(currentPlayer.inventory[itemId]) - 1;
+                        currentPlayer.inventory[itemId] = newQty;
+                        await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
+                        updateGameInventoryUI(currentPlayer.inventory);
+                        updateAuctionInventoryUI(currentPlayer.inventory);
+                        
+                        showToast(`⚫ Đã chọn ${selected.name} làm mục tiêu! Vật phẩm của họ sẽ bị hủy.`);
+                        
+                        // Gửi broadcast thông báo
+                        await set(ref(db, 'game/broadcast'), {
+                            text: `⚫ ${currentPlayer.name} đã kích hoạt Phát Xít nhắm vào ${selected.name}!`,
+                            timestamp: getServerTime()
+                        });
+                    },
+                    () => {
+                        showToast('Đã hủy kích hoạt Phát Xít.');
+                    }
+                );
+                return;
+            }
 
+            // ===== CÁC VẬT PHẨM KHÁC =====
             if (itemId === '50_50') {
                 if (currentQuestion.level === 'DEN_DICH') {
                     showToast("❌ Vật phẩm 50/50 không thể sử dụng ở chặng Đến Đích!", true);
@@ -930,11 +1136,6 @@
                 }
             }
 
-            else if (itemId === 'tham_lam') {
-                await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam`), true);
-                showToast("🤑 Đã kích hoạt Tham Lam! Nếu đúng, bạn sẽ cướp 1 vật phẩm của người khác.");
-            }
-
             else if (itemId === 'xa_hoi_chu_nghia') {
                 await set(ref(db, `players/${currentPlayer.name}/activeItems/xa_hoi_chu_nghia`), true);
                 showToast("🤝 Đã kích hoạt Xã hội chủ nghĩa! Điểm sẽ chia đều cho tất cả.");
@@ -945,28 +1146,36 @@
                 showToast("🏛️ Đã kích hoạt Tư bản Trump! Nếu đúng, bạn sẽ nhận 50% xu của người nghèo nhất.");
             }
 
-            else if (itemId === 'phat_xit') {
-                const playersSnap = await get(ref(db, 'players'));
-                if (playersSnap.exists()) {
-                    const allPlayers = Object.keys(playersSnap.val()).filter(p => p !== currentPlayer.name);
-                    if (allPlayers.length > 0) {
-                        const randomTarget = allPlayers[Math.floor(Math.random() * allPlayers.length)];
-                        await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit_target`), randomTarget);
-                        await set(ref(db, 'game/broadcast'), {
-                            text: `⚫ ${currentPlayer.name} đã kích hoạt Phát Xít, hủy 1 vật phẩm của ${randomTarget}!`,
-                            timestamp: getServerTime()
-                        });
-                        showToast(`⚫ Phát Xít kích hoạt! Vật phẩm của ${randomTarget} sẽ bị hủy.`);
-                    } else {
-                        showToast("❌ Không có người chơi nào khác online!", true);
-                        return;
-                    }
-                }
+            // Trừ vật phẩm (trừ Tham Lam và Phát Xít đã xử lý ở trên)
+            if (itemId !== 'tham_lam' && itemId !== 'phat_xit') {
+                const newQty = Number(currentPlayer.inventory[itemId]) - 1;
+                currentPlayer.inventory[itemId] = newQty;
+                await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
+                updateGameInventoryUI(currentPlayer.inventory);
+                updateAuctionInventoryUI(currentPlayer.inventory);
             }
+        }
 
-            const newQty = qty - 1;
-            currentPlayer.inventory[itemId] = newQty;
-            await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
+        function updateGameInventoryUI(inventory) {
+            const container = document.getElementById('gameInventory');
+            container.innerHTML = '';
+            if (!inventory) return;
+
+            Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
+                const qty = Number(inventory[id]) || 0;
+                if (id === 'shield' || id === 'guardian_shield') return;
+
+                const btn = document.createElement('button');
+                btn.disabled = qty <= 0;
+                btn.className = `p-2 rounded-xl text-center border relative transition flex flex-col items-center justify-center ${qty > 0 ? 'bg-indigo-600/20 border-indigo-500 hover:scale-105' : 'bg-slate-950/40 border-slate-900 opacity-40'}`;
+                btn.onclick = () => useInventoryItem(id);
+                btn.innerHTML = `
+                    <div class="text-xl">${meta.icon}</div>
+                    <div class="text-[9px] text-slate-300 font-bold truncate mt-1">${meta.name}</div>
+                    ${qty > 0 ? `<span class="inventory-badge">${qty}</span>` : ''}
+                `;
+                container.appendChild(btn);
+            });
         }
 
         function updateTimerDisplay() {
@@ -1132,7 +1341,6 @@
             currentQuestionIndex = q.index;
             isWaitingForQuestion = false;
 
-            // Kiểm tra miễn trừ bằng Bùa Hộ Pháp
             if (currentPlayer.bua_ho_phap_count && currentPlayer.bua_ho_phap_count > 0) {
                 window.setGameActive(false);
                 document.getElementById('questionText').innerHTML = `<div class='text-center w-full py-4'><span class='text-purple-400 text-lg block font-bold mb-1'>🔮 BÙA HỘ PHÁP ĐANG HIỆU LỰC 🔮</span><span class='text-xs text-slate-400 font-normal'>Bạn được miễn trả lời và được cộng trọn điểm câu này! (Hiệu lực: ${currentPlayer.bua_ho_phap_count} câu)</span></div>`;
@@ -1253,6 +1461,78 @@
             displayQuestion(currentQuestion);
         }
 
+        // ===== LẮNG NGHE SỰ KIỆN CƯỚP/HỦY TỪ HOST =====
+        function listenForStealEvents() {
+            onValue(ref(db, 'game/steal_event'), async (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                console.log('📢 Nhận được steal_event:', data);
+
+                // Nếu là nạn nhân bị cướp
+                if (data.status === 'completed' && data.victimName === currentPlayer.name) {
+                    showStealNotifyPopup({
+                        thief: data.thiefName,
+                        itemName: data.itemName,
+                        itemId: data.itemId,
+                        type: 'steal'
+                    });
+                    // Cập nhật inventory
+                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                    if (invSnap.exists()) {
+                        currentPlayer.inventory = invSnap.val();
+                        updateGameInventoryUI(currentPlayer.inventory);
+                        updateAuctionInventoryUI(currentPlayer.inventory);
+                    }
+                }
+
+                // Nếu là nạn nhân bị hủy (Phát Xít)
+                if (data.status === 'phatxit_completed' && data.victimName === currentPlayer.name) {
+                    showStealNotifyPopup({
+                        thief: data.thiefName,
+                        itemName: data.itemName,
+                        itemId: data.itemId,
+                        type: 'phatxit'
+                    });
+                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                    if (invSnap.exists()) {
+                        currentPlayer.inventory = invSnap.val();
+                        updateGameInventoryUI(currentPlayer.inventory);
+                        updateAuctionInventoryUI(currentPlayer.inventory);
+                    }
+                }
+
+                // Nếu là kẻ cướp -> thông báo thành công
+                if (data.status === 'completed' && data.thiefName === currentPlayer.name) {
+                    showToast(`🎉 Bạn đã cướp thành công vật phẩm ${data.itemName} của ${data.victimName}!`);
+                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                    if (invSnap.exists()) {
+                        currentPlayer.inventory = invSnap.val();
+                        updateGameInventoryUI(currentPlayer.inventory);
+                        updateAuctionInventoryUI(currentPlayer.inventory);
+                    }
+                }
+
+                // Nếu là kẻ tấn công (Phát Xít) -> thông báo thành công
+                if (data.status === 'phatxit_completed' && data.thiefName === currentPlayer.name) {
+                    showToast(`⚫ Bạn đã hủy thành công vật phẩm ${data.itemName} của ${data.victimName}!`);
+                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                    if (invSnap.exists()) {
+                        currentPlayer.inventory = invSnap.val();
+                        updateGameInventoryUI(currentPlayer.inventory);
+                        updateAuctionInventoryUI(currentPlayer.inventory);
+                    }
+                }
+
+                // Xóa event sau khi xử lý
+                if (data.status === 'completed' || data.status === 'phatxit_completed') {
+                    setTimeout(() => {
+                        set(ref(db, 'game/steal_event'), null);
+                    }, 3000);
+                }
+            });
+        }
+
         function listenForLockAndResult() {
             onValue(ref(db, 'game/locked'), (snapshot) => { 
                 isLocked = snapshot.val() === true; 
@@ -1352,6 +1632,7 @@
             });
         }
 
+        // Lắng nghe sự kiện đấu giá
         onValue(ref(db, 'game/auction/activeItemId'), async (snap) => {
             const itemId = snap.val();
             if (itemId) {
@@ -1454,6 +1735,129 @@
                 else { stopTimerLocal(); }
             } else { stopTimerLocal(); }
         });
+
+        // ===== ĐĂNG NHẬP =====
+        async function login() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) return showToast("Vui lòng nhập tên của bạn!", true);
+            
+            const playerRef = ref(db, `players/${name}`);
+            const snap = await get(playerRef);
+            
+            if (!snap.exists()) {
+                const initialData = { 
+                    name, 
+                    score: 0, 
+                    xu: STARTING_COINS,
+                    answers: {}, 
+                    cancelled: {}, 
+                    online: true,
+                    bua_ho_phap_count: 0,
+                    inventory: {
+                        "50_50": 0,
+                        "amulet": 0,
+                        "tham_lam": 0,
+                        "bua_ho_phap": 0,
+                        "xa_hoi_chu_nghia": 0,
+                        "tu_ban_trump": 0,
+                        "phat_xit": 0,
+                        "bua_the_than": 0,
+                        "double_points": 0,
+                        "extra_time": 0,
+                        "guardian_shield": 0,
+                        "steal_points": 0
+                    }
+                };
+                await set(playerRef, initialData);
+                currentPlayer = initialData;
+            } else {
+                const data = snap.val();
+                const defaultInventory = {
+                    "50_50": 0,
+                    "amulet": 0,
+                    "tham_lam": 0,
+                    "bua_ho_phap": 0,
+                    "xa_hoi_chu_nghia": 0,
+                    "tu_ban_trump": 0,
+                    "phat_xit": 0,
+                    "bua_the_than": 0,
+                    "double_points": 0,
+                    "extra_time": 0,
+                    "guardian_shield": 0,
+                    "steal_points": 0
+                };
+                const mergedInventory = { ...defaultInventory, ...(data.inventory || {}) };
+                
+                currentPlayer = { 
+                    name, 
+                    score: Number(data.score) || 0, 
+                    xu: data.xu !== undefined ? Number(data.xu) : STARTING_COINS,
+                    answers: data.answers || {}, 
+                    cancelled: data.cancelled || {}, 
+                    bua_ho_phap_count: Number(data.bua_ho_phap_count) || 0,
+                    inventory: mergedInventory,
+                    online: true 
+                };
+                await set(ref(db, `players/${name}/inventory`), mergedInventory);
+                await set(ref(db, `players/${name}/online`), true);
+            }
+            
+            onDisconnect(ref(db, `players/${name}/online`)).set(false);
+            sessionStorage.setItem('playerName', name);
+            
+            document.getElementById('loginPanel').classList.add('hidden');
+            
+            onValue(ref(db, 'game/status'), (snap) => {
+                const status = snap.val();
+                if (status === 'auction') {
+                    document.getElementById('auctionPanel').classList.remove('hidden');
+                    document.getElementById('gamePanel').classList.add('hidden');
+                } else {
+                    document.getElementById('auctionPanel').classList.add('hidden');
+                    document.getElementById('gamePanel').classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('playerNameDisplay').innerText = name;
+            document.getElementById('playerScore').innerText = currentPlayer.score;
+            document.getElementById('playerXu').innerText = currentPlayer.xu;
+            document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
+            
+            // Lắng nghe cập nhật dữ liệu người chơi
+            onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
+                const pVal = playerSnap.val();
+                if (!playerSnap.exists() || !pVal) {
+                    sessionStorage.removeItem('playerName');
+                    location.reload();
+                    return;
+                }
+                
+                currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
+                currentPlayer.inventory = pVal.inventory || {};
+                currentPlayer.score = Number(pVal.score) || 0;
+                currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
+                
+                document.getElementById('playerXu').innerText = currentPlayer.xu;
+                document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
+                document.getElementById('playerScore').innerText = currentPlayer.score;
+                
+                const shieldQty = Number(currentPlayer.inventory.shield) || 0;
+                const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
+                const shieldElem = document.getElementById('playerShieldCount');
+                const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
+                if (shieldElem) shieldElem.innerText = shieldQty;
+                if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
+                
+                updateAuctionInventoryUI(currentPlayer.inventory);
+                updateGameInventoryUI(currentPlayer.inventory);
+            });
+
+            // Lắng nghe sự kiện bị cướp/hủy
+            listenForStealEvents();
+
+            showTutorialModal();
+            checkCurrentQuestion();
+        }
 
         listenForLockAndResult(); 
         listenForLevelPopup(); 
