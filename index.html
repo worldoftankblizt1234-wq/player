@@ -954,8 +954,13 @@
             return popup;
         }
 
-        // ===== POPUP CHỌN VẬT PHẨM ĐỂ CƯỚP =====
+        // ===== POPUP CHỌN VẬT PHẨM ĐỂ CƯỚP (ĐÃ SỬA) =====
         function showStealItemSelectPopup(victimName) {
+            // Đóng tất cả popup hiện có
+            document.querySelectorAll('.steal-notify-popup, .client-popup, .modal-overlay, .explain-popup, .congrats-popup, .finished-popup').forEach(el => {
+                if (!el.id || !el.id.includes('notification')) el.remove();
+            });
+
             const oldPopup = document.querySelector('.client-popup');
             if (oldPopup) oldPopup.remove();
 
@@ -988,6 +993,7 @@
                         <span class="qty">x${qty}</span>
                     `;
                     btn.onclick = async () => {
+                        // Gửi lựa chọn lên Firebase
                         await set(ref(db, 'game/steal_select'), {
                             thiefName: currentPlayer.name,
                             victimName: victimName,
@@ -1008,6 +1014,7 @@
 
             document.getElementById('cancelStealBtn').onclick = () => {
                 popup.remove();
+                // Gửi hủy bỏ
                 set(ref(db, 'game/steal_select'), null);
                 showToast('Đã hủy cướp vật phẩm.');
             };
@@ -1052,7 +1059,7 @@
             document.body.appendChild(popup);
         }
 
-        // ===== SỬ DỤNG VẬT PHẨM =====
+        // ===== SỬ DỤNG VẬT PHẨM (ĐÃ SỬA) =====
         async function useInventoryItem(itemId) {
             if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) {
                 showToast("❌ Không thể sử dụng vật phẩm lúc này!", true);
@@ -1066,6 +1073,7 @@
 
             // ===== THAM LAM =====
             if (itemId === 'tham_lam') {
+                console.log('🤑 Đang kích hoạt Tham Lam...');
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
                     showToast("❌ Không có người chơi nào để cướp!", true);
@@ -1090,11 +1098,11 @@
                     targetList,
                     async (selected) => {
                         try {
-                            // ⚠️ QUAN TRỌNG: Đảm bảo activeItems tồn tại
+                            console.log('📢 Đã chọn nạn nhân:', selected.name);
+                            
                             // Lưu target vào activeItems
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam`), true);
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam_target`), selected.name);
-                            await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam_used`), false);
                             
                             // Trừ 1 vật phẩm Tham Lam
                             const newQty = Number(currentPlayer.inventory[itemId]) - 1;
@@ -1104,12 +1112,9 @@
                             updateAuctionInventoryUI(currentPlayer.inventory);
                             
                             showToast(`🤑 Đã chọn ${selected.name} làm nạn nhân! Hãy trả lời đúng để cướp vật phẩm.`);
-                            
-                            // 🔍 LOG để kiểm tra
                             console.log('✅ Đã lưu Tham Lam:', {
                                 tham_lam: true,
-                                target: selected.name,
-                                used: false
+                                target: selected.name
                             });
                         } catch (err) {
                             console.error('Lỗi khi kích hoạt Tham Lam:', err);
@@ -1125,6 +1130,7 @@
 
             // ===== PHÁT XÍT =====
             if (itemId === 'phat_xit') {
+                console.log('⚫ Đang kích hoạt Phát Xít...');
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
                     showToast("❌ Không có người chơi nào để tấn công!", true);
@@ -1149,6 +1155,8 @@
                     targetList,
                     async (selected) => {
                         try {
+                            console.log('📢 Đã chọn nạn nhân:', selected.name);
+                            
                             // Lưu target vào activeItems
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit`), true);
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit_target`), selected.name);
@@ -1579,17 +1587,25 @@
             displayQuestion(currentQuestion);
         }
 
-        // ===== LẮNG NGHE SỰ KIỆN TỪ HOST =====
+        // ===== LẮNG NGHE SỰ KIỆN TỪ HOST (ĐÃ SỬA) =====
         function listenForStealEvents() {
             // Lắng nghe yêu cầu chọn vật phẩm (THAM LAM)
             onValue(ref(db, 'game/steal_select'), async (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
                 
-                console.log('📢 Nhận được steal_select:', data);
+                console.log('📢 Client nhận được steal_select:', data);
                 
+                // Kiểm tra nếu yêu cầu dành cho currentPlayer và đang ở trạng thái chờ chọn
                 if (data.thiefName === currentPlayer.name && data.status === 'waiting_select') {
                     console.log('✅ Đây là yêu cầu chọn vật phẩm của tôi!');
+                    
+                    // Đóng tất cả popup hiện tại trước khi mở popup mới
+                    document.querySelectorAll('.steal-notify-popup, .client-popup, .modal-overlay, .explain-popup, .congrats-popup, .finished-popup').forEach(el => {
+                        if (!el.id || !el.id.includes('notification')) el.remove();
+                    });
+                    
+                    // Hiển thị popup chọn vật phẩm ngay lập tức
                     showStealItemSelectPopup(data.victimName);
                 }
             });
