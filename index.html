@@ -246,7 +246,7 @@
             border: 2px solid #0f172a;
         }
 
-        /* Popup chọn cho client */
+        /* Popup chọn vật phẩm cho client */
         .client-popup {
             position: fixed;
             top: 50%;
@@ -325,6 +325,114 @@
         .client-popup .empty-msg {
             color: #94a3b8;
             padding: 1rem;
+        }
+
+        /* Popup chọn vật phẩm để cướp/hủy */
+        .steal-select-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            border-radius: 1.5rem;
+            max-width: 95%;
+            width: 600px;
+            max-height: 90vh;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            z-index: 10001;
+            animation: showModal 0.4s ease-out;
+            color: white;
+            overflow-y: auto;
+        }
+        .steal-select-popup .icon-big {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .steal-select-popup h2 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 0.25rem;
+        }
+        .steal-select-popup .sub {
+            font-size: 0.95rem;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+        }
+        .steal-select-popup .highlight {
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        .steal-select-popup .item-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+        .steal-select-popup .item-btn {
+            background: rgba(30, 27, 75, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 0.75rem 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            color: white;
+        }
+        .steal-select-popup .item-btn:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: #fbbf24;
+            transform: scale(1.05);
+        }
+        .steal-select-popup .item-btn .icon {
+            font-size: 2rem;
+            display: block;
+        }
+        .steal-select-popup .item-btn .name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-top: 0.25rem;
+        }
+        .steal-select-popup .item-btn .qty {
+            font-size: 0.6rem;
+            color: #94a3b8;
+        }
+        .steal-select-popup .cancel-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .steal-select-popup .cancel-btn:hover {
+            background: #dc2626;
+            transform: scale(1.02);
+        }
+        .steal-select-popup .timer-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 0.5rem 0 1rem;
+            overflow: hidden;
+        }
+        .steal-select-popup .timer-bar .fill {
+            height: 100%;
+            background: linear-gradient(to right, #fbbf24, #ef4444);
+            border-radius: 4px;
+            transition: width 0.5s linear;
+        }
+        .steal-select-popup .time-left {
+            font-size: 0.8rem;
+            color: #94a3b8;
         }
 
         /* Popup chi tiết bị cướp/hủy */
@@ -408,42 +516,6 @@
         .steal-notify-popup .close-btn:hover {
             background: #4338ca;
             transform: scale(1.02);
-        }
-
-        .item-select-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-        .item-select-btn {
-            background: rgba(30, 27, 75, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
-            padding: 0.75rem 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            color: white;
-        }
-        .item-select-btn:hover {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: #fbbf24;
-            transform: scale(1.05);
-        }
-        .item-select-btn .icon {
-            font-size: 1.8rem;
-            display: block;
-        }
-        .item-select-btn .name {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin-top: 0.25rem;
-        }
-        .item-select-btn .qty {
-            font-size: 0.6rem;
-            color: #94a3b8;
         }
     </style>
 </head>
@@ -571,7 +643,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { getDatabase, ref, get, set, onValue, onDisconnect, update } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+        import { getDatabase, ref, get, set, onValue, onDisconnect, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
         const STARTING_COINS = 367360;
         let serverTimeOffset = 0;
@@ -712,6 +784,180 @@
             "guardian_shield": { name: "Khiên Hộ Pháp", icon: "🛡️✨" },
             "steal_points": { name: "Trộm điểm", icon: "💰" }
         };
+
+        // ===== POPUP CHỌN VẬT PHẨM ĐỂ CƯỚP/HỦY =====
+        function showStealSelectPopup(data) {
+            const oldPopup = document.querySelector('.steal-select-popup');
+            if (oldPopup) oldPopup.remove();
+
+            const { thiefName, victimName, status } = data;
+            const isThamLam = status === 'waiting_select';
+            const isPhatXit = status === 'waiting_select_phatxit';
+
+            // Kiểm tra nếu không phải của mình thì bỏ qua
+            if (thiefName !== currentPlayer.name) return;
+
+            const popup = document.createElement('div');
+            popup.className = 'steal-select-popup';
+
+            const icon = isThamLam ? '🤑' : '⚫';
+            const title = isThamLam ? 'CHỌN VẬT PHẨM ĐỂ CƯỚP' : 'CHỌN VẬT PHẨM ĐỂ HỦY';
+            const color = isThamLam ? '#fbbf24' : '#ef4444';
+
+            let timerSeconds = 30;
+            let timerInterval = null;
+
+            popup.innerHTML = `
+                <span class="icon-big">${icon}</span>
+                <h2 style="color: ${color}">${title}</h2>
+                <div class="sub">
+                    Bạn đã trả lời đúng! Hãy chọn <span class="highlight">1 vật phẩm</span> của <span class="highlight-red">${victimName}</span> để ${isThamLam ? 'cướp' : 'hủy'}.
+                </div>
+                <div class="time-left">⏱️ Còn <span id="stealTimer">30</span> giây</div>
+                <div class="timer-bar">
+                    <div id="stealProgress" class="fill" style="width: 100%"></div>
+                </div>
+                <div id="stealItemGrid" class="item-grid">
+                    <div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">
+                        <span class="loading-spinner" style="width:24px;height:24px;display:inline-block;"></span> Đang tải vật phẩm...
+                    </div>
+                </div>
+                <button id="cancelStealBtn" class="cancel-btn">❌ Hủy bỏ</button>
+            `;
+
+            document.body.appendChild(popup);
+
+            // Bắt đầu đếm ngược
+            const timerEl = document.getElementById('stealTimer');
+            const progressEl = document.getElementById('stealProgress');
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                timerEl.textContent = timerSeconds;
+                progressEl.style.width = `${(timerSeconds / 30) * 100}%`;
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    // Gửi timeout cho host
+                    set(ref(db, 'game/steal_select'), {
+                        thiefName: currentPlayer.name,
+                        status: 'timeout'
+                    });
+                    popup.remove();
+                    showToast('⏰ Hết thời gian chọn vật phẩm!');
+                }
+            }, 1000);
+
+            // Lấy danh sách vật phẩm của nạn nhân
+            get(ref(db, `players/${victimName}/inventory`)).then(snap => {
+                const inventory = snap.val() || {};
+                const container = document.getElementById('stealItemGrid');
+                container.innerHTML = '';
+                
+                let hasItem = false;
+                Object.entries(inventory).forEach(([itemId, qty]) => {
+                    if (qty <= 0) return;
+                    hasItem = true;
+                    const meta = itemIconsAndNames[itemId] || { name: itemId, icon: '📦' };
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'item-btn';
+                    btn.innerHTML = `
+                        <span class="icon">${meta.icon}</span>
+                        <span class="name">${meta.name}</span>
+                        <span class="qty">x${qty}</span>
+                    `;
+                    btn.onclick = async () => {
+                        clearInterval(timerInterval);
+                        // Gửi lựa chọn cho host
+                        await set(ref(db, 'game/steal_select'), {
+                            thiefName: currentPlayer.name,
+                            victimName: victimName,
+                            itemId: itemId,
+                            status: 'item_selected'
+                        });
+                        popup.remove();
+                        showToast(`✅ Đã chọn ${meta.name} để ${isThamLam ? 'cướp' : 'hủy'}!`);
+                    };
+                    container.appendChild(btn);
+                });
+                
+                if (!hasItem) {
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">
+                            ❌ ${victimName} không có vật phẩm nào để ${isThamLam ? 'cướp' : 'hủy'}!
+                        </div>
+                    `;
+                    // Tự động đóng sau 3s
+                    setTimeout(() => {
+                        clearInterval(timerInterval);
+                        set(ref(db, 'game/steal_select'), {
+                            thiefName: currentPlayer.name,
+                            status: 'timeout'
+                        });
+                        popup.remove();
+                    }, 3000);
+                }
+            }).catch(err => {
+                console.error('Lỗi lấy inventory:', err);
+                const container = document.getElementById('stealItemGrid');
+                container.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;color:#ef4444;padding:1rem;">
+                        ❌ Lỗi tải dữ liệu vật phẩm!
+                    </div>
+                `;
+            });
+
+            // Nút hủy
+            document.getElementById('cancelStealBtn').onclick = () => {
+                clearInterval(timerInterval);
+                set(ref(db, 'game/steal_select'), {
+                    thiefName: currentPlayer.name,
+                    status: 'cancelled'
+                });
+                popup.remove();
+                showToast('❌ Đã hủy chọn vật phẩm.');
+            };
+        }
+
+        // ===== POPUP CHI TIẾT BỊ CƯỚP/HỦY =====
+        function showStealNotifyPopup(data) {
+            const oldPopup = document.querySelector('.steal-notify-popup');
+            if (oldPopup) oldPopup.remove();
+
+            const { thief, itemName, itemId, type } = data;
+            const isSteal = type === 'steal';
+
+            const popup = document.createElement('div');
+            popup.className = 'steal-notify-popup';
+
+            const icon = isSteal ? '😱' : '💥';
+            const title = isSteal ? 'BẠN VỪA BỊ CƯỚP!' : 'BẠN VỪA BỊ HỦY VẬT PHẨM!';
+            const color = isSteal ? '#fbbf24' : '#ef4444';
+            const itemIcon = itemIconsAndNames[itemId]?.icon || '📦';
+            const itemDisplayName = itemIconsAndNames[itemId]?.name || itemId;
+
+            popup.innerHTML = `
+                <span class="icon-big">${icon}</span>
+                <h2 style="color: ${color}">${title}</h2>
+                <div class="sub">
+                    <span class="highlight-red">${thief}</span> đã ${isSteal ? 'cướp' : 'hủy'} <span class="highlight">${itemDisplayName}</span> của bạn!
+                </div>
+                <div style="background: rgba(30,27,75,0.4); border-radius: 1rem; padding: 0.75rem; margin: 0.5rem 0;">
+                    <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Vật phẩm bị mất</div>
+                    <div class="item-list">
+                        <span class="item-tag lost">
+                            ${itemIcon} ${itemDisplayName} ❌
+                        </span>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin: 0.5rem 0;">
+                    ${isSteal ? '🔄 Vật phẩm này đã chuyển sang túi đồ của kẻ cướp!' : '💥 Vật phẩm này đã bị xóa khỏi túi đồ của bạn!'}
+                </div>
+                <button class="close-btn" onclick="this.closest('.steal-notify-popup').remove()">✅ Đã hiểu</button>
+            `;
+            document.body.appendChild(popup);
+        }
 
         function showLevelPopup(level, force = false) {
             let normLevel = level ? level.toUpperCase() : '';
@@ -911,155 +1157,81 @@
         document.getElementById('bidBtn100').onclick = () => submitAuctionBid(100);
         document.getElementById('bidBtn500').onclick = () => submitAuctionBid(500);
 
-        // ===== POPUP CHỌN TARGET CHO CLIENT =====
-        function showClientPopup(title, subtitle, items, onSelect, onCancel) {
-            const oldPopup = document.querySelector('.client-popup');
-            if (oldPopup) oldPopup.remove();
+        // ===== LẮNG NGHE YÊU CẦU CHỌN VẬT PHẨM TỪ HOST =====
+        onValue(ref(db, 'game/steal_select'), async (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
 
-            const popup = document.createElement('div');
-            popup.className = 'client-popup';
-            popup.innerHTML = `
-                <h2>${title}</h2>
-                <div class="sub">${subtitle}</div>
-                <div id="clientPopupList" class="target-list"></div>
-                <button class="cancel-btn" id="clientPopupCancel">❌ Hủy bỏ</button>
-            `;
-            document.body.appendChild(popup);
+            console.log('📢 Nhận được steal_select từ host:', data);
 
-            const listContainer = document.getElementById('clientPopupList');
-
-            if (items.length === 0) {
-                listContainer.innerHTML = '<div class="empty-msg">❌ Không có lựa chọn nào!</div>';
-            } else {
-                items.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'target-item';
-                    div.innerHTML = `
-                        <span class="name">${item.name}</span>
-                        <span class="info">${item.info || ''}</span>
-                    `;
-                    div.onclick = () => {
-                        popup.remove();
-                        if (onSelect) onSelect(item);
-                    };
-                    listContainer.appendChild(div);
-                });
+            // Nếu đây là yêu cầu chọn của mình
+            if (data.thiefName === currentPlayer.name) {
+                if (data.status === 'waiting_select' || data.status === 'waiting_select_phatxit') {
+                    showStealSelectPopup(data);
+                }
+                if (data.status === 'processed') {
+                    showToast(`✅ Vật phẩm đã được xử lý!`);
+                }
+                if (data.status === 'timeout') {
+                    showToast('⏰ Hết thời gian chọn vật phẩm!');
+                }
             }
 
-            document.getElementById('clientPopupCancel').onclick = () => {
-                popup.remove();
-                if (onCancel) onCancel();
-            };
+            // Nếu là thông báo kết quả cướp/hủy
+            if (data.status === 'completed' || data.status === 'phatxit_completed') {
+                // Không làm gì thêm vì host đã gửi steal_event
+            }
+        });
 
-            return popup;
-        }
+        // ===== LẮNG NGHE KẾT QUẢ CƯỚP/HỦY =====
+        onValue(ref(db, 'game/steal_event'), async (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
 
-        // ===== POPUP CHỌN VẬT PHẨM ĐỂ CƯỚP (ĐÃ SỬA) =====
-        function showStealItemSelectPopup(victimName) {
-            // Đóng tất cả popup hiện có
-            document.querySelectorAll('.steal-notify-popup, .client-popup, .modal-overlay, .explain-popup, .congrats-popup, .finished-popup').forEach(el => {
-                if (!el.id || !el.id.includes('notification')) el.remove();
-            });
+            console.log('📢 Nhận được steal_event:', data);
 
-            const oldPopup = document.querySelector('.client-popup');
-            if (oldPopup) oldPopup.remove();
-
-            const popup = document.createElement('div');
-            popup.className = 'client-popup';
-            popup.innerHTML = `
-                <h2>🤑 CHỌN VẬT PHẨM ĐỂ CƯỚP</h2>
-                <div class="sub">Nạn nhân: <span style="color:#f87171;font-weight:700;">${victimName}</span><br>Chọn 1 vật phẩm để cướp:</div>
-                <div id="stealItemList" class="item-select-grid"></div>
-                <button class="cancel-btn" id="cancelStealBtn">❌ Hủy cướp</button>
-            `;
-            document.body.appendChild(popup);
-
-            const container = document.getElementById('stealItemList');
-            
-            get(ref(db, `players/${victimName}/inventory`)).then(snap => {
-                const inventory = snap.val() || {};
-                let hasItem = false;
-                
-                Object.entries(inventory).forEach(([itemId, qty]) => {
-                    if (qty <= 0) return;
-                    hasItem = true;
-                    const meta = itemIconsAndNames[itemId] || { name: itemId, icon: '📦' };
-                    
-                    const btn = document.createElement('button');
-                    btn.className = 'item-select-btn';
-                    btn.innerHTML = `
-                        <span class="icon">${meta.icon}</span>
-                        <span class="name">${meta.name}</span>
-                        <span class="qty">x${qty}</span>
-                    `;
-                    btn.onclick = async () => {
-                        // Gửi lựa chọn lên Firebase
-                        await set(ref(db, 'game/steal_select'), {
-                            thiefName: currentPlayer.name,
-                            victimName: victimName,
-                            itemId: itemId,
-                            status: 'item_selected'
-                        });
-                        popup.remove();
-                        showToast(`✅ Đã chọn ${meta.name} để cướp!`);
-                    };
-                    container.appendChild(btn);
+            // Nếu mình là nạn nhân
+            if (data.victimName === currentPlayer.name) {
+                showStealNotifyPopup({
+                    thief: data.thiefName,
+                    itemName: data.itemName,
+                    itemId: data.itemId,
+                    type: data.status === 'completed' ? 'steal' : 'phatxit'
                 });
-                
-                if (!hasItem) {
-                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">❌ Nạn nhân không có vật phẩm nào để cướp!</div>';
-                    document.getElementById('cancelStealBtn').textContent = 'Đóng';
+                // Cập nhật inventory
+                const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                if (invSnap.exists()) {
+                    currentPlayer.inventory = invSnap.val();
+                    updateGameInventoryUI(currentPlayer.inventory);
+                    updateAuctionInventoryUI(currentPlayer.inventory);
                 }
-            });
+            }
 
-            document.getElementById('cancelStealBtn').onclick = () => {
-                popup.remove();
-                // Gửi hủy bỏ
-                set(ref(db, 'game/steal_select'), null);
-                showToast('Đã hủy cướp vật phẩm.');
-            };
-        }
+            // Nếu mình là kẻ cướp thành công
+            if (data.thiefName === currentPlayer.name) {
+                if (data.status === 'completed') {
+                    showToast(`🎉 Bạn đã cướp thành công ${data.itemName} của ${data.victimName}!`);
+                } else if (data.status === 'phatxit_completed') {
+                    showToast(`💥 Bạn đã hủy thành công ${data.itemName} của ${data.victimName}!`);
+                }
+                // Cập nhật inventory
+                const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                if (invSnap.exists()) {
+                    currentPlayer.inventory = invSnap.val();
+                    updateGameInventoryUI(currentPlayer.inventory);
+                    updateAuctionInventoryUI(currentPlayer.inventory);
+                }
+            }
 
-        // ===== POPUP CHI TIẾT BỊ CƯỚP/HỦY =====
-        function showStealNotifyPopup(data) {
-            const oldPopup = document.querySelector('.steal-notify-popup');
-            if (oldPopup) oldPopup.remove();
+            // Xóa event sau khi đã xử lý
+            if (data.status === 'completed' || data.status === 'phatxit_completed') {
+                setTimeout(() => {
+                    set(ref(db, 'game/steal_event'), null);
+                }, 3000);
+            }
+        });
 
-            const { thief, itemName, itemId, type } = data;
-            const isSteal = type === 'steal';
-
-            const popup = document.createElement('div');
-            popup.className = 'steal-notify-popup';
-
-            const icon = isSteal ? '😱' : '💥';
-            const title = isSteal ? 'BẠN VỪA BỊ CƯỚP!' : 'BẠN VỪA BỊ HỦY VẬT PHẨM!';
-            const color = isSteal ? '#fbbf24' : '#ef4444';
-            const itemIcon = itemIconsAndNames[itemId]?.icon || '📦';
-            const itemDisplayName = itemIconsAndNames[itemId]?.name || itemId;
-
-            popup.innerHTML = `
-                <span class="icon-big">${icon}</span>
-                <h2 style="color: ${color}">${title}</h2>
-                <div class="sub">
-                    <span class="highlight-red">${thief}</span> đã ${isSteal ? 'cướp' : 'hủy'} <span class="highlight">${itemDisplayName}</span> của bạn!
-                </div>
-                <div style="background: rgba(30,27,75,0.4); border-radius: 1rem; padding: 0.75rem; margin: 0.5rem 0;">
-                    <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Vật phẩm bị mất</div>
-                    <div class="item-list">
-                        <span class="item-tag lost">
-                            ${itemIcon} ${itemDisplayName} ❌
-                        </span>
-                    </div>
-                </div>
-                <div style="font-size: 0.8rem; color: #94a3b8; margin: 0.5rem 0;">
-                    ${isSteal ? '🔄 Vật phẩm này đã chuyển sang túi đồ của kẻ cướp!' : '💥 Vật phẩm này đã bị xóa khỏi túi đồ của bạn!'}
-                </div>
-                <button class="close-btn" onclick="this.closest('.steal-notify-popup').remove()">✅ Đã hiểu</button>
-            `;
-            document.body.appendChild(popup);
-        }
-
-        // ===== SỬ DỤNG VẬT PHẨM (ĐÃ SỬA) =====
+        // ===== SỬ DỤNG VẬT PHẨM =====
         async function useInventoryItem(itemId) {
             if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) {
                 showToast("❌ Không thể sử dụng vật phẩm lúc này!", true);
@@ -1073,7 +1245,6 @@
 
             // ===== THAM LAM =====
             if (itemId === 'tham_lam') {
-                console.log('🤑 Đang kích hoạt Tham Lam...');
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
                     showToast("❌ Không có người chơi nào để cướp!", true);
@@ -1098,13 +1269,9 @@
                     targetList,
                     async (selected) => {
                         try {
-                            console.log('📢 Đã chọn nạn nhân:', selected.name);
-                            
-                            // Lưu target vào activeItems
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam`), true);
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/tham_lam_target`), selected.name);
                             
-                            // Trừ 1 vật phẩm Tham Lam
                             const newQty = Number(currentPlayer.inventory[itemId]) - 1;
                             currentPlayer.inventory[itemId] = newQty;
                             await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
@@ -1112,10 +1279,6 @@
                             updateAuctionInventoryUI(currentPlayer.inventory);
                             
                             showToast(`🤑 Đã chọn ${selected.name} làm nạn nhân! Hãy trả lời đúng để cướp vật phẩm.`);
-                            console.log('✅ Đã lưu Tham Lam:', {
-                                tham_lam: true,
-                                target: selected.name
-                            });
                         } catch (err) {
                             console.error('Lỗi khi kích hoạt Tham Lam:', err);
                             showToast('❌ Lỗi khi kích hoạt Tham Lam!', true);
@@ -1130,7 +1293,6 @@
 
             // ===== PHÁT XÍT =====
             if (itemId === 'phat_xit') {
-                console.log('⚫ Đang kích hoạt Phát Xít...');
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
                     showToast("❌ Không có người chơi nào để tấn công!", true);
@@ -1155,13 +1317,9 @@
                     targetList,
                     async (selected) => {
                         try {
-                            console.log('📢 Đã chọn nạn nhân:', selected.name);
-                            
-                            // Lưu target vào activeItems
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit`), true);
                             await set(ref(db, `players/${currentPlayer.name}/activeItems/phat_xit_target`), selected.name);
                             
-                            // Trừ 1 vật phẩm Phát Xít
                             const newQty = Number(currentPlayer.inventory[itemId]) - 1;
                             currentPlayer.inventory[itemId] = newQty;
                             await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
@@ -1169,17 +1327,6 @@
                             updateAuctionInventoryUI(currentPlayer.inventory);
                             
                             showToast(`⚫ Đã chọn ${selected.name} làm mục tiêu! Vật phẩm của họ sẽ bị hủy.`);
-                            
-                            // Gửi broadcast thông báo
-                            await set(ref(db, 'game/broadcast'), {
-                                text: `⚫ ${currentPlayer.name} đã kích hoạt Phát Xít nhắm vào ${selected.name}!`,
-                                timestamp: getServerTime()
-                            });
-                            
-                            console.log('✅ Đã lưu Phát Xít:', {
-                                phat_xit: true,
-                                target: selected.name
-                            });
                         } catch (err) {
                             console.error('Lỗi khi kích hoạt Phát Xít:', err);
                             showToast('❌ Lỗi khi kích hoạt Phát Xít!', true);
@@ -1280,6 +1427,49 @@
                 updateGameInventoryUI(currentPlayer.inventory);
                 updateAuctionInventoryUI(currentPlayer.inventory);
             }
+        }
+
+        // ===== CLIENT POPUP CHỌN NẠN NHÂN =====
+        function showClientPopup(title, subtitle, items, onSelect, onCancel) {
+            const oldPopup = document.querySelector('.client-popup');
+            if (oldPopup) oldPopup.remove();
+
+            const popup = document.createElement('div');
+            popup.className = 'client-popup';
+            popup.innerHTML = `
+                <h2>${title}</h2>
+                <div class="sub">${subtitle}</div>
+                <div id="clientPopupList" class="target-list"></div>
+                <button class="cancel-btn" id="clientPopupCancel">❌ Hủy bỏ</button>
+            `;
+            document.body.appendChild(popup);
+
+            const listContainer = document.getElementById('clientPopupList');
+
+            if (items.length === 0) {
+                listContainer.innerHTML = '<div class="empty-msg">❌ Không có lựa chọn nào!</div>';
+            } else {
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'target-item';
+                    div.innerHTML = `
+                        <span class="name">${item.name}</span>
+                        <span class="info">${item.info || ''}</span>
+                    `;
+                    div.onclick = () => {
+                        popup.remove();
+                        if (onSelect) onSelect(item);
+                    };
+                    listContainer.appendChild(div);
+                });
+            }
+
+            document.getElementById('clientPopupCancel').onclick = () => {
+                popup.remove();
+                if (onCancel) onCancel();
+            };
+
+            return popup;
         }
 
         function updateGameInventoryUI(inventory) {
@@ -1585,94 +1775,6 @@
             
             showToast("✅ Đã ghi nhận đáp án!");
             displayQuestion(currentQuestion);
-        }
-
-        // ===== LẮNG NGHE SỰ KIỆN TỪ HOST (ĐÃ SỬA) =====
-        function listenForStealEvents() {
-            // Lắng nghe yêu cầu chọn vật phẩm (THAM LAM)
-            onValue(ref(db, 'game/steal_select'), async (snapshot) => {
-                const data = snapshot.val();
-                if (!data) return;
-                
-                console.log('📢 Client nhận được steal_select:', data);
-                
-                // Kiểm tra nếu yêu cầu dành cho currentPlayer và đang ở trạng thái chờ chọn
-                if (data.thiefName === currentPlayer.name && data.status === 'waiting_select') {
-                    console.log('✅ Đây là yêu cầu chọn vật phẩm của tôi!');
-                    
-                    // Đóng tất cả popup hiện tại trước khi mở popup mới
-                    document.querySelectorAll('.steal-notify-popup, .client-popup, .modal-overlay, .explain-popup, .congrats-popup, .finished-popup').forEach(el => {
-                        if (!el.id || !el.id.includes('notification')) el.remove();
-                    });
-                    
-                    // Hiển thị popup chọn vật phẩm ngay lập tức
-                    showStealItemSelectPopup(data.victimName);
-                }
-            });
-
-            // Lắng nghe kết quả cướp/hủy
-            onValue(ref(db, 'game/steal_event'), async (snapshot) => {
-                const data = snapshot.val();
-                if (!data) return;
-
-                console.log('📢 Nhận được steal_event:', data);
-
-                if (data.status === 'completed' && data.victimName === currentPlayer.name) {
-                    showStealNotifyPopup({
-                        thief: data.thiefName,
-                        itemName: data.itemName,
-                        itemId: data.itemId,
-                        type: 'steal'
-                    });
-                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
-                    if (invSnap.exists()) {
-                        currentPlayer.inventory = invSnap.val();
-                        updateGameInventoryUI(currentPlayer.inventory);
-                        updateAuctionInventoryUI(currentPlayer.inventory);
-                    }
-                }
-
-                if (data.status === 'phatxit_completed' && data.victimName === currentPlayer.name) {
-                    showStealNotifyPopup({
-                        thief: data.thiefName,
-                        itemName: data.itemName,
-                        itemId: data.itemId,
-                        type: 'phatxit'
-                    });
-                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
-                    if (invSnap.exists()) {
-                        currentPlayer.inventory = invSnap.val();
-                        updateGameInventoryUI(currentPlayer.inventory);
-                        updateAuctionInventoryUI(currentPlayer.inventory);
-                    }
-                }
-
-                if (data.status === 'completed' && data.thiefName === currentPlayer.name) {
-                    showToast(`🎉 Bạn đã cướp thành công vật phẩm ${data.itemName} của ${data.victimName}!`);
-                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
-                    if (invSnap.exists()) {
-                        currentPlayer.inventory = invSnap.val();
-                        updateGameInventoryUI(currentPlayer.inventory);
-                        updateAuctionInventoryUI(currentPlayer.inventory);
-                    }
-                }
-
-                if (data.status === 'phatxit_completed' && data.thiefName === currentPlayer.name) {
-                    showToast(`⚫ Bạn đã hủy thành công vật phẩm ${data.itemName} của ${data.victimName}!`);
-                    const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
-                    if (invSnap.exists()) {
-                        currentPlayer.inventory = invSnap.val();
-                        updateGameInventoryUI(currentPlayer.inventory);
-                        updateAuctionInventoryUI(currentPlayer.inventory);
-                    }
-                }
-
-                if (data.status === 'completed' || data.status === 'phatxit_completed') {
-                    setTimeout(() => {
-                        set(ref(db, 'game/steal_event'), null);
-                    }, 3000);
-                }
-            });
         }
 
         function listenForLockAndResult() {
@@ -1992,8 +2094,6 @@
                 updateAuctionInventoryUI(currentPlayer.inventory);
                 updateGameInventoryUI(currentPlayer.inventory);
             });
-
-            listenForStealEvents();
 
             showTutorialModal();
             checkCurrentQuestion();
