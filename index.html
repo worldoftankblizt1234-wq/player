@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="google" content="notranslate">
-    <title>Mini-Game Player</title>
+    <title>Mini-Game Player - reCAPTCHA v3</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6Ld9Z2ctAAAAAJfwdzVE00MyLhS6l4XmdK1WGBdy"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -147,7 +148,7 @@
         @keyframes finishedFadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         @keyframes finishedPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
         @keyframes finishedFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-        @keyframes finishedGlow { 0% { text-shadow: 0 0 30px rgba(16,185,129,0.6); } 100% { text-shadow: 0 0 60px rgba(16,185,129,1), 0 0 90px rgba(16,185,129,0.5); } }
+        @keyframes finishedGlow { 0% { text-shadow: 0 0 30px rgba(16,185,129,0.6); } 50% { text-shadow: 0 0 60px rgba(16,185,129,1), 0 0 90px rgba(16,185,129,0.5); } }
         
         .explain-popup { 
             position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); 
@@ -246,7 +247,6 @@
             border: 2px solid #0f172a;
         }
 
-        /* Popup chọn vật phẩm cho client */
         .client-popup {
             position: fixed;
             top: 50%;
@@ -327,7 +327,6 @@
             padding: 1rem;
         }
 
-        /* Popup chọn vật phẩm để cướp/hủy */
         .steal-select-popup {
             position: fixed;
             top: 50%;
@@ -435,7 +434,6 @@
             color: #94a3b8;
         }
 
-        /* Popup chi tiết bị cướp/hủy */
         .steal-notify-popup {
             position: fixed;
             top: 50%;
@@ -517,6 +515,24 @@
             background: #4338ca;
             transform: scale(1.02);
         }
+
+        /* Captcha status styles */
+        #captchaStatus {
+            transition: all 0.3s ease;
+        }
+        .captcha-loading {
+            color: #fbbf24;
+        }
+        .captcha-ready {
+            color: #34d399;
+        }
+        .captcha-error {
+            color: #f87171;
+        }
+        .captcha-verified {
+            color: #34d399;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 flex items-center justify-center relative" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
@@ -528,24 +544,45 @@
         <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
             
+            <!-- ===== LOGIN PANEL ===== -->
             <div id="loginPanel" class="py-4">
                 <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner"><span class="text-4xl">🌌</span></div>
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-inner">
+                        <span class="text-4xl">🌌</span>
+                    </div>
                     <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">MiniGame Quiz</h1>
                     <p class="text-sm text-indigo-200/60">Đăng nhập tài khoản cá nhân của bạn</p>
                 </div>
+                
                 <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn</h2>
-                <input type="text" id="playerName" placeholder="Tên hiển thị của bạn..." class="w-full p-4 bg-slate-900/50 border border-slate-700/50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl mb-4 text-center text-white placeholder-slate-500 font-medium transition-all outline-none" autocomplete="off">
-                <button id="loginBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all">🎮 VÀO CHƠI NGAY</button>
+                
+                <input type="text" id="playerName" placeholder="Tên hiển thị của bạn..." 
+                       class="w-full p-4 bg-slate-900/50 border border-slate-700/50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl mb-4 text-center text-white placeholder-slate-500 font-medium transition-all outline-none" 
+                       autocomplete="off">
+                
+                <!-- Hidden input để lưu captcha token -->
+                <input type="hidden" id="captchaToken" value="">
+                
+                <!-- Nút đăng nhập -->
+                <button id="loginBtn" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    🎮 VÀO CHƠI NGAY
+                </button>
+                
+                <!-- Trạng thái captcha -->
+                <div id="captchaStatus" class="text-xs text-center mt-3 text-yellow-400 captcha-loading">
+                    🔒 Đang tải bảo mật...
+                </div>
             </div>
 
+            <!-- ===== AUCTION PANEL ===== -->
             <div id="auctionPanel" class="hidden space-y-6">
                 <div class="flex justify-between items-center bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
                     <div class="flex items-center gap-2">
                         <span class="text-2xl">🪙</span>
                         <div>
                             <span class="text-[10px] text-slate-400 font-bold block uppercase">Số dư ví thầu</span>
-                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">46,360 xu</span>
+                            <span id="playerXuAuction" class="text-xl font-black text-amber-400">0 xu</span>
                         </div>
                     </div>
                     <div class="text-right">
@@ -587,11 +624,30 @@
                 </div>
             </div>
 
+            <!-- ===== GAME PANEL ===== -->
             <div id="gamePanel" class="hidden space-y-6">
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">👤</div><div class="truncate"><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">NGƯỜI CHƠI</p><span id="playerNameDisplay" class="font-extrabold text-white text-xs"></span></div></div>
-                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">⭐</div><div><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">ĐIỂM</p><span id="playerScore" class="font-black text-indigo-400 text-sm">0</span></div></div>
-                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3"><div class="text-xl">🪙</div><div><p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">VÍ TIỀN</p><span id="playerXu" class="font-black text-amber-400 text-sm">0</span></div></div>
+                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3">
+                        <div class="text-xl">👤</div>
+                        <div class="truncate">
+                            <p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">NGƯỜI CHƠI</p>
+                            <span id="playerNameDisplay" class="font-extrabold text-white text-xs"></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3">
+                        <div class="text-xl">⭐</div>
+                        <div>
+                            <p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">ĐIỂM</p>
+                            <span id="playerScore" class="font-black text-indigo-400 text-sm">0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3">
+                        <div class="text-xl">🪙</div>
+                        <div>
+                            <p class="text-[8px] text-slate-400 font-bold tracking-wider uppercase">VÍ TIỀN</p>
+                            <span id="playerXu" class="font-black text-amber-400 text-sm">0</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -612,8 +668,13 @@
                 </div>
 
                 <div class="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-4">
-                    <div class="flex justify-between items-center text-sm mb-2.5"><span class="text-slate-300 font-medium flex items-center gap-1.5">⏱️ Thời gian còn lại</span><span id="timerText" class="font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full text-xs">-- giây</span></div>
-                    <div class="w-full bg-slate-950/60 rounded-full h-3.5 p-[2px] border border-slate-800/60 overflow-hidden"><div id="timerBar" class="timer-bar bg-green-500 h-2.5 rounded-full" style="width: 100%"></div></div>
+                    <div class="flex justify-between items-center text-sm mb-2.5">
+                        <span class="text-slate-300 font-medium flex items-center gap-1.5">⏱️ Thời gian còn lại</span>
+                        <span id="timerText" class="font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full text-xs">-- giây</span>
+                    </div>
+                    <div class="w-full bg-slate-950/60 rounded-full h-3.5 p-[2px] border border-slate-800/60 overflow-hidden">
+                        <div id="timerBar" class="timer-bar bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
+                    </div>
                 </div>
 
                 <div class="bg-slate-900/40 border border-slate-800/50 rounded-2xl p-4 relative">
@@ -636,7 +697,10 @@
 
                 <div id="options" class="grid grid-cols-1 gap-3"></div>
 
-                <div class="border-t border-slate-800/80 pt-6"><h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🏆</span> BẢNG XẾP HẠNG</h3><div id="rankList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div></div>
+                <div class="border-t border-slate-800/80 pt-6">
+                    <h3 class="font-extrabold text-white text-sm tracking-wider uppercase mb-3 flex items-center gap-2"><span>🏆</span> BẢNG XẾP HẠNG</h3>
+                    <div id="rankList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -645,9 +709,142 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, onDisconnect, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
 
+        // ============================================================
+        // CẤU HÌNH
+        // ============================================================
         const STARTING_COINS = 367360;
+        const CAPTCHA_SITE_KEY = '6Ld9Z2ctAAAAAJfwdzVE00MyLhS6l4XmdK1WGBdy';
+        const WORKER_API_URL = 'https://capcha.anhminhadof123.workers.dev';
         let serverTimeOffset = 0;
 
+        // ============================================================
+        // FIREBASE CONFIG
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyALdVA3woqhtG1k7tfApCiP5ar8kH1JfHI",
+            authDomain: "administrator-a7ed3.firebaseapp.com",
+            databaseURL: "https://administrator-a7ed3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "administrator-a7ed3",
+            storageBucket: "administrator-a7ed3.firebasestorage.app",
+            messagingSenderId: "299780527549",
+            appId: "1:299780527549:web:21d540316de77159692ed4"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // ============================================================
+        // SERVER TIME
+        // ============================================================
+        onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
+            serverTimeOffset = snap.val() || 0;
+        });
+
+        function getServerTime() {
+            return Date.now() + serverTimeOffset;
+        }
+
+        // ============================================================
+        // RECAPTCHA V3 - CLIENT SIDE
+        // ============================================================
+        let captchaToken = '';
+        let captchaVerified = false;
+        let isVerifying = false;
+
+        // Hàm lấy token reCAPTCHA v3
+        async function getCaptchaToken(action = 'login') {
+            try {
+                if (typeof grecaptcha === 'undefined') {
+                    console.error('❌ reCAPTCHA not loaded');
+                    updateCaptchaStatus('❌ Lỗi tải bảo mật!', 'error');
+                    return null;
+                }
+                
+                const token = await grecaptcha.execute(CAPTCHA_SITE_KEY, { action: action });
+                captchaToken = token;
+                document.getElementById('captchaToken').value = token;
+                
+                console.log('✅ Captcha token obtained:', token.substring(0, 20) + '...');
+                updateCaptchaStatus('🔒 Đã sẵn sàng bảo mật', 'ready');
+                
+                return token;
+            } catch (error) {
+                console.error('❌ Get captcha token error:', error);
+                updateCaptchaStatus('❌ Lỗi bảo mật! Tải lại trang.', 'error');
+                return null;
+            }
+        }
+
+        // Hàm xác minh captcha với Worker
+        async function verifyCaptchaWithWorker(token, action = 'login') {
+            try {
+                isVerifying = true;
+                const loginBtn = document.getElementById('loginBtn');
+                loginBtn.disabled = true;
+                loginBtn.textContent = '⏳ Đang xác minh...';
+                updateCaptchaStatus('⏳ Đang xác minh bảo mật...', 'loading');
+                
+                const response = await fetch(`${WORKER_API_URL}/api/verify-captcha`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        action: action
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('📊 Captcha verification result:', result);
+                
+                isVerifying = false;
+                
+                if (result.success) {
+                    captchaVerified = true;
+                    updateCaptchaStatus(`✅ Xác minh thành công (Score: ${result.score})`, 'verified');
+                    loginBtn.textContent = '✅ XÁC NHẬN - VÀO CHƠI';
+                    loginBtn.className = 'w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-emerald-600/30 active:scale-[0.99] transition-all';
+                    return true;
+                } else {
+                    captchaVerified = false;
+                    updateCaptchaStatus(`❌ Xác minh thất bại (Score: ${result.score || 0})`, 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🎮 VÀO CHƠI NGAY';
+                    loginBtn.className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all';
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ Verify captcha error:', error);
+                isVerifying = false;
+                captchaVerified = false;
+                updateCaptchaStatus('❌ Lỗi kết nối xác minh!', 'error');
+                document.getElementById('loginBtn').disabled = false;
+                document.getElementById('loginBtn').textContent = '🎮 VÀO CHƠI NGAY';
+                document.getElementById('loginBtn').className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all';
+                return false;
+            }
+        }
+
+        // Cập nhật trạng thái captcha
+        function updateCaptchaStatus(message, type = 'loading') {
+            const statusEl = document.getElementById('captchaStatus');
+            statusEl.textContent = message;
+            statusEl.className = 'text-xs text-center mt-3';
+            
+            if (type === 'loading') {
+                statusEl.classList.add('captcha-loading');
+            } else if (type === 'ready') {
+                statusEl.classList.add('captcha-ready');
+            } else if (type === 'error') {
+                statusEl.classList.add('captcha-error');
+            } else if (type === 'verified') {
+                statusEl.classList.add('captcha-verified');
+            }
+        }
+
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
         function showToast(msg, isError = false) {
             let toast = document.querySelector('.toast-notify');
             if (toast) toast.remove();
@@ -661,102 +858,182 @@
             setTimeout(() => toast.remove(), 2500);
         }
 
-        function showCongratsPopup(name, rank, score) {
-            const medals = ['🥇', '🥈', '🥉'];
-            const titles = ['NHÀ VÔ ĐỊCH', 'Á QUÂN', 'HẠNG BA'];
-            const popup = document.createElement('div');
-            popup.className = 'congrats-popup';
-            popup.innerHTML = `
-                <div class="rank-icon">${medals[rank-1]}</div>
-                <h2>🎉 CHÚC MỪNG 🎉</h2>
-                <div class="rank-name">${name}</div>
-                <div class="rank-score">🏆 ${titles[rank-1]} 🏆<br>⭐ ${score} điểm ⭐</div>
-                <button onclick="this.closest('.congrats-popup').remove()">Tiếp tục</button>
-            `;
-            document.body.appendChild(popup);
-            setTimeout(() => popup.remove(), 5000);
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
+        function showToast(msg, isError = false) {
+            let toast = document.querySelector('.toast-notify');
+            if (toast) toast.remove();
+            toast = document.createElement('div');
+            toast.className = 'toast-notify';
+            toast.style.background = isError ? 'rgba(239,68,68,0.9)' : 'rgba(15,23,42,0.9)';
+            toast.style.borderColor = isError ? '#ef4444' : '#6366f1';
+            toast.style.color = isError ? '#f87171' : '#a5b4fc';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
         }
 
-        let hasTriggeredCancel = false;
-        let isGameActive = false;
-        let activationTimeout = null;
-
-        (function() {
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
-            });
-            document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-            
-            document.addEventListener('visibilitychange', function() { 
-                if (!isGameActive) return; 
-                if (document.hidden) { 
-                    handleCheatDetection();
-                } 
-            });
-            window.addEventListener('blur', function() { 
-                if (!isGameActive) return; 
-                handleCheatDetection();
-            });
-            window.addEventListener('focus', function() { hasTriggeredCancel = false; });
-            
-            window.setGameActive = function(active) { 
-                if (activationTimeout) clearTimeout(activationTimeout); 
-                if (active) { 
-                    activationTimeout = setTimeout(() => { isGameActive = true; }, 500); 
-                } else { 
-                    isGameActive = false; 
-                    hasTriggeredCancel = false; 
-                } 
-            };
-        })();
-
-        async function handleCheatDetection() {
-            if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
-            
-            if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.guardian_shield) > 0) {
-                hasTriggeredCancel = true;
-                const newShieldCount = Number(currentPlayer.inventory.guardian_shield) - 1;
-                currentPlayer.inventory.guardian_shield = newShieldCount;
-                await set(ref(db, `players/${currentPlayer.name}/inventory/guardian_shield`), newShieldCount);
-                showToast("🛡️✨ Khiên Hộ Pháp đã tự động bảo vệ điểm số khi bạn tab-out!", false);
+        // ============================================================
+        // LOGIN FUNCTION
+        // ============================================================
+        async function login() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showToast("Vui lòng nhập tên của bạn!", true);
                 return;
             }
 
-            if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.shield) > 0) {
-                hasTriggeredCancel = true;
-                const newShieldCount = Number(currentPlayer.inventory.shield) - 1;
-                currentPlayer.inventory.shield = newShieldCount;
-                await set(ref(db, `players/${currentPlayer.name}/inventory/shield`), newShieldCount);
-                showToast("🛡️ Khiên Bảo Vệ đã tự động bảo vệ chống phạt Khóa câu hỏi khi tab-out!", false);
+            // Kiểm tra captcha
+            if (!captchaToken) {
+                showToast("⚠️ Vui lòng chờ tải bảo mật!", true);
                 return;
             }
 
-            if (window.cancelCurrentQuestion) { 
-                hasTriggeredCancel = true; 
-                window.cancelCurrentQuestion(); 
+            // Xác minh captcha
+            const verified = await verifyCaptchaWithWorker(captchaToken, 'login');
+            if (!verified) {
+                showToast("❌ Xác minh bảo mật thất bại! Vui lòng thử lại.", true);
+                // Refresh token
+                await getCaptchaToken('login');
+                return;
+            }
+
+            try {
+                // Đăng nhập Firebase
+                const playerRef = ref(db, `players/${name}`);
+                const snap = await get(playerRef);
+                
+                if (!snap.exists()) {
+                    const initialData = { 
+                        name, 
+                        score: 0, 
+                        xu: STARTING_COINS,
+                        answers: {}, 
+                        cancelled: {}, 
+                        online: true,
+                        bua_ho_phap_count: 0,
+                        inventory: {
+                            "50_50": 0,
+                            "amulet": 0,
+                            "tham_lam": 0,
+                            "bua_ho_phap": 0,
+                            "xa_hoi_chu_nghia": 0,
+                            "tu_ban_trump": 0,
+                            "phat_xit": 0,
+                            "bua_the_than": 0,
+                            "double_points": 0,
+                            "extra_time": 0,
+                            "guardian_shield": 0,
+                            "steal_points": 0
+                        }
+                    };
+                    await set(playerRef, initialData);
+                    currentPlayer = initialData;
+                } else {
+                    const data = snap.val();
+                    const defaultInventory = {
+                        "50_50": 0,
+                        "amulet": 0,
+                        "tham_lam": 0,
+                        "bua_ho_phap": 0,
+                        "xa_hoi_chu_nghia": 0,
+                        "tu_ban_trump": 0,
+                        "phat_xit": 0,
+                        "bua_the_than": 0,
+                        "double_points": 0,
+                        "extra_time": 0,
+                        "guardian_shield": 0,
+                        "steal_points": 0
+                    };
+                    const mergedInventory = { ...defaultInventory, ...(data.inventory || {}) };
+                    
+                    currentPlayer = { 
+                        name, 
+                        score: Number(data.score) || 0, 
+                        xu: data.xu !== undefined ? Number(data.xu) : STARTING_COINS,
+                        answers: data.answers || {}, 
+                        cancelled: data.cancelled || {}, 
+                        bua_ho_phap_count: Number(data.bua_ho_phap_count) || 0,
+                        inventory: mergedInventory,
+                        online: true 
+                    };
+                    await set(ref(db, `players/${name}/inventory`), mergedInventory);
+                    await set(ref(db, `players/${name}/online`), true);
+                }
+                
+                onDisconnect(ref(db, `players/${name}/online`)).set(false);
+                sessionStorage.setItem('playerName', name);
+                
+                // Chuyển sang game
+                document.getElementById('loginPanel').classList.add('hidden');
+                
+                onValue(ref(db, 'game/status'), (snap) => {
+                    const status = snap.val();
+                    if (status === 'auction') {
+                        document.getElementById('auctionPanel').classList.remove('hidden');
+                        document.getElementById('gamePanel').classList.add('hidden');
+                    } else {
+                        document.getElementById('auctionPanel').classList.add('hidden');
+                        document.getElementById('gamePanel').classList.remove('hidden');
+                    }
+                });
+
+                document.getElementById('playerNameDisplay').innerText = name;
+                document.getElementById('playerScore').innerText = currentPlayer.score;
+                document.getElementById('playerXu').innerText = currentPlayer.xu;
+                document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
+                
+                onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
+                    const pVal = playerSnap.val();
+                    if (!playerSnap.exists() || !pVal) {
+                        sessionStorage.removeItem('playerName');
+                        location.reload();
+                        return;
+                    }
+                    
+                    currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
+                    currentPlayer.inventory = pVal.inventory || {};
+                    currentPlayer.score = Number(pVal.score) || 0;
+                    currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
+                    
+                    document.getElementById('playerXu').innerText = currentPlayer.xu;
+                    document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
+                    document.getElementById('playerScore').innerText = currentPlayer.score;
+                    
+                    const shieldQty = Number(currentPlayer.inventory.shield) || 0;
+                    const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
+                    const shieldElem = document.getElementById('playerShieldCount');
+                    const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
+                    if (shieldElem) shieldElem.innerText = shieldQty;
+                    if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
+                    
+                    updateAuctionInventoryUI(currentPlayer.inventory);
+                    updateGameInventoryUI(currentPlayer.inventory);
+                });
+
+                showTutorialModal();
+                checkCurrentQuestion();
+                
+                showToast("✅ Đăng nhập thành công!", false);
+                
+                // Reset captcha sau khi login
+                captchaVerified = false;
+                captchaToken = '';
+                document.getElementById('loginBtn').disabled = false;
+                document.getElementById('loginBtn').textContent = '🎮 VÀO CHƠI NGAY';
+                document.getElementById('loginBtn').className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all';
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast("❌ Lỗi đăng nhập! Vui lòng thử lại.", true);
             }
         }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyALdVA3woqhtG1k7tfApCiP5ar8kH1JfHI",
-            authDomain: "administrator-a7ed3.firebaseapp.com",
-            databaseURL: "https://administrator-a7ed3-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "administrator-a7ed3",
-            storageBucket: "administrator-a7ed3.firebasestorage.app",
-            messagingSenderId: "299780527549",
-            appId: "1:299780527549:web:21d540316de77159692ed4"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
-            serverTimeOffset = snap.val() || 0;
-        });
-
-        function getServerTime() {
-            return Date.now() + serverTimeOffset;
-        }
-
+        // ============================================================
+        // CÁC HÀM HỖ TRỢ KHÁC
+        // ============================================================
+        // Biến toàn cục
         let currentPlayer = null, currentQuestion = null, hasAnsweredCurrent = false, selectedAnswerIdx = -1, isLocked = false, resultData = null, currentQuestionIndex = -1, modalShownForCurrentQuestion = false;
         let timerEndTime = null, timerDuration = 30, timerInterval = null;
         let auctionItemTimerInterval = null;
@@ -767,7 +1044,6 @@
         let lastShownLevel = null;
         let gameFinished = false;
         let levelPopupTimeout = null;
-
         window.hasAnsweredCurrent = false;
 
         const itemIconsAndNames = {
@@ -785,180 +1061,53 @@
             "steal_points": { name: "Trộm điểm", icon: "💰" }
         };
 
-        // ===== POPUP CHỌN VẬT PHẨM ĐỂ CƯỚP/HỦY =====
-        function showStealSelectPopup(data) {
-            const oldPopup = document.querySelector('.steal-select-popup');
-            if (oldPopup) oldPopup.remove();
-
-            const { thiefName, victimName, status } = data;
-            const isThamLam = status === 'waiting_select';
-            const isPhatXit = status === 'waiting_select_phatxit';
-
-            // Kiểm tra nếu không phải của mình thì bỏ qua
-            if (thiefName !== currentPlayer.name) return;
-
-            const popup = document.createElement('div');
-            popup.className = 'steal-select-popup';
-
-            const icon = isThamLam ? '🤑' : '⚫';
-            const title = isThamLam ? 'CHỌN VẬT PHẨM ĐỂ CƯỚP' : 'CHỌN VẬT PHẨM ĐỂ HỦY';
-            const color = isThamLam ? '#fbbf24' : '#ef4444';
-
-            let timerSeconds = 30;
-            let timerInterval = null;
-
-            popup.innerHTML = `
-                <span class="icon-big">${icon}</span>
-                <h2 style="color: ${color}">${title}</h2>
-                <div class="sub">
-                    Bạn đã trả lời đúng! Hãy chọn <span class="highlight">1 vật phẩm</span> của <span class="highlight-red">${victimName}</span> để ${isThamLam ? 'cướp' : 'hủy'}.
-                </div>
-                <div class="time-left">⏱️ Còn <span id="stealTimer">30</span> giây</div>
-                <div class="timer-bar">
-                    <div id="stealProgress" class="fill" style="width: 100%"></div>
-                </div>
-                <div id="stealItemGrid" class="item-grid">
-                    <div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">
-                        <span class="loading-spinner" style="width:24px;height:24px;display:inline-block;"></span> Đang tải vật phẩm...
-                    </div>
-                </div>
-                <button id="cancelStealBtn" class="cancel-btn">❌ Hủy bỏ</button>
-            `;
-
-            document.body.appendChild(popup);
-
-            // Bắt đầu đếm ngược
-            const timerEl = document.getElementById('stealTimer');
-            const progressEl = document.getElementById('stealProgress');
-            
-            timerInterval = setInterval(() => {
-                timerSeconds--;
-                timerEl.textContent = timerSeconds;
-                progressEl.style.width = `${(timerSeconds / 30) * 100}%`;
-                
-                if (timerSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    // Gửi timeout cho host
-                    set(ref(db, 'game/steal_select'), {
-                        thiefName: currentPlayer.name,
-                        status: 'timeout'
-                    });
-                    popup.remove();
-                    showToast('⏰ Hết thời gian chọn vật phẩm!');
-                }
-            }, 1000);
-
-            // Lấy danh sách vật phẩm của nạn nhân
-            get(ref(db, `players/${victimName}/inventory`)).then(snap => {
-                const inventory = snap.val() || {};
-                const container = document.getElementById('stealItemGrid');
-                container.innerHTML = '';
-                
-                let hasItem = false;
-                Object.entries(inventory).forEach(([itemId, qty]) => {
-                    if (qty <= 0) return;
-                    hasItem = true;
-                    const meta = itemIconsAndNames[itemId] || { name: itemId, icon: '📦' };
+        // ============================================================
+        // TUTORIAL
+        // ============================================================
+        function showTutorialModal() {
+            if (hasShownTutorial) return;
+            hasShownTutorial = true;
+            const modal1 = document.createElement('div');
+            modal1.className = 'modal-overlay';
+            modal1.innerHTML = `
+                <div class="modal-content !max-w-[480px]">
+                    <div class="text-5xl mb-3">⚡</div>
+                    <h2 class="text-2xl font-extrabold mb-4 text-white tracking-wide">THÔNG BÁO QUAN TRỌNG</h2>
                     
-                    const btn = document.createElement('button');
-                    btn.className = 'item-btn';
-                    btn.innerHTML = `
-                        <span class="icon">${meta.icon}</span>
-                        <span class="name">${meta.name}</span>
-                        <span class="qty">x${qty}</span>
-                    `;
-                    btn.onclick = async () => {
-                        clearInterval(timerInterval);
-                        // Gửi lựa chọn cho host
-                        await set(ref(db, 'game/steal_select'), {
-                            thiefName: currentPlayer.name,
-                            victimName: victimName,
-                            itemId: itemId,
-                            status: 'item_selected'
-                        });
-                        popup.remove();
-                        showToast(`✅ Đã chọn ${meta.name} để ${isThamLam ? 'cướp' : 'hủy'}!`);
-                    };
-                    container.appendChild(btn);
-                });
-                
-                if (!hasItem) {
-                    container.innerHTML = `
-                        <div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">
-                            ❌ ${victimName} không có vật phẩm nào để ${isThamLam ? 'cướp' : 'hủy'}!
+                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left mb-6 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="text-cyan-400 text-lg font-bold">1.</span>
+                            <p class="text-sm text-slate-200 leading-relaxed">Phát hiện rời trang sẽ phạt Khóa câu hỏi. <span class="text-red-400 font-bold">Hãy tập trung tối đa</span>.</p>
                         </div>
-                    `;
-                    // Tự động đóng sau 3s
-                    setTimeout(() => {
-                        clearInterval(timerInterval);
-                        set(ref(db, 'game/steal_select'), {
-                            thiefName: currentPlayer.name,
-                            status: 'timeout'
-                        });
-                        popup.remove();
-                    }, 3000);
-                }
-            }).catch(err => {
-                console.error('Lỗi lấy inventory:', err);
-                const container = document.getElementById('stealItemGrid');
-                container.innerHTML = `
-                    <div style="grid-column:1/-1;text-align:center;color:#ef4444;padding:1rem;">
-                        ❌ Lỗi tải dữ liệu vật phẩm!
+                        <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
+                            <span class="text-cyan-400 text-lg font-bold">2.</span>
+                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>367.360 Xu</b> 🪙 và hoàn toàn KHÔNG CÓ TRANG BỊ SẴN. Bạn cần tham gia đấu thầu để sở hữu các vật phẩm bảo vệ và hỗ trợ!</p>
+                        </div>
+                        <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
+                            <span class="text-cyan-400 text-lg font-bold">3.</span>
+                            <p class="text-sm text-slate-200 leading-relaxed">🔒 Hệ thống bảo mật reCAPTCHA v3 đã được kích hoạt để bảo vệ bạn khỏi bot!</p>
+                        </div>
                     </div>
-                `;
-            });
-
-            // Nút hủy
-            document.getElementById('cancelStealBtn').onclick = () => {
-                clearInterval(timerInterval);
-                set(ref(db, 'game/steal_select'), {
-                    thiefName: currentPlayer.name,
-                    status: 'cancelled'
-                });
-                popup.remove();
-                showToast('❌ Đã hủy chọn vật phẩm.');
+                    
+                    <button id="finishTutorialBtn" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3.5 rounded-xl font-bold tracking-wider hover:from-emerald-500 hover:to-green-500 shadow-lg shadow-emerald-900/30 transition">
+                        🎮 VÀO GAME THÔI!
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal1);
+            document.getElementById('finishTutorialBtn').onclick = () => {
+                modal1.remove();
+                if (currentQuestion) {
+                    setTimeout(() => {
+                        showLevelPopup(currentQuestion.level, true);
+                    }, 300);
+                }
             };
         }
 
-        // ===== POPUP CHI TIẾT BỊ CƯỚP/HỦY =====
-        function showStealNotifyPopup(data) {
-            const oldPopup = document.querySelector('.steal-notify-popup');
-            if (oldPopup) oldPopup.remove();
-
-            const { thief, itemName, itemId, type } = data;
-            const isSteal = type === 'steal';
-
-            const popup = document.createElement('div');
-            popup.className = 'steal-notify-popup';
-
-            const icon = isSteal ? '😱' : '💥';
-            const title = isSteal ? 'BẠN VỪA BỊ CƯỚP!' : 'BẠN VỪA BỊ HỦY VẬT PHẨM!';
-            const color = isSteal ? '#fbbf24' : '#ef4444';
-            const itemIcon = itemIconsAndNames[itemId]?.icon || '📦';
-            const itemDisplayName = itemIconsAndNames[itemId]?.name || itemId;
-
-            popup.innerHTML = `
-                <span class="icon-big">${icon}</span>
-                <h2 style="color: ${color}">${title}</h2>
-                <div class="sub">
-                    <span class="highlight-red">${thief}</span> đã ${isSteal ? 'cướp' : 'hủy'} <span class="highlight">${itemDisplayName}</span> của bạn!
-                </div>
-                <div style="background: rgba(30,27,75,0.4); border-radius: 1rem; padding: 0.75rem; margin: 0.5rem 0;">
-                    <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Vật phẩm bị mất</div>
-                    <div class="item-list">
-                        <span class="item-tag lost">
-                            ${itemIcon} ${itemDisplayName} ❌
-                        </span>
-                    </div>
-                </div>
-                <div style="font-size: 0.8rem; color: #94a3b8; margin: 0.5rem 0;">
-                    ${isSteal ? '🔄 Vật phẩm này đã chuyển sang túi đồ của kẻ cướp!' : '💥 Vật phẩm này đã bị xóa khỏi túi đồ của bạn!'}
-                </div>
-                <button class="close-btn" onclick="this.closest('.steal-notify-popup').remove()">✅ Đã hiểu</button>
-            `;
-            document.body.appendChild(popup);
-        }
-
+        // ============================================================
+        // LEVEL POPUP
+        // ============================================================
         function showLevelPopup(level, force = false) {
             let normLevel = level ? level.toUpperCase() : '';
 
@@ -1029,17 +1178,9 @@
             }, 2500);
         }
 
-        function resetLevelPopup() {
-            lastShownLevel = null;
-            gameFinished = false;
-            if (levelPopupTimeout) {
-                clearTimeout(levelPopupTimeout);
-                levelPopupTimeout = null;
-            }
-            const oldPopup = document.querySelector('.level-popup');
-            if (oldPopup) oldPopup.remove();
-        }
-
+        // ============================================================
+        // FINISHED POPUP
+        // ============================================================
         function showFinishedPopup(finalScore) {
             const popup = document.createElement('div');
             popup.className = 'finished-popup';
@@ -1054,6 +1195,9 @@
             document.body.appendChild(popup);
         }
 
+        // ============================================================
+        // EXPLANATION POPUP
+        // ============================================================
         function showExplanationPopup(explanation) {
             const popup = document.createElement('div'); 
             popup.className = 'explain-popup';
@@ -1062,43 +1206,28 @@
             document.getElementById('closeExplainBtn').onclick = () => popup.remove();
         }
 
-        function showTutorialModal() {
-            if (hasShownTutorial) return;
-            hasShownTutorial = true;
-            const modal1 = document.createElement('div');
-            modal1.className = 'modal-overlay';
-            modal1.innerHTML = `
-                <div class="modal-content !max-w-[480px]">
-                    <div class="text-5xl mb-3">⚡</div>
-                    <h2 class="text-2xl font-extrabold mb-4 text-white tracking-wide">THÔNG BÁO QUAN TRỌNG</h2>
-                    
-                    <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left mb-6 space-y-3">
-                        <div class="flex items-start gap-3">
-                            <span class="text-cyan-400 text-lg font-bold">1.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Phát hiện rời trang sẽ phạt Khóa câu hỏi. <span class="text-red-400 font-bold">Hãy tập trung tối đa</span>.</p>
-                        </div>
-                        <div class="flex items-start gap-3 border-t border-slate-800/60 pt-3">
-                            <span class="text-cyan-400 text-lg font-bold">2.</span>
-                            <p class="text-sm text-slate-200 leading-relaxed">Ví thầu bắt đầu có sẵn <b>367.360 Xu</b> 🪙 và hoàn toàn KHÔNG CÓ TRANG BỊ SẴN. Bạn cần tham gia đấu thầu để sở hữu các vật phẩm bảo vệ và hỗ trợ!</p>
-                        </div>
-                    </div>
-                    
-                    <button id="finishTutorialBtn" class="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3.5 rounded-xl font-bold tracking-wider hover:from-emerald-500 hover:to-green-500 shadow-lg shadow-emerald-900/30 transition">
-                        🎮 VÀO GAME THÔI!
-                    </button>
-                </div>
+        // ============================================================
+        // CONGRATS POPUP
+        // ============================================================
+        function showCongratsPopup(name, rank, score) {
+            const medals = ['🥇', '🥈', '🥉'];
+            const titles = ['NHÀ VÔ ĐỊCH', 'Á QUÂN', 'HẠNG BA'];
+            const popup = document.createElement('div');
+            popup.className = 'congrats-popup';
+            popup.innerHTML = `
+                <div class="rank-icon">${medals[rank-1]}</div>
+                <h2>🎉 CHÚC MỪNG 🎉</h2>
+                <div class="rank-name">${name}</div>
+                <div class="rank-score">🏆 ${titles[rank-1]} 🏆<br>⭐ ${score} điểm ⭐</div>
+                <button onclick="this.closest('.congrats-popup').remove()">Tiếp tục</button>
             `;
-            document.body.appendChild(modal1);
-            document.getElementById('finishTutorialBtn').onclick = () => {
-                modal1.remove();
-                if (currentQuestion) {
-                    setTimeout(() => {
-                        showLevelPopup(currentQuestion.level, true);
-                    }, 300);
-                }
-            };
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 5000);
         }
 
+        // ============================================================
+        // AUCTION UI
+        // ============================================================
         function updateAuctionInventoryUI(inventory) {
             const container = document.getElementById('auctionInventory');
             container.innerHTML = '';
@@ -1117,121 +1246,34 @@
             });
         }
 
-        async function submitAuctionBid(increment) {
-            if (!currentPlayer) return;
-            try {
-                const activeIdSnap = await get(ref(db, 'game/auction/activeItemId'));
-                const activeId = activeIdSnap.val();
-                if (!activeId) {
-                    showToast("Sàn thầu đang trống!", true);
-                    return;
-                }
+        // ============================================================
+        // GAME INVENTORY UI
+        // ============================================================
+        function updateGameInventoryUI(inventory) {
+            const container = document.getElementById('gameInventory');
+            container.innerHTML = '';
+            if (!inventory) return;
 
-                const curBidSnap = await get(ref(db, 'game/auction/currentBid'));
-                const currentBid = Number(curBidSnap.val()) || 0;
+            Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
+                const qty = Number(inventory[id]) || 0;
+                if (id === 'shield' || id === 'guardian_shield') return;
 
-                const bidderSnap = await get(ref(db, 'game/auction/highestBidder'));
-                if (bidderSnap.val() === currentPlayer.name) {
-                    showToast("Bạn đang giữ giá thầu cao nhất!", true);
-                    return;
-                }
-
-                const walletSnap = await get(ref(db, `players/${currentPlayer.name}/xu`));
-                const currentWallet = Number(walletSnap.val()) || 0;
-                
-                const nextBid = Number(currentBid) + Number(increment);
-
-                if (currentWallet < nextBid) {
-                    showToast("🪙 Ví thầu của bạn không đủ xu để đặt giá này!", true);
-                    return;
-                }
-
-                await set(ref(db, 'game/auction/currentBid'), nextBid);
-                await set(ref(db, 'game/auction/highestBidder'), currentPlayer.name);
-                showToast("🔥 Đã nâng giá thành công!");
-            } catch (e) {
-                console.error(e);
-            }
+                const btn = document.createElement('button');
+                btn.disabled = qty <= 0;
+                btn.className = `p-2 rounded-xl text-center border relative transition flex flex-col items-center justify-center ${qty > 0 ? 'bg-indigo-600/20 border-indigo-500 hover:scale-105' : 'bg-slate-950/40 border-slate-900 opacity-40'}`;
+                btn.onclick = () => useInventoryItem(id);
+                btn.innerHTML = `
+                    <div class="text-xl">${meta.icon}</div>
+                    <div class="text-[9px] text-slate-300 font-bold truncate mt-1">${meta.name}</div>
+                    ${qty > 0 ? `<span class="inventory-badge">${qty}</span>` : ''}
+                `;
+                container.appendChild(btn);
+            });
         }
 
-        document.getElementById('bidBtn100').onclick = () => submitAuctionBid(100);
-        document.getElementById('bidBtn500').onclick = () => submitAuctionBid(500);
-
-        // ===== LẮNG NGHE YÊU CẦU CHỌN VẬT PHẨM TỪ HOST =====
-        onValue(ref(db, 'game/steal_select'), async (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-
-            console.log('📢 Nhận được steal_select từ host:', data);
-
-            // Nếu đây là yêu cầu chọn của mình
-            if (data.thiefName === currentPlayer.name) {
-                if (data.status === 'waiting_select' || data.status === 'waiting_select_phatxit') {
-                    showStealSelectPopup(data);
-                }
-                if (data.status === 'processed') {
-                    showToast(`✅ Vật phẩm đã được xử lý!`);
-                }
-                if (data.status === 'timeout') {
-                    showToast('⏰ Hết thời gian chọn vật phẩm!');
-                }
-            }
-
-            // Nếu là thông báo kết quả cướp/hủy
-            if (data.status === 'completed' || data.status === 'phatxit_completed') {
-                // Không làm gì thêm vì host đã gửi steal_event
-            }
-        });
-
-        // ===== LẮNG NGHE KẾT QUẢ CƯỚP/HỦY =====
-        onValue(ref(db, 'game/steal_event'), async (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-
-            console.log('📢 Nhận được steal_event:', data);
-
-            // Nếu mình là nạn nhân
-            if (data.victimName === currentPlayer.name) {
-                showStealNotifyPopup({
-                    thief: data.thiefName,
-                    itemName: data.itemName,
-                    itemId: data.itemId,
-                    type: data.status === 'completed' ? 'steal' : 'phatxit'
-                });
-                // Cập nhật inventory
-                const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
-                if (invSnap.exists()) {
-                    currentPlayer.inventory = invSnap.val();
-                    updateGameInventoryUI(currentPlayer.inventory);
-                    updateAuctionInventoryUI(currentPlayer.inventory);
-                }
-            }
-
-            // Nếu mình là kẻ cướp thành công
-            if (data.thiefName === currentPlayer.name) {
-                if (data.status === 'completed') {
-                    showToast(`🎉 Bạn đã cướp thành công ${data.itemName} của ${data.victimName}!`);
-                } else if (data.status === 'phatxit_completed') {
-                    showToast(`💥 Bạn đã hủy thành công ${data.itemName} của ${data.victimName}!`);
-                }
-                // Cập nhật inventory
-                const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
-                if (invSnap.exists()) {
-                    currentPlayer.inventory = invSnap.val();
-                    updateGameInventoryUI(currentPlayer.inventory);
-                    updateAuctionInventoryUI(currentPlayer.inventory);
-                }
-            }
-
-            // Xóa event sau khi đã xử lý
-            if (data.status === 'completed' || data.status === 'phatxit_completed') {
-                setTimeout(() => {
-                    set(ref(db, 'game/steal_event'), null);
-                }, 3000);
-            }
-        });
-
-        // ===== SỬ DỤNG VẬT PHẨM =====
+        // ============================================================
+        // USE INVENTORY ITEM
+        // ============================================================
         async function useInventoryItem(itemId) {
             if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) {
                 showToast("❌ Không thể sử dụng vật phẩm lúc này!", true);
@@ -1243,7 +1285,7 @@
                 return;
             }
 
-            // ===== THAM LAM =====
+            // THAM LAM
             if (itemId === 'tham_lam') {
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
@@ -1291,7 +1333,7 @@
                 return;
             }
 
-            // ===== PHÁT XÍT =====
+            // PHÁT XÍT
             if (itemId === 'phat_xit') {
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
@@ -1339,7 +1381,7 @@
                 return;
             }
 
-            // ===== CÁC VẬT PHẨM KHÁC =====
+            // CÁC VẬT PHẨM KHÁC
             if (itemId === '50_50') {
                 if (currentQuestion.level === 'DEN_DICH') {
                     showToast("❌ Vật phẩm 50/50 không thể sử dụng ở chặng Đến Đích!", true);
@@ -1429,7 +1471,9 @@
             }
         }
 
-        // ===== CLIENT POPUP CHỌN NẠN NHÂN =====
+        // ============================================================
+        // CLIENT POPUP CHỌN NẠN NHÂN
+        // ============================================================
         function showClientPopup(title, subtitle, items, onSelect, onCancel) {
             const oldPopup = document.querySelector('.client-popup');
             if (oldPopup) oldPopup.remove();
@@ -1472,28 +1516,223 @@
             return popup;
         }
 
-        function updateGameInventoryUI(inventory) {
-            const container = document.getElementById('gameInventory');
-            container.innerHTML = '';
-            if (!inventory) return;
+        // ============================================================
+        // STEAL SELECT POPUP
+        // ============================================================
+        function showStealSelectPopup(data) {
+            const oldPopup = document.querySelector('.steal-select-popup');
+            if (oldPopup) oldPopup.remove();
 
-            Object.entries(itemIconsAndNames).forEach(([id, meta]) => {
-                const qty = Number(inventory[id]) || 0;
-                if (id === 'shield' || id === 'guardian_shield') return;
+            const { thiefName, victimName, status } = data;
+            const isThamLam = status === 'waiting_select';
+            const isPhatXit = status === 'waiting_select_phatxit';
 
-                const btn = document.createElement('button');
-                btn.disabled = qty <= 0;
-                btn.className = `p-2 rounded-xl text-center border relative transition flex flex-col items-center justify-center ${qty > 0 ? 'bg-indigo-600/20 border-indigo-500 hover:scale-105' : 'bg-slate-950/40 border-slate-900 opacity-40'}`;
-                btn.onclick = () => useInventoryItem(id);
-                btn.innerHTML = `
-                    <div class="text-xl">${meta.icon}</div>
-                    <div class="text-[9px] text-slate-300 font-bold truncate mt-1">${meta.name}</div>
-                    ${qty > 0 ? `<span class="inventory-badge">${qty}</span>` : ''}
+            if (thiefName !== currentPlayer.name) return;
+
+            const popup = document.createElement('div');
+            popup.className = 'steal-select-popup';
+
+            const icon = isThamLam ? '🤑' : '⚫';
+            const title = isThamLam ? 'CHỌN VẬT PHẨM ĐỂ CƯỚP' : 'CHỌN VẬT PHẨM ĐỂ HỦY';
+            const color = isThamLam ? '#fbbf24' : '#ef4444';
+
+            let timerSeconds = 30;
+            let timerInterval = null;
+
+            popup.innerHTML = `
+                <span class="icon-big">${icon}</span>
+                <h2 style="color: ${color}">${title}</h2>
+                <div class="sub">
+                    Bạn đã trả lời đúng! Hãy chọn <span class="highlight">1 vật phẩm</span> của <span class="highlight-red">${victimName}</span> để ${isThamLam ? 'cướp' : 'hủy'}.
+                </div>
+                <div class="time-left">⏱️ Còn <span id="stealTimer">30</span> giây</div>
+                <div class="timer-bar">
+                    <div id="stealProgress" class="fill" style="width: 100%"></div>
+                </div>
+                <div id="stealItemGrid" class="item-grid">
+                    <div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">
+                        <span class="loading-spinner" style="width:24px;height:24px;display:inline-block;"></span> Đang tải vật phẩm...
+                    </div>
+                </div>
+                <button id="cancelStealBtn" class="cancel-btn">❌ Hủy bỏ</button>
+            `;
+
+            document.body.appendChild(popup);
+
+            const timerEl = document.getElementById('stealTimer');
+            const progressEl = document.getElementById('stealProgress');
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                timerEl.textContent = timerSeconds;
+                progressEl.style.width = `${(timerSeconds / 30) * 100}%`;
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    set(ref(db, 'game/steal_select'), {
+                        thiefName: currentPlayer.name,
+                        status: 'timeout'
+                    });
+                    popup.remove();
+                    showToast('⏰ Hết thời gian chọn vật phẩm!');
+                }
+            }, 1000);
+
+            get(ref(db, `players/${victimName}/inventory`)).then(snap => {
+                const inventory = snap.val() || {};
+                const container = document.getElementById('stealItemGrid');
+                container.innerHTML = '';
+                
+                let hasItem = false;
+                Object.entries(inventory).forEach(([itemId, qty]) => {
+                    if (qty <= 0) return;
+                    hasItem = true;
+                    const meta = itemIconsAndNames[itemId] || { name: itemId, icon: '📦' };
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'item-btn';
+                    btn.innerHTML = `
+                        <span class="icon">${meta.icon}</span>
+                        <span class="name">${meta.name}</span>
+                        <span class="qty">x${qty}</span>
+                    `;
+                    btn.onclick = async () => {
+                        clearInterval(timerInterval);
+                        await set(ref(db, 'game/steal_select'), {
+                            thiefName: currentPlayer.name,
+                            victimName: victimName,
+                            itemId: itemId,
+                            status: 'item_selected'
+                        });
+                        popup.remove();
+                        showToast(`✅ Đã chọn ${meta.name} để ${isThamLam ? 'cướp' : 'hủy'}!`);
+                    };
+                    container.appendChild(btn);
+                });
+                
+                if (!hasItem) {
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:1rem;">
+                            ❌ ${victimName} không có vật phẩm nào để ${isThamLam ? 'cướp' : 'hủy'}!
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        clearInterval(timerInterval);
+                        set(ref(db, 'game/steal_select'), {
+                            thiefName: currentPlayer.name,
+                            status: 'timeout'
+                        });
+                        popup.remove();
+                    }, 3000);
+                }
+            }).catch(err => {
+                console.error('Lỗi lấy inventory:', err);
+                const container = document.getElementById('stealItemGrid');
+                container.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;color:#ef4444;padding:1rem;">
+                        ❌ Lỗi tải dữ liệu vật phẩm!
+                    </div>
                 `;
-                container.appendChild(btn);
             });
+
+            document.getElementById('cancelStealBtn').onclick = () => {
+                clearInterval(timerInterval);
+                set(ref(db, 'game/steal_select'), {
+                    thiefName: currentPlayer.name,
+                    status: 'cancelled'
+                });
+                popup.remove();
+                showToast('❌ Đã hủy chọn vật phẩm.');
+            };
         }
 
+        // ============================================================
+        // STEAL NOTIFY POPUP
+        // ============================================================
+        function showStealNotifyPopup(data) {
+            const oldPopup = document.querySelector('.steal-notify-popup');
+            if (oldPopup) oldPopup.remove();
+
+            const { thief, itemName, itemId, type } = data;
+            const isSteal = type === 'steal';
+
+            const popup = document.createElement('div');
+            popup.className = 'steal-notify-popup';
+
+            const icon = isSteal ? '😱' : '💥';
+            const title = isSteal ? 'BẠN VỪA BỊ CƯỚP!' : 'BẠN VỪA BỊ HỦY VẬT PHẨM!';
+            const color = isSteal ? '#fbbf24' : '#ef4444';
+            const itemIcon = itemIconsAndNames[itemId]?.icon || '📦';
+            const itemDisplayName = itemIconsAndNames[itemId]?.name || itemId;
+
+            popup.innerHTML = `
+                <span class="icon-big">${icon}</span>
+                <h2 style="color: ${color}">${title}</h2>
+                <div class="sub">
+                    <span class="highlight-red">${thief}</span> đã ${isSteal ? 'cướp' : 'hủy'} <span class="highlight">${itemDisplayName}</span> của bạn!
+                </div>
+                <div style="background: rgba(30,27,75,0.4); border-radius: 1rem; padding: 0.75rem; margin: 0.5rem 0;">
+                    <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Vật phẩm bị mất</div>
+                    <div class="item-list">
+                        <span class="item-tag lost">
+                            ${itemIcon} ${itemDisplayName} ❌
+                        </span>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin: 0.5rem 0;">
+                    ${isSteal ? '🔄 Vật phẩm này đã chuyển sang túi đồ của kẻ cướp!' : '💥 Vật phẩm này đã bị xóa khỏi túi đồ của bạn!'}
+                </div>
+                <button class="close-btn" onclick="this.closest('.steal-notify-popup').remove()">✅ Đã hiểu</button>
+            `;
+            document.body.appendChild(popup);
+        }
+
+        // ============================================================
+        // SUBMIT AUCTION BID
+        // ============================================================
+        async function submitAuctionBid(increment) {
+            if (!currentPlayer) return;
+            try {
+                const activeIdSnap = await get(ref(db, 'game/auction/activeItemId'));
+                const activeId = activeIdSnap.val();
+                if (!activeId) {
+                    showToast("Sàn thầu đang trống!", true);
+                    return;
+                }
+
+                const curBidSnap = await get(ref(db, 'game/auction/currentBid'));
+                const currentBid = Number(curBidSnap.val()) || 0;
+
+                const bidderSnap = await get(ref(db, 'game/auction/highestBidder'));
+                if (bidderSnap.val() === currentPlayer.name) {
+                    showToast("Bạn đang giữ giá thầu cao nhất!", true);
+                    return;
+                }
+
+                const walletSnap = await get(ref(db, `players/${currentPlayer.name}/xu`));
+                const currentWallet = Number(walletSnap.val()) || 0;
+                
+                const nextBid = Number(currentBid) + Number(increment);
+
+                if (currentWallet < nextBid) {
+                    showToast("🪙 Ví thầu của bạn không đủ xu để đặt giá này!", true);
+                    return;
+                }
+
+                await set(ref(db, 'game/auction/currentBid'), nextBid);
+                await set(ref(db, 'game/auction/highestBidder'), currentPlayer.name);
+                showToast("🔥 Đã nâng giá thành công!");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('bidBtn100').onclick = () => submitAuctionBid(100);
+        document.getElementById('bidBtn500').onclick = () => submitAuctionBid(500);
+
+        // ============================================================
+        // TIMER
+        // ============================================================
         function updateTimerDisplay() {
             if (isQuestionCancelled) return;
             
@@ -1545,6 +1784,69 @@
             updateTimerDisplay(); 
         }
 
+        // ============================================================
+        // CHEAT DETECTION
+        // ============================================================
+        let hasTriggeredCancel = false;
+        let isGameActive = false;
+        let activationTimeout = null;
+
+        (function() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
+            });
+            document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+            
+            document.addEventListener('visibilitychange', function() { 
+                if (!isGameActive) return; 
+                if (document.hidden) { 
+                    handleCheatDetection();
+                } 
+            });
+            window.addEventListener('blur', function() { 
+                if (!isGameActive) return; 
+                handleCheatDetection();
+            });
+            window.addEventListener('focus', function() { hasTriggeredCancel = false; });
+            
+            window.setGameActive = function(active) { 
+                if (activationTimeout) clearTimeout(activationTimeout); 
+                if (active) { 
+                    activationTimeout = setTimeout(() => { isGameActive = true; }, 500); 
+                } else { 
+                    isGameActive = false; 
+                    hasTriggeredCancel = false; 
+                } 
+            };
+        })();
+
+        async function handleCheatDetection() {
+            if (window.hasAnsweredCurrent || hasTriggeredCancel) return;
+            
+            if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.guardian_shield) > 0) {
+                hasTriggeredCancel = true;
+                const newShieldCount = Number(currentPlayer.inventory.guardian_shield) - 1;
+                currentPlayer.inventory.guardian_shield = newShieldCount;
+                await set(ref(db, `players/${currentPlayer.name}/inventory/guardian_shield`), newShieldCount);
+                showToast("🛡️✨ Khiên Hộ Pháp đã tự động bảo vệ điểm số khi bạn tab-out!", false);
+                return;
+            }
+
+            if (currentPlayer && currentPlayer.inventory && Number(currentPlayer.inventory.shield) > 0) {
+                hasTriggeredCancel = true;
+                const newShieldCount = Number(currentPlayer.inventory.shield) - 1;
+                currentPlayer.inventory.shield = newShieldCount;
+                await set(ref(db, `players/${currentPlayer.name}/inventory/shield`), newShieldCount);
+                showToast("🛡️ Khiên Bảo Vệ đã tự động bảo vệ chống phạt Khóa câu hỏi khi tab-out!", false);
+                return;
+            }
+
+            if (window.cancelCurrentQuestion) { 
+                hasTriggeredCancel = true; 
+                window.cancelCurrentQuestion(); 
+            }
+        }
+
         window.cancelCurrentQuestion = async function() {
             if (!currentQuestion || isQuestionCancelled || hasAnsweredCurrent) return;
             isQuestionCancelled = true;
@@ -1563,6 +1865,9 @@
             await set(ref(db, `game/cancelledBy/${currentPlayer.name}`), { questionIndex: qIndex, timestamp: Date.now() });
         };
 
+        // ============================================================
+        // RESET FOR NEW QUESTION
+        // ============================================================
         function resetForNewQuestion() { 
             hasAnsweredCurrent = false; 
             window.hasAnsweredCurrent = false;
@@ -1578,6 +1883,9 @@
             if(oldModal && !oldModal.querySelector('#finishTutorialBtn')) oldModal.remove(); 
         }
 
+        // ============================================================
+        // SHOW RESULT MODAL
+        // ============================================================
         function showResultModal(isCorrect, correctLetter, correctText, pointsEarned, playerScore, explanation, isReplay = false) {
             if(modalShownForCurrentQuestion) return;
             modalShownForCurrentQuestion = true;
@@ -1618,6 +1926,9 @@
             document.getElementById('showExplainBtn').onclick = () => { showExplanationPopup(explanation); };
         }
 
+        // ============================================================
+        // CHECK CURRENT QUESTION
+        // ============================================================
         async function checkCurrentQuestion() {
             try {
                 const snap = await get(ref(db, 'game/currentQuestion'));
@@ -1649,6 +1960,9 @@
             }
         }
 
+        // ============================================================
+        // DISPLAY QUESTION
+        // ============================================================
         function displayQuestion(q) {
             if(!currentPlayer) return;
             
@@ -1759,6 +2073,9 @@
             });
         }
 
+        // ============================================================
+        // SUBMIT ANSWER
+        // ============================================================
         async function submitAnswer(answerIdx) {
             if (!currentPlayer || hasAnsweredCurrent || isLocked || !currentQuestion || isQuestionCancelled) return;
             if (timerEndTime && getServerTime() > timerEndTime) { 
@@ -1777,6 +2094,9 @@
             displayQuestion(currentQuestion);
         }
 
+        // ============================================================
+        // LISTEN FOR LOCK AND RESULT
+        // ============================================================
         function listenForLockAndResult() {
             onValue(ref(db, 'game/locked'), (snapshot) => { 
                 isLocked = snapshot.val() === true; 
@@ -1812,6 +2132,9 @@
             });
         }
 
+        // ============================================================
+        // LISTEN FOR LEVEL POPUP
+        // ============================================================
         function listenForLevelPopup() { 
             onValue(ref(db, 'game/levelPopup'), (snapshot) => { 
                 const data = snapshot.val(); 
@@ -1823,7 +2146,10 @@
                 }
             }); 
         }
-        
+
+        // ============================================================
+        // LISTEN FOR TOP3
+        // ============================================================
         function listenForTop3() {
             onValue(ref(db, 'game/top3'), (snapshot) => {
                 const data = snapshot.val();
@@ -1837,6 +2163,9 @@
             });
         }
 
+        // ============================================================
+        // LISTEN FOR BROADCAST
+        // ============================================================
         function listenForBroadcast() {
             onValue(ref(db, 'game/broadcast'), (snapshot) => {
                 const data = snapshot.val();
@@ -1846,6 +2175,9 @@
             });
         }
 
+        // ============================================================
+        // LISTEN RANKING
+        // ============================================================
         function listenRanking() {
             onValue(ref(db, 'players'), () => {
                 get(ref(db, 'players')).then(snap => {
@@ -1876,6 +2208,9 @@
             });
         }
 
+        // ============================================================
+        // EVENT LISTENERS - FIREBASE
+        // ============================================================
         // Lắng nghe sự kiện đấu giá
         onValue(ref(db, 'game/auction/activeItemId'), async (snap) => {
             const itemId = snap.val();
@@ -1980,154 +2315,100 @@
             } else { stopTimerLocal(); }
         });
 
-        // ===== ĐĂNG NHẬP =====
-        async function login() {
-            const name = document.getElementById('playerName').value.trim();
-            if (!name) return showToast("Vui lòng nhập tên của bạn!", true);
-            
-            const playerRef = ref(db, `players/${name}`);
-            const snap = await get(playerRef);
-            
-            if (!snap.exists()) {
-                const initialData = { 
-                    name, 
-                    score: 0, 
-                    xu: STARTING_COINS,
-                    answers: {}, 
-                    cancelled: {}, 
-                    online: true,
-                    bua_ho_phap_count: 0,
-                    inventory: {
-                        "50_50": 0,
-                        "amulet": 0,
-                        "tham_lam": 0,
-                        "bua_ho_phap": 0,
-                        "xa_hoi_chu_nghia": 0,
-                        "tu_ban_trump": 0,
-                        "phat_xit": 0,
-                        "bua_the_than": 0,
-                        "double_points": 0,
-                        "extra_time": 0,
-                        "guardian_shield": 0,
-                        "steal_points": 0
-                    }
-                };
-                await set(playerRef, initialData);
-                currentPlayer = initialData;
-            } else {
-                const data = snap.val();
-                const defaultInventory = {
-                    "50_50": 0,
-                    "amulet": 0,
-                    "tham_lam": 0,
-                    "bua_ho_phap": 0,
-                    "xa_hoi_chu_nghia": 0,
-                    "tu_ban_trump": 0,
-                    "phat_xit": 0,
-                    "bua_the_than": 0,
-                    "double_points": 0,
-                    "extra_time": 0,
-                    "guardian_shield": 0,
-                    "steal_points": 0
-                };
-                const mergedInventory = { ...defaultInventory, ...(data.inventory || {}) };
-                
-                currentPlayer = { 
-                    name, 
-                    score: Number(data.score) || 0, 
-                    xu: data.xu !== undefined ? Number(data.xu) : STARTING_COINS,
-                    answers: data.answers || {}, 
-                    cancelled: data.cancelled || {}, 
-                    bua_ho_phap_count: Number(data.bua_ho_phap_count) || 0,
-                    inventory: mergedInventory,
-                    online: true 
-                };
-                await set(ref(db, `players/${name}/inventory`), mergedInventory);
-                await set(ref(db, `players/${name}/online`), true);
+        // Lắng nghe steal_select
+        onValue(ref(db, 'game/steal_select'), async (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            console.log('📢 Nhận được steal_select từ host:', data);
+
+            if (data.thiefName === currentPlayer.name) {
+                if (data.status === 'waiting_select' || data.status === 'waiting_select_phatxit') {
+                    showStealSelectPopup(data);
+                }
+                if (data.status === 'processed') {
+                    showToast(`✅ Vật phẩm đã được xử lý!`);
+                }
+                if (data.status === 'timeout') {
+                    showToast('⏰ Hết thời gian chọn vật phẩm!');
+                }
             }
-            
-            onDisconnect(ref(db, `players/${name}/online`)).set(false);
-            sessionStorage.setItem('playerName', name);
-            
-            document.getElementById('loginPanel').classList.add('hidden');
-            
-            onValue(ref(db, 'game/status'), (snap) => {
-                const status = snap.val();
-                if (status === 'auction') {
-                    document.getElementById('auctionPanel').classList.remove('hidden');
-                    document.getElementById('gamePanel').classList.add('hidden');
-                } else {
-                    document.getElementById('auctionPanel').classList.add('hidden');
-                    document.getElementById('gamePanel').classList.remove('hidden');
+        });
+
+        // Lắng nghe steal_event
+        onValue(ref(db, 'game/steal_event'), async (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            console.log('📢 Nhận được steal_event:', data);
+
+            if (data.victimName === currentPlayer.name) {
+                showStealNotifyPopup({
+                    thief: data.thiefName,
+                    itemName: data.itemName,
+                    itemId: data.itemId,
+                    type: data.status === 'completed' ? 'steal' : 'phatxit'
+                });
+                const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                if (invSnap.exists()) {
+                    currentPlayer.inventory = invSnap.val();
+                    updateGameInventoryUI(currentPlayer.inventory);
+                    updateAuctionInventoryUI(currentPlayer.inventory);
                 }
-            });
+            }
 
-            document.getElementById('playerNameDisplay').innerText = name;
-            document.getElementById('playerScore').innerText = currentPlayer.score;
-            document.getElementById('playerXu').innerText = currentPlayer.xu;
-            document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
-            
-            onValue(ref(db, `players/${currentPlayer.name}`), (playerSnap) => {
-                const pVal = playerSnap.val();
-                if (!playerSnap.exists() || !pVal) {
-                    sessionStorage.removeItem('playerName');
-                    location.reload();
-                    return;
+            if (data.thiefName === currentPlayer.name) {
+                if (data.status === 'completed') {
+                    showToast(`🎉 Bạn đã cướp thành công ${data.itemName} của ${data.victimName}!`);
+                } else if (data.status === 'phatxit_completed') {
+                    showToast(`💥 Bạn đã hủy thành công ${data.itemName} của ${data.victimName}!`);
                 }
-                
-                currentPlayer.xu = pVal.xu !== undefined ? Number(pVal.xu) : STARTING_COINS;
-                currentPlayer.inventory = pVal.inventory || {};
-                currentPlayer.score = Number(pVal.score) || 0;
-                currentPlayer.bua_ho_phap_count = Number(pVal.bua_ho_phap_count) || 0;
-                
-                document.getElementById('playerXu').innerText = currentPlayer.xu;
-                document.getElementById('playerXuAuction').innerText = `${currentPlayer.xu} xu`;
-                document.getElementById('playerScore').innerText = currentPlayer.score;
-                
-                const shieldQty = Number(currentPlayer.inventory.shield) || 0;
-                const guardianShieldQty = Number(currentPlayer.inventory.guardian_shield) || 0;
-                const shieldElem = document.getElementById('playerShieldCount');
-                const guardianShieldElem = document.getElementById('playerGuardianShieldCount');
-                if (shieldElem) shieldElem.innerText = shieldQty;
-                if (guardianShieldElem) guardianShieldElem.innerText = guardianShieldQty;
-                
-                updateAuctionInventoryUI(currentPlayer.inventory);
-                updateGameInventoryUI(currentPlayer.inventory);
-            });
+                const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
+                if (invSnap.exists()) {
+                    currentPlayer.inventory = invSnap.val();
+                    updateGameInventoryUI(currentPlayer.inventory);
+                    updateAuctionInventoryUI(currentPlayer.inventory);
+                }
+            }
 
-            showTutorialModal();
-            checkCurrentQuestion();
-        }
+            if (data.status === 'completed' || data.status === 'phatxit_completed') {
+                setTimeout(() => {
+                    set(ref(db, 'game/steal_event'), null);
+                }, 3000);
+            }
+        });
 
+        // ============================================================
+        // KHỞI TẠO
+        // ============================================================
         listenForLockAndResult(); 
         listenForLevelPopup(); 
         listenRanking(); 
         listenForTop3();
         listenForBroadcast();
-        
+
         document.getElementById('loginBtn').onclick = login;
         document.getElementById('playerName').addEventListener('keypress', e => {
             if (e.key === 'Enter') login();
         });
 
-        window.onload = function() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const autoName = urlParams.get('name');
-                if (autoName) {
-                    const decodedName = decodeURIComponent(autoName).trim();
-                    if (decodedName) {
-                        document.getElementById('playerName').value = decodedName;
-                        setTimeout(() => { login(); }, 300);
-                        return;
-                    }
-                }
-                const savedName = sessionStorage.getItem('playerName');
-                if (savedName) {
-                    document.getElementById('playerName').value = savedName;
-                    setTimeout(() => { login(); }, 150);
-                }
-            } catch (err) {}
+        window.onload = async function() {
+            // Lấy token captcha
+            await getCaptchaToken('login');
+            
+            // Refresh token mỗi 2 phút
+            setInterval(async () => {
+                await getCaptchaToken('login');
+            }, 120000);
+            
+            // Tự động đăng nhập nếu có tên lưu
+            const savedName = sessionStorage.getItem('playerName');
+            if (savedName) {
+                document.getElementById('playerName').value = savedName;
+            }
+
+            console.log('🚀 App loaded with reCAPTCHA v3!');
+            console.log('🔗 Worker API:', WORKER_API_URL);
         };
     </script>
 </body>
