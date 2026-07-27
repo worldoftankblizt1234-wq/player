@@ -366,6 +366,10 @@
             color: #fbbf24;
             font-weight: 700;
         }
+        .steal-select-popup .highlight-red {
+            color: #f87171;
+            font-weight: 700;
+        }
         .steal-select-popup .item-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -515,6 +519,64 @@
         }
         .steal-notify-popup .close-btn:hover {
             background: #4338ca;
+            transform: scale(1.02);
+        }
+
+        /* Popup thông báo Bùa thế thân */
+        .bua-the-than-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid rgba(168, 85, 247, 0.5);
+            border-radius: 1.5rem;
+            max-width: 95%;
+            width: 500px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            z-index: 10002;
+            animation: showModal 0.4s ease-out;
+            color: white;
+        }
+        .bua-the-than-popup .icon-big {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .bua-the-than-popup h2 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            color: #a78bfa;
+        }
+        .bua-the-than-popup .sub {
+            font-size: 0.95rem;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+        }
+        .bua-the-than-popup .highlight {
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        .bua-the-than-popup .highlight-purple {
+            color: #a78bfa;
+            font-weight: 700;
+        }
+        .bua-the-than-popup .close-btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 0.6rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .bua-the-than-popup .close-btn:hover {
+            background: #6d28d9;
             transform: scale(1.02);
         }
     </style>
@@ -959,6 +1021,42 @@
             document.body.appendChild(popup);
         }
 
+        // ===== POPUP THÔNG BÁO BÙA THẾ THÂN =====
+        function showBuaTheThanPopup(data) {
+            const oldPopup = document.querySelector('.bua-the-than-popup');
+            if (oldPopup) oldPopup.remove();
+
+            const { targetName, isCorrect, points } = data;
+
+            const popup = document.createElement('div');
+            popup.className = 'bua-the-than-popup';
+
+            const icon = isCorrect ? '🎭✨' : '🎭💫';
+            const title = isCorrect ? 'BÙA THẾ THÂN - CẢ 2 ĐỀU ĐƯỢC CỘNG ĐIỂM!' : 'BÙA THẾ THÂN - BẠN ĐƯỢC BẢO VỆ!';
+            const subText = isCorrect 
+                ? `Bạn và <span class="highlight">${targetName}</span> đều được cộng <span class="highlight">+${points} điểm</span> vì bạn đã trả lời đúng! 🎉`
+                : `<span class="highlight">${targetName}</span> đã gánh thay điểm trừ cho bạn. Bạn KHÔNG bị trừ điểm! 🛡️`;
+
+            popup.innerHTML = `
+                <span class="icon-big">${icon}</span>
+                <h2>${title}</h2>
+                <div class="sub">${subText}</div>
+                <div style="background: rgba(30,27,75,0.4); border-radius: 1rem; padding: 0.75rem; margin: 0.5rem 0; text-align: left;">
+                    <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">📌 Chi tiết</div>
+                    <div style="font-size: 0.9rem; margin-top: 0.25rem;">
+                        ${isCorrect 
+                            ? `✅ Cả 2 người chơi đều được hưởng lợi từ câu trả lời đúng của bạn!` 
+                            : `✅ Bạn được bảo vệ bởi Bùa thế thân, không mất điểm dù trả lời sai!`}
+                    </div>
+                    <div style="font-size: 0.8rem; color: #a5b4fc; margin-top: 0.25rem;">
+                        🎭 Người thế thân: <span class="highlight">${targetName}</span>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="this.closest('.bua-the-than-popup').remove()">✅ Đã hiểu</button>
+            `;
+            document.body.appendChild(popup);
+        }
+
         function showLevelPopup(level, force = false) {
             let normLevel = level ? level.toUpperCase() : '';
 
@@ -1231,6 +1329,30 @@
             }
         });
 
+        // ===== LẮNG NGHE THÔNG BÁO BÙA THẾ THÂN =====
+        onValue(ref(db, 'game/bua_the_than_notify'), async (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            console.log('📢 Nhận được bua_the_than_notify:', data);
+
+            // Nếu là thông báo cho mình
+            if (data.playerName === currentPlayer.name) {
+                showBuaTheThanPopup({
+                    targetName: data.targetName,
+                    isCorrect: data.isCorrect,
+                    points: data.points
+                });
+            }
+
+            // Xóa sau khi đã xử lý
+            if (data.isCorrect !== undefined) {
+                setTimeout(() => {
+                    set(ref(db, 'game/bua_the_than_notify'), null);
+                }, 5000);
+            }
+        });
+
         // ===== SỬ DỤNG VẬT PHẨM =====
         async function useInventoryItem(itemId) {
             if (!currentPlayer || !currentQuestion || isLocked || hasAnsweredCurrent) {
@@ -1339,6 +1461,53 @@
                 return;
             }
 
+            // ===== BÙA THẾ THÂN =====
+            if (itemId === 'bua_the_than') {
+                const playersSnap = await get(ref(db, 'players'));
+                if (!playersSnap.exists()) {
+                    showToast("❌ Không có người chơi nào để thế thân!", true);
+                    return;
+                }
+                const players = playersSnap.val();
+                const targetList = Object.entries(players)
+                    .filter(([name, data]) => name !== currentPlayer.name && data.online)
+                    .map(([name, data]) => ({
+                        name: name,
+                        info: `⭐ ${data.score || 0} điểm | 🪙 ${data.xu || 0} xu`
+                    }));
+
+                if (targetList.length === 0) {
+                    showToast("❌ Không có người chơi nào khác online để thế thân!", true);
+                    return;
+                }
+
+                showClientPopup(
+                    '🎭 BÙA THẾ THÂN',
+                    'Chọn người sẽ gánh thay điểm trừ (hoặc được cộng điểm khi bạn đúng):',
+                    targetList,
+                    async (selected) => {
+                        try {
+                            await set(ref(db, `players/${currentPlayer.name}/activeItems/bua_the_than_target`), selected.name);
+                            
+                            const newQty = Number(currentPlayer.inventory[itemId]) - 1;
+                            currentPlayer.inventory[itemId] = newQty;
+                            await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
+                            updateGameInventoryUI(currentPlayer.inventory);
+                            updateAuctionInventoryUI(currentPlayer.inventory);
+                            
+                            showToast(`🎭 Đã chọn ${selected.name} làm người thế thân!`);
+                        } catch (err) {
+                            console.error('Lỗi khi kích hoạt Bùa Thế Thân:', err);
+                            showToast('❌ Lỗi khi kích hoạt Bùa Thế Thân!', true);
+                        }
+                    },
+                    () => {
+                        showToast('Đã hủy kích hoạt Bùa Thế Thân.');
+                    }
+                );
+                return;
+            }
+
             // ===== CÁC VẬT PHẨM KHÁC =====
             if (itemId === '50_50') {
                 if (currentQuestion.level === 'DEN_DICH') {
@@ -1390,37 +1559,8 @@
                 showToast("🔮✨ Đã kích hoạt Bùa hộ pháp! Bạn sẽ tự động nhận điểm 2 câu kế tiếp.");
             }
 
-            else if (itemId === 'bua_the_than') {
-                const playersSnap = await get(ref(db, 'players'));
-                if (playersSnap.exists()) {
-                    const allPlayers = Object.keys(playersSnap.val()).filter(p => p !== currentPlayer.name);
-                    if (allPlayers.length > 0) {
-                        const randomTarget = allPlayers[Math.floor(Math.random() * allPlayers.length)];
-                        await set(ref(db, `players/${currentPlayer.name}/activeItems/bua_the_than_target`), randomTarget);
-                        await set(ref(db, 'game/broadcast'), {
-                            text: `🎭 ${currentPlayer.name} đã kích hoạt Bùa Thế Thân lên ${randomTarget}!`,
-                            timestamp: getServerTime()
-                        });
-                        showToast(`🎭 Kích hoạt Bùa Thế Thân thành công! Người gánh chịu: ${randomTarget}`);
-                    } else {
-                        showToast("❌ Không có người chơi nào khác online để thế thân!", true);
-                        return;
-                    }
-                }
-            }
-
-            else if (itemId === 'xa_hoi_chu_nghia') {
-                await set(ref(db, `players/${currentPlayer.name}/activeItems/xa_hoi_chu_nghia`), true);
-                showToast("🤝 Đã kích hoạt Xã hội chủ nghĩa! Điểm sẽ chia đều cho tất cả.");
-            }
-
-            else if (itemId === 'tu_ban_trump') {
-                await set(ref(db, `players/${currentPlayer.name}/activeItems/tu_ban_trump`), true);
-                showToast("🏛️ Đã kích hoạt Tư bản Trump! Nếu đúng, bạn sẽ nhận 50% xu của người nghèo nhất.");
-            }
-
             // Trừ vật phẩm (trừ Tham Lam và Phát Xít đã xử lý ở trên)
-            if (itemId !== 'tham_lam' && itemId !== 'phat_xit') {
+            if (itemId !== 'tham_lam' && itemId !== 'phat_xit' && itemId !== 'bua_the_than') {
                 const newQty = Number(currentPlayer.inventory[itemId]) - 1;
                 currentPlayer.inventory[itemId] = newQty;
                 await set(ref(db, `players/${currentPlayer.name}/inventory/${itemId}`), newQty);
