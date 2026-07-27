@@ -7,6 +7,8 @@
     <title>Mini-Game Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -517,6 +519,34 @@
             background: #4338ca;
             transform: scale(1.02);
         }
+
+        /* reCAPTCHA styles */
+        .recaptcha-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .recaptcha-wrapper .g-recaptcha {
+            transform: scale(0.85);
+            transform-origin: center center;
+        }
+        @media (max-width: 480px) {
+            .recaptcha-wrapper .g-recaptcha {
+                transform: scale(0.75);
+            }
+        }
+        .login-error {
+            color: #f87171;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 8px;
+            min-height: 20px;
+        }
+        #loginBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 flex items-center justify-center relative" oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
@@ -536,7 +566,14 @@
                 </div>
                 <h2 class="text-lg font-semibold text-indigo-200 mb-3 text-center">📝 Nhập tên của bạn</h2>
                 <input type="text" id="playerName" placeholder="Tên hiển thị của bạn..." class="w-full p-4 bg-slate-900/50 border border-slate-700/50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl mb-4 text-center text-white placeholder-slate-500 font-medium transition-all outline-none" autocomplete="off">
-                <button id="loginBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all">🎮 VÀO CHƠI NGAY</button>
+                
+                <!-- reCAPTCHA v2 -->
+                <div class="recaptcha-wrapper">
+                    <div class="g-recaptcha" data-sitekey="6LfEuWctAAAAAAzCWLOGjM022pLKqxQudnsjt_Im" data-callback="onRecaptchaSuccess"></div>
+                </div>
+                <div id="recaptchaError" class="login-error"></div>
+                
+                <button id="loginBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-4 rounded-2xl font-bold tracking-wider shadow-lg shadow-indigo-600/30 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>🎮 VÀO CHƠI NGAY</button>
             </div>
 
             <div id="auctionPanel" class="hidden space-y-6">
@@ -647,6 +684,7 @@
 
         const STARTING_COINS = 367360;
         let serverTimeOffset = 0;
+        let recaptchaToken = null;
 
         function showToast(msg, isError = false) {
             let toast = document.querySelector('.toast-notify');
@@ -659,6 +697,35 @@
             toast.innerText = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2500);
+        }
+
+        // reCAPTCHA callback
+        window.onRecaptchaSuccess = function(token) {
+            recaptchaToken = token;
+            document.getElementById('recaptchaError').textContent = '';
+            document.getElementById('loginBtn').disabled = false;
+        };
+
+        // reCAPTCHA expired callback
+        window.onRecaptchaExpired = function() {
+            recaptchaToken = null;
+            document.getElementById('loginBtn').disabled = true;
+            document.getElementById('recaptchaError').textContent = '⚠️ reCAPTCHA đã hết hạn, vui lòng xác nhận lại.';
+        };
+
+        // reCAPTCHA error callback
+        window.onRecaptchaError = function() {
+            recaptchaToken = null;
+            document.getElementById('loginBtn').disabled = true;
+            document.getElementById('recaptchaError').textContent = '⚠️ Có lỗi xảy ra với reCAPTCHA, vui lòng thử lại.';
+        };
+
+        function resetRecaptcha() {
+            recaptchaToken = null;
+            document.getElementById('loginBtn').disabled = true;
+            if (window.grecaptcha) {
+                grecaptcha.reset();
+            }
         }
 
         function showCongratsPopup(name, rank, score) {
@@ -794,7 +861,6 @@
             const isThamLam = status === 'waiting_select';
             const isPhatXit = status === 'waiting_select_phatxit';
 
-            // Kiểm tra nếu không phải của mình thì bỏ qua
             if (thiefName !== currentPlayer.name) return;
 
             const popup = document.createElement('div');
@@ -827,7 +893,6 @@
 
             document.body.appendChild(popup);
 
-            // Bắt đầu đếm ngược
             const timerEl = document.getElementById('stealTimer');
             const progressEl = document.getElementById('stealProgress');
             
@@ -838,7 +903,6 @@
                 
                 if (timerSeconds <= 0) {
                     clearInterval(timerInterval);
-                    // Gửi timeout cho host
                     set(ref(db, 'game/steal_select'), {
                         thiefName: currentPlayer.name,
                         status: 'timeout'
@@ -848,7 +912,6 @@
                 }
             }, 1000);
 
-            // Lấy danh sách vật phẩm của nạn nhân
             get(ref(db, `players/${victimName}/inventory`)).then(snap => {
                 const inventory = snap.val() || {};
                 const container = document.getElementById('stealItemGrid');
@@ -869,7 +932,6 @@
                     `;
                     btn.onclick = async () => {
                         clearInterval(timerInterval);
-                        // Gửi lựa chọn cho host
                         await set(ref(db, 'game/steal_select'), {
                             thiefName: currentPlayer.name,
                             victimName: victimName,
@@ -888,7 +950,6 @@
                             ❌ ${victimName} không có vật phẩm nào để ${isThamLam ? 'cướp' : 'hủy'}!
                         </div>
                     `;
-                    // Tự động đóng sau 3s
                     setTimeout(() => {
                         clearInterval(timerInterval);
                         set(ref(db, 'game/steal_select'), {
@@ -908,7 +969,6 @@
                 `;
             });
 
-            // Nút hủy
             document.getElementById('cancelStealBtn').onclick = () => {
                 clearInterval(timerInterval);
                 set(ref(db, 'game/steal_select'), {
@@ -1164,7 +1224,6 @@
 
             console.log('📢 Nhận được steal_select từ host:', data);
 
-            // Nếu đây là yêu cầu chọn của mình
             if (data.thiefName === currentPlayer.name) {
                 if (data.status === 'waiting_select' || data.status === 'waiting_select_phatxit') {
                     showStealSelectPopup(data);
@@ -1177,7 +1236,6 @@
                 }
             }
 
-            // Nếu là thông báo kết quả cướp/hủy
             if (data.status === 'completed' || data.status === 'phatxit_completed') {
                 // Không làm gì thêm vì host đã gửi steal_event
             }
@@ -1190,7 +1248,6 @@
 
             console.log('📢 Nhận được steal_event:', data);
 
-            // Nếu mình là nạn nhân
             if (data.victimName === currentPlayer.name) {
                 showStealNotifyPopup({
                     thief: data.thiefName,
@@ -1198,7 +1255,6 @@
                     itemId: data.itemId,
                     type: data.status === 'completed' ? 'steal' : 'phatxit'
                 });
-                // Cập nhật inventory
                 const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
                 if (invSnap.exists()) {
                     currentPlayer.inventory = invSnap.val();
@@ -1207,14 +1263,12 @@
                 }
             }
 
-            // Nếu mình là kẻ cướp thành công
             if (data.thiefName === currentPlayer.name) {
                 if (data.status === 'completed') {
                     showToast(`🎉 Bạn đã cướp thành công ${data.itemName} của ${data.victimName}!`);
                 } else if (data.status === 'phatxit_completed') {
                     showToast(`💥 Bạn đã hủy thành công ${data.itemName} của ${data.victimName}!`);
                 }
-                // Cập nhật inventory
                 const invSnap = await get(ref(db, `players/${currentPlayer.name}/inventory`));
                 if (invSnap.exists()) {
                     currentPlayer.inventory = invSnap.val();
@@ -1223,7 +1277,6 @@
                 }
             }
 
-            // Xóa event sau khi đã xử lý
             if (data.status === 'completed' || data.status === 'phatxit_completed') {
                 setTimeout(() => {
                     set(ref(db, 'game/steal_event'), null);
@@ -1243,7 +1296,6 @@
                 return;
             }
 
-            // ===== THAM LAM =====
             if (itemId === 'tham_lam') {
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
@@ -1291,7 +1343,6 @@
                 return;
             }
 
-            // ===== PHÁT XÍT =====
             if (itemId === 'phat_xit') {
                 const playersSnap = await get(ref(db, 'players'));
                 if (!playersSnap.exists()) {
@@ -1339,7 +1390,6 @@
                 return;
             }
 
-            // ===== CÁC VẬT PHẨM KHÁC =====
             if (itemId === '50_50') {
                 if (currentQuestion.level === 'DEN_DICH') {
                     showToast("❌ Vật phẩm 50/50 không thể sử dụng ở chặng Đến Đích!", true);
@@ -1419,7 +1469,6 @@
                 showToast("🏛️ Đã kích hoạt Tư bản Trump! Nếu đúng, bạn sẽ nhận 50% xu của người nghèo nhất.");
             }
 
-            // Trừ vật phẩm (trừ Tham Lam và Phát Xít đã xử lý ở trên)
             if (itemId !== 'tham_lam' && itemId !== 'phat_xit') {
                 const newQty = Number(currentPlayer.inventory[itemId]) - 1;
                 currentPlayer.inventory[itemId] = newQty;
@@ -1983,7 +2032,47 @@
         // ===== ĐĂNG NHẬP =====
         async function login() {
             const name = document.getElementById('playerName').value.trim();
-            if (!name) return showToast("Vui lòng nhập tên của bạn!", true);
+            if (!name) {
+                showToast("Vui lòng nhập tên của bạn!", true);
+                return;
+            }
+            
+            if (!recaptchaToken) {
+                document.getElementById('recaptchaError').textContent = '⚠️ Vui lòng xác nhận bạn không phải là robot!';
+                showToast("Vui lòng hoàn thành reCAPTCHA!", true);
+                return;
+            }
+            
+            // Verify captcha với backend (gọi API của bạn)
+            try {
+                const verifyRes = await fetch('https://capcha.anhminhadof123.workers.dev/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: recaptchaToken,
+                        secret: '6LfEuWctAAAAAAIhIngVkf7D4lg2_L6J8jxv8Mi-u'
+                    })
+                });
+                
+                const verifyData = await verifyRes.json();
+                
+                if (!verifyData.success) {
+                    document.getElementById('recaptchaError').textContent = '❌ Xác minh reCAPTCHA thất bại! Vui lòng thử lại.';
+                    resetRecaptcha();
+                    showToast("Xác minh reCAPTCHA thất bại!", true);
+                    return;
+                }
+            } catch (err) {
+                console.error('Lỗi verify captcha:', err);
+                document.getElementById('recaptchaError').textContent = '❌ Lỗi kết nối xác minh! Vui lòng thử lại.';
+                resetRecaptcha();
+                showToast("Lỗi kết nối xác minh!", true);
+                return;
+            }
+            
+            document.getElementById('recaptchaError').textContent = '';
             
             const playerRef = ref(db, `players/${name}`);
             const snap = await get(playerRef);
@@ -2110,7 +2199,9 @@
             if (e.key === 'Enter') login();
         });
 
+        // Reset recaptcha khi bắt đầu lại
         window.onload = function() {
+            resetRecaptcha();
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const autoName = urlParams.get('name');
